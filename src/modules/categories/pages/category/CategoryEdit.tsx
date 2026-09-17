@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { MdEdit, MdSend } from "react-icons/md";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -16,9 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES_API } from "@/modules/categories/api/categories";
 import { storageImage } from "@/lib/constants";
 import SubCategoryEditList from "@/modules/categories/components/SubCategoryEditList";
+import {
+  useCategoryDetail,
+  useUpdateCategory,
+} from "@/modules/categories/hooks/useCategories";
 import type {
   CategoryEditFormState,
   CategoryUser,
@@ -47,9 +48,14 @@ const CategoryEdit = () => {
   const [categoryUser, setCategoryUser] = useState<CategoryUser[]>([]);
   const { id } = useParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const navigate = useNavigate();
+  const { data: categoryDetail, error: categoryError } = useCategoryDetail(id);
+  const updateCategory = useUpdateCategory(id, {
+    onUpdated: () => {
+      navigate("/category");
+    },
+  });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategoryData({
@@ -59,57 +65,21 @@ const CategoryEdit = () => {
   };
 
   useEffect(() => {
-    const fetchCategory = async () => {
-      try {
-        const response = await axios.get(CATEGORIES_API.byId(String(id ?? "")), {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setCategoryData(response.data.categories);
-        setCategoryUser(response.data.user ?? []);
-      } catch (error) {
-        console.error("Error fetching category edit:", error);
-      }
-    };
+    if (categoryDetail) {
+      setCategoryData(categoryDetail.categories);
+      setCategoryUser(categoryDetail.user ?? []);
+    }
+  }, [categoryDetail]);
 
-    fetchCategory();
-  }, [id]);
+  useEffect(() => {
+    if (categoryError) {
+      console.error("Error fetching category edit:", categoryError);
+    }
+  }, [categoryError]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("category", categoryData.category);
-    formData.append("category_status", categoryData.category_status);
-    formData.append("category_type", categoryData.category_type);
-    formData.append("category_sort", categoryData.category_sort);
-    if (selectedFile) {
-      formData.append("category_image", selectedFile);
-    }
-
-    try {
-      setIsButtonDisabled(true);
-      const response = await axios.post(
-        CATEGORIES_API.update(String(id ?? "")),
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      if (response.data.code == "200") {
-        toast.success("Category updated successfully");
-        navigate("/category");
-      } else {
-        toast.error("Duplicate entry");
-      }
-    } catch (error) {
-      console.error("Error updating category:", error);
-    } finally {
-      setIsButtonDisabled(false);
-    }
+    updateCategory.mutate({ form: categoryData, file: selectedFile });
   };
 
   const imageUrl = storageImage("categories_images", categoryData.category_image);
@@ -233,9 +203,9 @@ const CategoryEdit = () => {
                   )}
                 </div>
                 <div className="flex flex-col gap-2 lg:flex-row">
-                  <Button type="submit" size="sm" disabled={isButtonDisabled}>
+                  <Button type="submit" size="sm" disabled={updateCategory.isPending}>
                     <MdSend />
-                    <span>{isButtonDisabled ? "Updating..." : "Update"}</span>
+                    <span>{updateCategory.isPending ? "Updating..." : "Update"}</span>
                   </Button>
                 </div>
               </div>

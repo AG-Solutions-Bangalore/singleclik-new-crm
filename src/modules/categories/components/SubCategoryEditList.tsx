@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { CiEdit } from "react-icons/ci";
 import { RiArrowUpDoubleFill } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
@@ -14,7 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES_API } from "@/modules/categories/api/categories";
+import { useCategoryDetail } from "@/modules/categories/hooks/useCategories";
+import { useUpdateSubCategoryRow } from "@/modules/categories/hooks/useSubCategories";
 import type {
   CategoryEditFormState,
   SubCategoryRow,
@@ -36,34 +35,29 @@ const SubCategoryEditList = () => {
   const [subcategories, setSubcategories] = useState<SubCategoryRow[]>([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editedSubcategories, setEditedSubcategories] = useState<SubCategoryRow[]>([]);
-  const [isSubcatButtonDisabled, setIsSubcatButtonDisabled] = useState(false);
   const { id } = useParams();
+  const { data: categoryDetail, error: categoryError } = useCategoryDetail(id);
+  const updateSubCategory = useUpdateSubCategoryRow();
 
   useEffect(() => {
-    const fetchCategory = async () => {
-      try {
-        const response = await axios.get(CATEGORIES_API.byId(String(id ?? "")), {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setCategoryData(response.data.categories);
+    if (categoryDetail) {
+      setCategoryData(categoryDetail.categories);
+      setSubcategories(categoryDetail.categoriessub ?? []);
+      setEditedSubcategories(categoryDetail.categoriessub ?? []);
+    }
+  }, [categoryDetail]);
 
-        setSubcategories(response.data.categoriessub ?? []);
-        setEditedSubcategories(response.data.categoriessub ?? []);
-      } catch (error) {
-        console.error("Error fetching category edit:", error);
-      }
-    };
-
-    fetchCategory();
-  }, [id]);
+  useEffect(() => {
+    if (categoryError) {
+      console.error("Error fetching category edit:", categoryError);
+    }
+  }, [categoryError]);
 
   const handleEditClick = (index: number) => {
     setEditIndex(index);
   };
 
-  const handleUpdateSubCat = async (e: React.MouseEvent, index: number) => {
+  const handleUpdateSubCat = (e: React.MouseEvent, index: number) => {
     e.preventDefault();
 
     const current = editedSubcategories[index];
@@ -71,33 +65,15 @@ const SubCategoryEditList = () => {
 
     setEditIndex(null);
     const subcategoryId = current.id;
-    setIsSubcatButtonDisabled(true);
 
-    try {
-      const data = {
+    updateSubCategory.mutate({
+      rowId: subcategoryId,
+      data: {
         category_id: current.category_id,
         subcategory: current.subcategory,
         subcategory_status: current.subcategory_status,
-      };
-
-      const res = await axios({
-        url: CATEGORIES_API.subUpdate(subcategoryId),
-        method: "PUT",
-        data,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      if (res.data.code == "200") {
-        toast.success("Sub Category Updated");
-      } else {
-        toast.error("duplicate entry");
-      }
-    } catch (error) {
-      console.error("Error updating sub category", error);
-    } finally {
-      setIsSubcatButtonDisabled(false);
-    }
+      },
+    });
   };
 
   const handleChange = (
@@ -188,7 +164,7 @@ const SubCategoryEditList = () => {
                         variant="ghost"
                         size="icon"
                         onClick={(e) => handleUpdateSubCat(e, index)}
-                        disabled={isSubcatButtonDisabled}
+                        disabled={updateSubCategory.isPending}
                         aria-label="Save subcategory"
                         title="Save"
                       >

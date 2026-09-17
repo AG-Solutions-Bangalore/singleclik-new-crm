@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { RiEditLine } from "react-icons/ri";
 import { Plus } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -11,39 +10,26 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
-import { CATEGORIES_API, categoryTypeLabel } from "@/modules/categories/api/categories";
+import { categoryTypeLabel } from "@/modules/categories/api/categories";
+import { useCategoriesList } from "@/modules/categories/hooks/useCategories";
 import type { CategoryRow } from "@/modules/categories/types/categories";
 
 const CategoryList = () => {
-  const [categoryListData, setCategoryListData] = useState<CategoryRow[]>([]);
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
+  const { data: categoryListData = [], isLoading, error } = useCategoriesList();
 
   useEffect(() => {
-    const fetchCategoryListData = async () => {
-      try {
-        if (!isPanelUp) {
-          navigate("/maintenance");
-          return;
-        }
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const response = await axios.get(CATEGORIES_API.list, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    if (!isPanelUp) {
+      navigate("/maintenance");
+    }
+  }, [isPanelUp, navigate]);
 
-        setCategoryListData(response.data?.categories ?? []);
-      } catch (error) {
-        console.error("Error fetching category list data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCategoryListData();
-  }, []);
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching category list data", error);
+    }
+  }, [error]);
 
   const columns: DataTableColumn<CategoryRow>[] = [
     {
@@ -127,7 +113,7 @@ const CategoryList = () => {
           description="All categories with type and status."
           data={categoryListData}
           columns={columns}
-          loading={loading}
+          loading={isLoading}
           rowKey={(row) => row.id}
           searchPlaceholder="Search categories…"
           disableDownload

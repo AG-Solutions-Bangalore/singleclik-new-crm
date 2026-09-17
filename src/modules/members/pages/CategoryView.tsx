@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { SyntheticEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { Plus } from "lucide-react";
 import { MdOutlineDelete } from "react-icons/md";
@@ -12,7 +11,13 @@ import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
 import { useAppContext } from "@/context/app-context";
-import { MEMBERS_API } from "../api/members";
+import { useCategoryView } from "../hooks/useMemberDetail";
+import {
+  useDeleteCategory,
+  useDeleteSubCategory,
+  useUpdateCategoryStatus,
+  useUpdateSubCategoryStatus,
+} from "../hooks/useMemberMutations";
 import type { MemberCategory, MemberSubCategory } from "../types/member";
 import AddCategoryMember from "../components/AddCategoryMember";
 import AddSubCategoryMember from "../components/AddSubCategoryMember";
@@ -23,7 +28,6 @@ const CategoryView = () => {
   const [category, setCategory] = useState<MemberCategory[]>([]);
   const [subCategory, setSubCategory] = useState<MemberSubCategory[]>([]);
   const { isPanelUp } = useAppContext();
-  const [loading, setLoading] = useState(false);
 
   //
   const [openModal, setOpenModal] = useState(false);
@@ -32,191 +36,132 @@ const CategoryView = () => {
   const handleOpenSubCat = () => setOpenSubModal(!openSubModal);
   //
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(MEMBERS_API.byId(id ?? ""), {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      if (response.data.user) {
-        setCategory(response.data?.categories);
-        console.table("category view", response.data.categories);
-        setSubCategory(response.data?.subcategories);
-        console.table("sub category view", response.data.subcategories);
-      } else {
-        toast.error("No Category data found");
-        console.error("no Category data found");
+  const {
+    data: categoryViewData,
+    isLoading,
+    error: categoryViewError,
+  } = useCategoryView(id);
 
-        navigate(`/member-edit/${id}`);
-      }
-    } catch (error) {
-      console.error("Error fetching Category data:", error);
-    }
-  };
+  const updateCategoryMutation = useUpdateCategoryStatus(id, (toggledId) => {
+    setCategory((prevUserListData) => {
+      return prevUserListData.map((user) => {
+        if (user.id === toggledId) {
+          const newStatus =
+            user.u_catg_status === "Active" ? "Inactive" : "Active";
+
+          if (newStatus === "Active") {
+            toast.success("Category Activated Successfully");
+          } else {
+            toast.success("Category Inactivated Successfully");
+          }
+
+          return { ...user, u_catg_status: newStatus };
+        }
+        return user;
+      });
+    });
+  });
+
+  const updateSubCategoryMutation = useUpdateSubCategoryStatus(id, (toggledId) => {
+    setSubCategory((prevUserListData) => {
+      return prevUserListData.map((user) => {
+        if (user.id === toggledId) {
+          const newStatus =
+            user.u_subcatg_status === "Active" ? "Inactive" : "Active";
+
+          if (newStatus === "Active") {
+            toast.success("SubCategory Activated Successfully");
+          } else {
+            toast.success("SubCategory Inactivated Successfully");
+          }
+
+          return { ...user, u_subcatg_status: newStatus };
+        }
+        return user;
+      });
+    });
+  });
+
+  const deleteCategoryMutation = useDeleteCategory(id, (deletedId) => {
+    toast.success("Category Deleted  succesfully");
+    setCategory((prevUserListData) =>
+      prevUserListData.filter((user) => user.id !== deletedId)
+    );
+  });
+
+  const deleteSubCategoryMutation = useDeleteSubCategory(id, (deletedId) => {
+    toast.success("SubCategory Deleted  succesfully");
+    setSubCategory((prevUserListData) =>
+      prevUserListData.filter((user) => user.id !== deletedId)
+    );
+  });
+
+  const loading =
+    isLoading ||
+    updateCategoryMutation.isPending ||
+    updateSubCategoryMutation.isPending ||
+    deleteCategoryMutation.isPending ||
+    deleteSubCategoryMutation.isPending;
+
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (categoryViewData === undefined) return;
+    if (categoryViewData?.user) {
+      setCategory(categoryViewData?.categories);
+      console.table("category view", categoryViewData.categories);
+      setSubCategory(categoryViewData?.subcategories);
+      console.table("sub category view", categoryViewData.subcategories);
+    } else {
+      toast.error("No Category data found");
+      console.error("no Category data found");
+
+      navigate(`/member-edit/${id}`);
+    }
+  }, [categoryViewData, id, navigate]);
+
+  useEffect(() => {
+    if (categoryViewError) {
+      console.error("Error fetching Category data:", categoryViewError);
+    }
+  }, [categoryViewError]);
 
   // update the status of category
-  const handleUpdate = async (e: SyntheticEvent, id: number) => {
+  const handleUpdate = (e: SyntheticEvent, rowId: number) => {
     e.preventDefault();
-    try {
-      if (!isPanelUp) {
-        navigate("/maintenance");
-        return;
-      }
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      const res = await axios({
-        url: MEMBERS_API.updateCategoryStatus(id),
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.data.code == "200") {
-        setCategory((prevUserListData) => {
-          return prevUserListData.map((user) => {
-            if (user.id === id) {
-              const newStatus =
-                user.u_catg_status === "Active" ? "Inactive" : "Active";
-
-              if (newStatus === "Active") {
-                toast.success("Category Activated Successfully");
-              } else {
-                toast.success("Category Inactivated Successfully");
-              }
-
-              return { ...user, u_catg_status: newStatus };
-            }
-            return user;
-          });
-        });
-        fetchData();
-      } else {
-        toast.error("Errro occur while Inactive the Category");
-      }
-    } catch (error) {
-      console.error("Error fetching Category activate data", error);
-      toast.error("Error fetching Category activate data");
-    } finally {
-      setLoading(false);
+    if (!isPanelUp) {
+      navigate("/maintenance");
+      return;
     }
+    updateCategoryMutation.mutate(rowId);
   };
 
   // status update for the sub categroy
-  const handleSubUpdate = async (e: SyntheticEvent, id: number) => {
+  const handleSubUpdate = (e: SyntheticEvent, rowId: number) => {
     e.preventDefault();
-    try {
-      if (!isPanelUp) {
-        navigate("/maintenance");
-        return;
-      }
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      const res = await axios({
-        url: MEMBERS_API.updateSubCategoryStatus(id),
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.data.code == "200") {
-        setSubCategory((prevUserListData) => {
-          return prevUserListData.map((user) => {
-            if (user.id === id) {
-              const newStatus =
-                user.u_subcatg_status === "Active" ? "Inactive" : "Active";
-
-              if (newStatus === "Active") {
-                toast.success("SubCategory Activated Successfully");
-              } else {
-                toast.success("SubCategory Inactivated Successfully");
-              }
-
-              return { ...user, u_subcatg_status: newStatus };
-            }
-            return user;
-          });
-        });
-      } else {
-        toast.error("Errro occur while Inactive the SubCategory");
-      }
-    } catch (error) {
-      console.error("Error fetching SubCategory activate data", error);
-      toast.error("Error fetching SubCategory activate data");
-    } finally {
-      setLoading(false);
+    if (!isPanelUp) {
+      navigate("/maintenance");
+      return;
     }
+    updateSubCategoryMutation.mutate(rowId);
   };
 
   // delete function for Category
-  const handleDelete = async (e: SyntheticEvent, id: number) => {
+  const handleDelete = (e: SyntheticEvent, rowId: number) => {
     e.preventDefault();
-    try {
-      if (!isPanelUp) {
-        navigate("/maintenance");
-        return;
-      }
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      const res = await axios({
-        url: MEMBERS_API.deleteCategory(id),
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.data.code == "200") {
-        toast.success("Category Deleted  succesfully");
-        setCategory((prevUserListData) =>
-          prevUserListData.filter((user) => user.id !== id)
-        );
-        fetchData();
-      } else {
-        toast.error("Errro occur while delete the  Category");
-      }
-    } catch (error) {
-      console.error("Error Category delete data", error);
-      toast.error("Error Category delete data");
-    } finally {
-      setLoading(false);
+    if (!isPanelUp) {
+      navigate("/maintenance");
+      return;
     }
+    deleteCategoryMutation.mutate(rowId);
   };
 
   // delete function for subcategory
-  const handleSubDelete = async (e: SyntheticEvent, id: number) => {
+  const handleSubDelete = (e: SyntheticEvent, rowId: number) => {
     e.preventDefault();
-    try {
-      if (!isPanelUp) {
-        navigate("/maintenance");
-        return;
-      }
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      const res = await axios({
-        url: MEMBERS_API.deleteSubCategory(id),
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.data.code == "200") {
-        toast.success("SubCategory Deleted  succesfully");
-        setSubCategory((prevUserListData) =>
-          prevUserListData.filter((user) => user.id !== id)
-        );
-        fetchData();
-      } else {
-        toast.error("Errro occur while delete the  SubCategory");
-      }
-    } catch (error) {
-      console.error("Error SubCategory delete data", error);
-      toast.error("Error SubCategory delete data");
-    } finally {
-      setLoading(false);
+    if (!isPanelUp) {
+      navigate("/maintenance");
+      return;
     }
+    deleteSubCategoryMutation.mutate(rowId);
   };
 
   const columns: DataTableColumn<MemberCategory>[] = [
@@ -335,13 +280,11 @@ const CategoryView = () => {
           open={openModal}
           handleOpenCategory={handleOpenCat}
           id={id}
-          fetchData={fetchData}
         />
         <AddSubCategoryMember
           open={openSubModal}
           handleOpenSubCategory={handleOpenSubCat}
           id={id}
-          fetchData={fetchData}
         />
       </div>
     </Layout>

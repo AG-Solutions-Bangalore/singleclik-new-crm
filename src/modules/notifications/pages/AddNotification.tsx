@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { Send } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -10,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
 import { Textarea } from "@/components/ui/textarea";
-import { NOTIFICATIONS_API, authHeaders } from "../api/notifications";
 import type { NotificationForm } from "../types/notifications";
+import { useCreateNotification } from "../hooks/useNotifications";
 
 type AddNotificationState = Pick<
   NotificationForm,
@@ -25,8 +23,9 @@ const AddNotification = () => {
     notification_des: "",
     notification_images: "",
   });
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
+  const createMutation = useCreateNotification();
+  const isPending = createMutation.isPending;
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNotify({
@@ -37,31 +36,25 @@ const AddNotification = () => {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsButtonDisabled(true);
-    const data = new FormData();
-    data.append("notification_heading", notify.notification_heading);
-    data.append("notification_des", notify.notification_des);
-    data.append("notification_images", selectedFile ?? "null");
-
-    axios({
-      url: NOTIFICATIONS_API.create,
-      method: "POST",
-      data,
-      headers: authHeaders(),
-    }).then((res) => {
-      if (res.data.code == "200") {
-        toast.success("Notification Create  succesfull");
-
-        setNotify({
-          notification_heading: "",
-          notification_des: "",
-          notification_images: "",
-        });
-        navigate("/notification");
-      } else {
-        toast.error("duplicate entry");
-      }
-    });
+    createMutation.mutate(
+      {
+        notification_heading: notify.notification_heading,
+        notification_des: notify.notification_des,
+        selectedFile,
+      },
+      {
+        onSuccess: (res) => {
+          if (res.data.code == "200") {
+            setNotify({
+              notification_heading: "",
+              notification_des: "",
+              notification_images: "",
+            });
+            navigate("/notification");
+          }
+        },
+      },
+    );
   };
 
   return (
@@ -113,9 +106,9 @@ const AddNotification = () => {
                 </div>
               </div>
               <div className="mt-6 flex justify-center">
-                <Button type="submit" variant="primary" disabled={isButtonDisabled}>
+                <Button type="submit" variant="primary" disabled={isPending}>
                   <Send />
-                  <span>{isButtonDisabled ? "Submitting..." : "Submit"}</span>
+                  <span>{isPending ? "Submitting..." : "Submit"}</span>
                 </Button>
               </div>
             </form>

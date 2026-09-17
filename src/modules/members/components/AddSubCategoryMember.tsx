@@ -1,7 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,21 +17,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MEMBERS_API } from "../api/members";
+import { useUserCategories, useRegisterSubCategoriesByValue } from "../hooks/useMemberCategories";
+import { useCreateSubCategoryMember } from "../hooks/useMemberMutations";
 import type { CategoryOption, SubCategoryOption } from "../types/member";
 
 interface AddSubCategoryMemberProps {
   open: boolean;
   handleOpenSubCategory: () => void;
   id: string | undefined;
-  fetchData: () => void;
 }
 
 const AddSubCategoryMember = ({
   open,
   handleOpenSubCategory,
   id,
-  fetchData,
 }: AddSubCategoryMemberProps) => {
   const [profile, setProfile] = useState({
     category: "",
@@ -43,93 +40,58 @@ const AddSubCategoryMember = ({
 
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [categoriesSub, setCategoriesSub] = useState<SubCategoryOption[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get(MEMBERS_API.userCategoriesById(id ?? ""), {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+  const { data: userCategoriesData, error: userCategoriesError } = useUserCategories(id);
+  const { data: registerSubCategoriesData, error: registerSubCategoriesError } =
+    useRegisterSubCategoriesByValue(profile.catg_id);
+  const createSubCategoryMutation = useCreateSubCategoryMember(id, {
+    onCreated: () => {
+      handleOpenSubCategory();
+      setProfile({
+        category: "",
+        catg_id: "",
+        u_subcatg_id: "",
       });
-      setCategories(response.data?.categories);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
-  const fetchSubCategories = useCallback(async () => {
-    if (!profile.catg_id) return;
-    try {
-      const response = await axios.get(
-        MEMBERS_API.registerSubCategoriesByValue(profile.catg_id || ""),
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      setCategoriesSub(response.data.categoriessub || []);
-    } catch (error) {
-      console.error("Error fetching sub-categories:", error);
-    }
-  }, [profile?.catg_id]);
+    },
+    onFailure: (message) => setError(message),
+  });
+  const isSubmitting = createSubCategoryMutation.isPending;
 
   useEffect(() => {
-    fetchCategories();
-  }, [fetchData]);
+    if (userCategoriesData !== undefined) {
+      setCategories(userCategoriesData);
+    }
+  }, [userCategoriesData]);
 
   useEffect(() => {
-    fetchSubCategories();
-  }, [fetchSubCategories]);
+    if (userCategoriesError) {
+      console.error("Error fetching categories:", userCategoriesError);
+    }
+  }, [userCategoriesError]);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (registerSubCategoriesData !== undefined) {
+      setCategoriesSub(registerSubCategoriesData);
+    }
+  }, [registerSubCategoriesData]);
+
+  useEffect(() => {
+    if (registerSubCategoriesError) {
+      console.error("Error fetching sub-categories:", registerSubCategoriesError);
+    }
+  }, [registerSubCategoriesError]);
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError("");
 
     if (!profile.u_subcatg_id) {
       setError("Please select a sub-category");
-      setIsSubmitting(false);
       return;
     }
 
-    try {
-      const response = await axios.post(
-        MEMBERS_API.createSubCategory,
-        {
-          u_id: id,
-          u_subcatg_id: profile.u_subcatg_id,
-          u_subcatg_other_sub_category: "",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (response.data.code == "200") {
-        handleOpenSubCategory();
-        toast.success("SubCategory Added Succesfully");
-        fetchData();
-
-        setProfile({
-          category: "",
-          catg_id: "",
-          u_subcatg_id: "",
-        });
-      } else {
-        setError(response.data.message || "Failed to add sub-category");
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      const message = axios.isAxiosError(error) ? error.response?.data?.message : undefined;
-      setError(message || "Failed to submit form");
-    } finally {
-      setIsSubmitting(false);
-    }
+    createSubCategoryMutation.mutate(profile.u_subcatg_id);
   };
 
   return (

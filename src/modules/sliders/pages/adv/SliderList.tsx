@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Pencil, Plus } from "lucide-react";
@@ -11,12 +11,10 @@ import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
 import { Spinner } from "@/components/ui/spinner";
-import { fetchAdvSliderList } from "@/modules/sliders/api/advSlider";
+import { useAdvSliderList } from "@/modules/sliders/hooks/useAdvSlider";
 import type { SliderRow } from "@/modules/sliders/types/slider";
 
 const SliderList = () => {
-  const [sliderListData, setSliderListData] = useState<SliderRow[]>([]);
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,23 +22,21 @@ const SliderList = () => {
   const searchParams = new URLSearchParams(location.search);
   const pageParam = searchParams.get("page");
 
+  const { data: sliderListData = [], isLoading, error } = useAdvSliderList({
+    enabled: !!isPanelUp,
+  });
+
   useEffect(() => {
-    const fetchSliderListData = async () => {
-      try {
-        if (!isPanelUp) {
-          navigate("/maintenance");
-          return;
-        }
-        setLoading(true);
-        setSliderListData(await fetchAdvSliderList());
-      } catch (error) {
-        console.error("Error fetching slider list data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSliderListData();
-  }, []);
+    if (!isPanelUp) {
+      navigate("/maintenance");
+    }
+  }, [isPanelUp, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching slider list data", error);
+    }
+  }, [error]);
 
   const handleEdit = (e: ReactMouseEvent, id: number) => {
     e.preventDefault();
@@ -123,7 +119,7 @@ const SliderList = () => {
             </Button>
           }
         />
-        {loading ? (
+        {isLoading ? (
           <div className="rounded-lg border border-outline bg-surface-container-lowest shadow-md">
             <Spinner className="py-16" />
           </div>

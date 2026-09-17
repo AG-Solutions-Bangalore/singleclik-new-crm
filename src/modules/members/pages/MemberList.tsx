@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { MouseEvent } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { FaWhatsapp } from "react-icons/fa";
 import { FiMessageCircle } from "react-icons/fi";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
@@ -20,7 +18,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppContext } from "@/context/app-context";
 import { storageImage } from "@/lib/constants";
-import { MEMBERS_API } from "../api/members";
+import { useHoldMember, useMembersList } from "../hooks/useMembersList";
 import type { MemberRow } from "../types/member";
 
 type PhotoFilter = "All" | "Photo" | "No photo";
@@ -37,7 +35,6 @@ const profileTypeLabel = (value: MemberRow["profile_type"]): string => {
 
 const MemberList = () => {
   const [memberList, setMemberList] = useState<MemberRow[] | null>(null);
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -47,6 +44,14 @@ const MemberList = () => {
   const searchParams = new URLSearchParams(location.search);
   const pageParam = searchParams.get("page");
 
+  const { data: membersData, isLoading, error: membersError } = useMembersList();
+  const holdMemberMutation = useHoldMember((heldId) => {
+    setMemberList((prevMemberListData) =>
+      (prevMemberListData ?? []).filter((member) => member.id !== heldId)
+    );
+  });
+  const loading = isLoading || holdMemberMutation.isPending;
+
   useEffect(() => {
     if (!localStorage.getItem("page-no")) {
       localStorage.setItem("page-no", "1");
@@ -54,29 +59,22 @@ const MemberList = () => {
   }, []);
 
   useEffect(() => {
-    const fetchMemberListData = async () => {
-      try {
-        if (!isPanelUp) {
-          navigate("/maintenance");
-          return;
-        }
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const response = await axios.get(MEMBERS_API.list, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    if (!isPanelUp) {
+      navigate("/maintenance");
+    }
+  }, [isPanelUp, navigate]);
 
-        setMemberList(response.data?.user ?? null);
-      } catch (error) {
-        console.error("Error fetching user list data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMemberListData();
-  }, []);
+  useEffect(() => {
+    if (membersData !== undefined) {
+      setMemberList(membersData);
+    }
+  }, [membersData]);
+
+  useEffect(() => {
+    if (membersError) {
+      console.error("Error fetching user list data", membersError);
+    }
+  }, [membersError]);
 
   const filteredData = useMemo(() => {
     if (!memberList) return [];
@@ -110,36 +108,13 @@ const MemberList = () => {
     window.open(whatsappLink, "_blank");
   };
 
-  const handleChangeToHold = async (e: MouseEvent, id: number) => {
+  const handleChangeToHold = (e: MouseEvent, id: number) => {
     e.preventDefault();
-    try {
-      if (!isPanelUp) {
-        navigate("/maintenance");
-        return;
-      }
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      const res = await axios({
-        url: MEMBERS_API.hold(id),
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.data.code == "200") {
-        toast.success("Member Hold  succesfully");
-        setMemberList((prevMemberListData) =>
-          (prevMemberListData ?? []).filter((member) => member.id !== id)
-        );
-      } else {
-        toast.error("Member Cannot be Hold");
-      }
-    } catch (error) {
-      console.error("Error Meber hol data", error);
-      toast.error("Error member hold data");
-    } finally {
-      setLoading(false);
+    if (!isPanelUp) {
+      navigate("/maintenance");
+      return;
     }
+    holdMemberMutation.mutate(id);
   };
 
   const handleEdit = (e: MouseEvent, id: number) => {

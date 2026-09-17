@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Pencil, Plus } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -10,32 +10,28 @@ import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
 import { Spinner } from "@/components/ui/spinner";
-import { fetchPopupSliderList } from "@/modules/sliders/api/popupSlider";
+import { usePopupSliderList } from "@/modules/sliders/hooks/usePopupSlider";
 import type { SliderRow } from "@/modules/sliders/types/slider";
 
 const PopupSlider = () => {
-  const [popupListData, setPopupListData] = useState<SliderRow[] | null>(null);
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
 
+  const { data: popupListData, isLoading, error } = usePopupSliderList({
+    enabled: !!isPanelUp,
+  });
+
   useEffect(() => {
-    const fetchPopupListData = async () => {
-      try {
-        if (!isPanelUp) {
-          navigate("/maintenance");
-          return;
-        }
-        setLoading(true);
-        setPopupListData(await fetchPopupSliderList());
-      } catch (error) {
-        console.error("Error fetching pop upslider list data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPopupListData();
-  }, []);
+    if (!isPanelUp) {
+      navigate("/maintenance");
+    }
+  }, [isPanelUp, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching pop upslider list data", error);
+    }
+  }, [error]);
 
   const columns: DataTableColumn<SliderRow>[] = [
     {
@@ -112,7 +108,7 @@ const PopupSlider = () => {
             </Button>
           }
         />
-        {loading ? (
+        {isLoading ? (
           <div className="rounded-lg border border-outline bg-surface-container-lowest shadow-md">
             <Spinner className="py-16" />
           </div>

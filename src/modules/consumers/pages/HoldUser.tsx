@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { UserCheck } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { DataTable } from "@/components/ui/data-table";
@@ -11,64 +9,36 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useAppContext } from "@/context/app-context";
 import { storageImage } from "@/lib/constants";
-import { CONSUMERS_API, authHeaders } from "../api/consumers";
 import type { ConsumerRow } from "../types/consumers";
 import { profileTypeLabel } from "../types/consumers";
+import { useActivateHoldUser, useHoldConsumerList } from "../hooks/useConsumers";
 
 const HoldUser = () => {
-  const [holdUserData, setHoldUserData] = useState<ConsumerRow[] | null>(null);
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
-
-  const fetchHoldUserData = async () => {
-    try {
-      if (!isPanelUp) {
-        navigate("/maintenance");
-        return;
-      }
-      setLoading(true);
-      const response = await axios.get(CONSUMERS_API.holdUserList, {
-        headers: authHeaders(),
-      });
-
-      setHoldUserData(response.data?.user);
-    } catch (error) {
-      console.error("Error fetching hold user list data", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: holdUserData, isLoading, error } = useHoldConsumerList();
+  const activateMutation = useActivateHoldUser();
+  const loading = isLoading || activateMutation.isPending;
 
   useEffect(() => {
-    fetchHoldUserData();
-  }, []);
-
-  const handleActivate = async (e: React.SyntheticEvent, id: number) => {
-    e.preventDefault();
-    try {
-      if (!isPanelUp) {
-        navigate("/maintenance");
-        return;
-      }
-      setLoading(true);
-      const res = await axios({
-        url: CONSUMERS_API.activateHoldUser(id),
-        method: "PUT",
-        headers: authHeaders(),
-      });
-      if (res.data.code == "200") {
-        toast.success("User Activate succesfully");
-        fetchHoldUserData();
-      } else {
-        toast.error("Errro occur while activate the profile");
-      }
-    } catch (error) {
-      console.error("Error fetching user hold activate data", error);
-      toast.error("Error fetching user hold activate data");
-    } finally {
-      setLoading(false);
+    if (!isPanelUp) {
+      navigate("/maintenance");
     }
+  }, [isPanelUp, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching hold user list data", error);
+    }
+  }, [error]);
+
+  const handleActivate = (e: React.SyntheticEvent, id: number) => {
+    e.preventDefault();
+    if (!isPanelUp) {
+      navigate("/maintenance");
+      return;
+    }
+    activateMutation.mutate(id);
   };
 
   const columns: DataTableColumn<ConsumerRow>[] = [
@@ -146,7 +116,7 @@ const HoldUser = () => {
   return (
     <Layout>
       <div className="mt-5">
-        {loading && holdUserData === null ? (
+        {loading && holdUserData == null ? (
           <Spinner className="py-16" />
         ) : (
           <DataTable

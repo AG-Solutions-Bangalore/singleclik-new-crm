@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { ArrowLeft, Pencil, Send } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -17,8 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { storageImage } from "@/lib/constants";
-import { NOTIFICATIONS_API, authHeaders } from "../api/notifications";
 import type { NotificationForm } from "../types/notifications";
+import { useNotificationDetail, useUpdateNotification } from "../hooks/useNotifications";
 
 const statusOptions = [
   { value: "Active", label: "Active" },
@@ -35,8 +33,10 @@ const EditNotification = () => {
   });
   const { id } = useParams<{ id: string }>();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
+  const { data: detailData, error: detailError } = useNotificationDetail(id);
+  const updateMutation = useUpdateNotification();
+  const isPending = updateMutation.isPending;
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNotify({
@@ -46,43 +46,35 @@ const EditNotification = () => {
   };
 
   useEffect(() => {
-    const fetchNotifyEdit = async () => {
-      try {
-        const response = await axios.get(NOTIFICATIONS_API.byId(id ?? ""), {
-          headers: authHeaders(),
-        });
-        setNotify(response.data.notification as NotificationForm);
-      } catch (error) {
-        console.error("Error fetching Notifiation Edit:", error);
-      }
-    };
-
-    fetchNotifyEdit();
-  }, [id]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const data = new FormData();
-    data.append("notification_heading", notify.notification_heading);
-    data.append("notification_des", notify.notification_des);
-    data.append("notification_images", selectedFile ?? "null");
-    data.append("notification_status", notify.notification_status);
-
-    try {
-      setIsButtonDisabled(true);
-      const response = await axios.post(NOTIFICATIONS_API.update(id ?? ""), data, {
-        headers: authHeaders(),
-      });
-      if (response.data.code == "200") {
-        toast.success("Notification updated successfully");
-        navigate("/notification");
-      } else {
-        toast.error("Duplicate entry");
-      }
-    } finally {
-      setIsButtonDisabled(false);
+    if (detailData) {
+      setNotify(detailData);
     }
+  }, [detailData]);
+
+  useEffect(() => {
+    if (detailError) {
+      console.error("Error fetching Notifiation Edit:", detailError);
+    }
+  }, [detailError]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateMutation.mutate(
+      {
+        id: id ?? "",
+        notification_heading: notify.notification_heading,
+        notification_des: notify.notification_des,
+        notification_status: notify.notification_status,
+        selectedFile,
+      },
+      {
+        onSuccess: ({ response }) => {
+          if (response.data.code == "200") {
+            navigate("/notification");
+          }
+        },
+      },
+    );
   };
 
   const imageUrl = storageImage("notification_images", notify.notification_images);
@@ -180,9 +172,9 @@ const EditNotification = () => {
               </div>
 
               <div className="mt-6 flex items-center justify-between">
-                <Button type="submit" variant="primary" disabled={isButtonDisabled}>
+                <Button type="submit" variant="primary" disabled={isPending}>
                   <Send />
-                  <span>{isButtonDisabled ? "Updating..." : "Update"}</span>
+                  <span>{isPending ? "Updating..." : "Update"}</span>
                 </Button>
                 <Button variant="ghost" asChild>
                   <Link to="/notification">

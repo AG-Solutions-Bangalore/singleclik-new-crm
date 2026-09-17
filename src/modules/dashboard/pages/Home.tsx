@@ -1,48 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { LayoutGrid } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { useAppContext } from "@/context/app-context";
 import { NO_IMAGE, storageImage } from "@/lib/constants";
-import { DASHBOARD_URL } from "@/modules/dashboard/api/dashboard.api";
-import type { CategoryStat } from "@/modules/dashboard/types/dashboard.types";
+import { useDashboardStats } from "@/modules/dashboard/hooks/useDashboard";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { Spinner } from "@/components/ui/spinner";
 
 const Home = () => {
-  const [categoriesData, setCategoriesData] = useState<CategoryStat[]>([]);
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
+  const { data: categoriesData = [], isLoading: loading, error } = useDashboardStats();
 
   useEffect(() => {
-    const fetchCategoryData = async () => {
-      try {
-        if (!isPanelUp) {
-          navigate("/maintenance");
-          return;
-        }
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const response = await axios.get(DASHBOARD_URL, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setCategoriesData(response.data?.total_categories);
-      } catch (error) {
-        console.error("Error fetching user list data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCategoryData();
+    if (!isPanelUp) {
+      navigate("/maintenance");
+    }
   }, [isPanelUp, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching user list data", error);
+    }
+  }, [error]);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },

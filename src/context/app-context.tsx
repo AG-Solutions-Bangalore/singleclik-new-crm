@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
 
@@ -33,20 +34,28 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const checkPanelStatus = async () => {
-    try {
+  const { data: panelData, error: panelError } = useQuery({
+    queryKey: ["panel-status"],
+    queryFn: async (): Promise<PanelStatus> => {
       const response = await axios.get(`${BASE_URL}/api/panel-check-status`);
-      const datas = (await response.data) as PanelStatus;
-      setIsPanelUp(datas);
-      if (datas?.success) {
-        setError(false);
-      } else {
-        setError(true);
-      }
-    } catch {
+      return (await response.data) as PanelStatus;
+    },
+    refetchInterval: 60000,
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (panelData) {
+      setIsPanelUp(panelData);
+      setError(!panelData.success);
+    }
+  }, [panelData]);
+
+  useEffect(() => {
+    if (panelError) {
       setError(true);
     }
-  };
+  }, [panelError]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -103,12 +112,6 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
       }
     }
   }, [error, navigate, isPanelUp, location.pathname]);
-
-  useEffect(() => {
-    checkPanelStatus();
-    const intervalId = setInterval(checkPanelStatus, 60000);
-    return () => clearInterval(intervalId);
-  }, []);
 
   return <AppContext.Provider value={{ isPanelUp, setIsPanelUp }}>{children}</AppContext.Provider>;
 };

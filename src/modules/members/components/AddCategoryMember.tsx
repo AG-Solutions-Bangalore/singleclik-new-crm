@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,88 +17,59 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MEMBERS_API } from "../api/members";
+import { useMemberCategories } from "../hooks/useMemberCategories";
+import { useCreateCategoryMember } from "../hooks/useMemberMutations";
 import type { CategoryOption } from "../types/member";
 
 interface AddCategoryMemberProps {
   open: boolean;
   handleOpenCategory: () => void;
   id: string | undefined;
-  fetchData: () => void;
 }
 
-const AddCategoryMember = ({ open, handleOpenCategory, id, fetchData }: AddCategoryMemberProps) => {
+const AddCategoryMember = ({ open, handleOpenCategory, id }: AddCategoryMemberProps) => {
   const [profile, setProfile] = useState({
     category: "",
     catg_id: "",
   });
   const [categories, setCategories] = useState<CategoryOption[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  const { data: categoriesData, error: categoriesError } = useMemberCategories();
+  const createCategoryMutation = useCreateCategoryMember(id, {
+    onCreated: () => {
+      handleOpenCategory();
+      setProfile({
+        category: "",
+        catg_id: "",
+      });
+    },
+    onFailure: (message) => setError(message),
+  });
+  const isSubmitting = createCategoryMutation.isPending;
+
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get(MEMBERS_API.categories, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setCategories(response.data.categories);
-      } catch (error) {
-        console.error("Error fetching Categories:", error);
-      }
-    };
+    if (categoriesData !== undefined) {
+      setCategories(categoriesData);
+    }
+  }, [categoriesData]);
 
-    fetchCategories();
-  }, []);
+  useEffect(() => {
+    if (categoriesError) {
+      console.error("Error fetching Categories:", categoriesError);
+    }
+  }, [categoriesError]);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError("");
 
     if (!profile.catg_id) {
       setError("Please select a category");
-      setIsSubmitting(false);
       return;
     }
 
-    try {
-      const response = await axios.post(
-        MEMBERS_API.createCategory,
-        {
-          u_id: id,
-          u_catg_id: profile.catg_id,
-          u_catg_other_sub_category: "",
-          u_catg_other_category: "",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (response.data.code == "200") {
-        handleOpenCategory();
-        toast.success("Category Added Succesfully");
-        fetchData();
-
-        setProfile({
-          category: "",
-          catg_id: "",
-        });
-      } else {
-        setError(response.data.message || "Failed to add sub-category");
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      const message = axios.isAxiosError(error) ? error.response?.data?.message : undefined;
-      setError(message || "Failed to submit form");
-    } finally {
-      setIsSubmitting(false);
-    }
+    createCategoryMutation.mutate(profile.catg_id);
   };
 
   return (

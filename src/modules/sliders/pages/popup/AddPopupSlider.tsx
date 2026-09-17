@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
-import { createPopupSlider } from "@/modules/sliders/api/popupSlider";
+import { useCreatePopupSlider } from "@/modules/sliders/hooks/usePopupSlider";
 
 const AddPopupSlider = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -17,8 +17,8 @@ const AddPopupSlider = () => {
     slider_url: "",
     slider_images: "",
   });
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
+  const createMutation = useCreatePopupSlider();
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPopupSlider({
@@ -33,24 +33,24 @@ const AddPopupSlider = () => {
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setIsButtonDisabled(true);
-    const data = new FormData();
-    data.append("slider_url", popupSlider.slider_url);
-    data.append("slider_images", selectedFile as unknown as Blob);
+    createMutation.mutate(
+      { slider_url: popupSlider.slider_url, selectedFile },
+      {
+        onSuccess: (res) => {
+          if (res.data.code == "200") {
+            toast.success("Popup Slider Create  succesfull");
 
-    createPopupSlider(data).then((res) => {
-      if (res.data.code == "200") {
-        toast.success("Popup Slider Create  succesfull");
-
-        setPopupSlider({
-          slider_url: "",
-          slider_images: "",
-        });
-        navigate("/popup-slider");
-      } else {
-        toast.error("duplicate entry");
-      }
-    });
+            setPopupSlider({
+              slider_url: "",
+              slider_images: "",
+            });
+            navigate("/popup-slider");
+          } else {
+            toast.error("duplicate entry");
+          }
+        },
+      },
+    );
   };
 
   return (
@@ -87,9 +87,9 @@ const AddPopupSlider = () => {
                 </div>
               </div>
               <div className="flex justify-center">
-                <Button type="submit" variant="primary" disabled={isButtonDisabled}>
+                <Button type="submit" variant="primary" disabled={createMutation.isPending}>
                   <Send />
-                  <span>{isButtonDisabled ? "Submiting...." : "Submit"}</span>
+                  <span>{createMutation.isPending ? "Submiting...." : "Submit"}</span>
                 </Button>
               </div>
             </form>

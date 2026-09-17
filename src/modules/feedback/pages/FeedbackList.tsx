@@ -1,44 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Layout from "@/components/layout/Layout";
 import { useAppContext } from "@/context/app-context";
-import { FEEDBACK_LIST_URL } from "@/modules/feedback/api/feedback.api";
+import { useFeedbackList } from "@/modules/feedback/hooks/useFeedbackList";
 import type { FeedbackRow } from "@/modules/feedback/types/feedback.types";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
 
 const FeedbackList = () => {
-  const [feedbackData, setFeedbackData] = useState<FeedbackRow[] | null>(null);
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
+  const { data: feedbackData = [], isLoading: loading, error } = useFeedbackList();
 
   useEffect(() => {
-    const fetchFeedData = async () => {
-      try {
-        if (!isPanelUp) {
-          navigate("/maintenance");
-          return;
-        }
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const response = await axios.get(FEEDBACK_LIST_URL, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    if (!isPanelUp) {
+      navigate("/maintenance");
+    }
+  }, [isPanelUp, navigate]);
 
-        setFeedbackData(response.data?.feedback);
-      } catch (error) {
-        console.error("Error fetching feedback list data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchFeedData();
-    setLoading(false);
-  }, []);
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching feedback list data", error);
+    }
+  }, [error]);
 
   const columns: DataTableColumn<FeedbackRow>[] = [
     {
@@ -71,7 +55,7 @@ const FeedbackList = () => {
         <DataTable
           title="Feedback List"
           description="Customer feedback submitted through the platform"
-          data={feedbackData ? feedbackData : []}
+          data={feedbackData}
           columns={columns}
           loading={loading}
           rowKey={(row) => row.id}

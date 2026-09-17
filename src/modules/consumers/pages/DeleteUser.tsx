@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Layout from "@/components/layout/Layout";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
@@ -8,37 +7,26 @@ import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { useAppContext } from "@/context/app-context";
 import { storageImage } from "@/lib/constants";
-import { CONSUMERS_API, authHeaders } from "../api/consumers";
 import type { ConsumerRow } from "../types/consumers";
 import { profileTypeLabel } from "../types/consumers";
+import { useDeletedConsumerList } from "../hooks/useConsumers";
 
 const DeleteUser = () => {
-  const [deleteData, setDeleteData] = useState<ConsumerRow[] | null>(null);
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
+  const { data: deleteData, isLoading: loading, error } = useDeletedConsumerList();
 
   useEffect(() => {
-    const fetchDeleteData = async () => {
-      try {
-        if (!isPanelUp) {
-          navigate("/maintenance");
-          return;
-        }
-        setLoading(true);
-        const response = await axios.get(CONSUMERS_API.deletedUserList, {
-          headers: authHeaders(),
-        });
+    if (!isPanelUp) {
+      navigate("/maintenance");
+    }
+  }, [isPanelUp, navigate]);
 
-        setDeleteData(response.data?.user);
-      } catch (error) {
-        console.error("Error fetching delete user list data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDeleteData();
-  }, []);
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching delete user list data", error);
+    }
+  }, [error]);
 
   const columns: DataTableColumn<ConsumerRow>[] = [
     {
@@ -95,7 +83,7 @@ const DeleteUser = () => {
   return (
     <Layout>
       <div className="mt-5">
-        {loading && deleteData === null ? (
+        {loading && deleteData == null ? (
           <Spinner className="py-16" />
         ) : (
           <DataTable

@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchPopupSliderById, updatePopupSlider } from "@/modules/sliders/api/popupSlider";
+import { usePopupSliderDetail, useUpdatePopupSlider } from "@/modules/sliders/hooks/usePopupSlider";
 
 const statusOptions = [
   { value: "Active", label: "Active" },
@@ -33,8 +33,10 @@ const EditPopupSlider = () => {
   });
   const { id } = useParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
+
+  const { data: sliderData, error } = usePopupSliderDetail(id);
+  const updateMutation = useUpdatePopupSlider();
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPopupSlider({
@@ -55,37 +57,38 @@ const EditPopupSlider = () => {
   };
 
   useEffect(() => {
-    const fetchSlider = async () => {
-      try {
-        setPopupSlider(await fetchPopupSliderById(id));
-      } catch (error) {
-        console.error("Error fetching Popup Slider:", error);
-      }
-    };
+    if (sliderData) {
+      setPopupSlider(sliderData);
+    }
+  }, [sliderData]);
 
-    fetchSlider();
-  }, [id]);
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching Popup Slider:", error);
+    }
+  }, [error]);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("slider_url", popupSlider.slider_url);
-    formData.append("slider_status", popupSlider.slider_status);
-    formData.append("slider_images", selectedFile as unknown as Blob);
-
-    try {
-      setIsButtonDisabled(true);
-      const response = await updatePopupSlider(id, formData);
-      if (response.data.code == "200") {
-        toast.success("Popup Slider updated successfully");
-        navigate("/popup-slider");
-      } else {
-        toast.error("Duplicate entry");
-      }
-    } finally {
-      setIsButtonDisabled(false);
-    }
+    updateMutation.mutate(
+      {
+        id,
+        slider_url: popupSlider.slider_url,
+        slider_status: popupSlider.slider_status,
+        selectedFile,
+      },
+      {
+        onSuccess: (response) => {
+          if (response.data.code == "200") {
+            toast.success("Popup Slider updated successfully");
+            navigate("/popup-slider");
+          } else {
+            toast.error("Duplicate entry");
+          }
+        },
+      },
+    );
   };
 
   const imageUrl = storageImage("slider_images", popupSlider.slider_images);
@@ -154,9 +157,9 @@ const EditPopupSlider = () => {
               </div>
 
               <div className="flex justify-start gap-3">
-                <Button type="submit" variant="primary" disabled={isButtonDisabled}>
+                <Button type="submit" variant="primary" disabled={updateMutation.isPending}>
                   <Send />
-                  <span>{isButtonDisabled ? "Updating..." : "Update"}</span>
+                  <span>{updateMutation.isPending ? "Updating..." : "Update"}</span>
                 </Button>
                 <Button type="button" variant="outline" onClick={() => navigate("/popup-slider")}>
                   Back

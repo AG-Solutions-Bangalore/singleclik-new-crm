@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchAdvSliderById, updateAdvSlider } from "@/modules/sliders/api/advSlider";
+import { useAdvSliderDetail, useUpdateAdvSlider } from "@/modules/sliders/hooks/useAdvSlider";
 
 const statusOptions = [
   { value: "Active", label: "Active" },
@@ -33,10 +33,12 @@ const EditSlider = () => {
   });
   const { id } = useParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
   const storedPageNo = localStorage.getItem("page-no");
   const pageNo = storedPageNo === "null" || storedPageNo === null ? "1" : storedPageNo;
+
+  const { data: sliderData, error } = useAdvSliderDetail(id);
+  const updateMutation = useUpdateAdvSlider();
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setAdvSlider({
@@ -62,38 +64,38 @@ const EditSlider = () => {
   };
 
   useEffect(() => {
-    const fetchSlider = async () => {
-      try {
-        setAdvSlider(await fetchAdvSliderById(id));
-      } catch (error) {
-        console.error("Error fetching ADv Slider:", error);
-      }
-    };
+    if (sliderData) {
+      setAdvSlider(sliderData);
+    }
+  }, [sliderData]);
 
-    fetchSlider();
-  }, [id]);
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching ADv Slider:", error);
+    }
+  }, [error]);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("slider_url", advSlider.slider_url);
-    formData.append("slider_status", advSlider.slider_status);
-    formData.append("slider_images", selectedFile as unknown as Blob);
-
-    try {
-      setIsButtonDisabled(true);
-
-      const response = await updateAdvSlider(id, formData);
-      if (response.data.code == "200") {
-        toast.success("Adv Slider updated successfully");
-        navigate(`/adv-slider?page=${pageNo}`);
-      } else {
-        toast.error("Duplicate entry");
-      }
-    } finally {
-      setIsButtonDisabled(false);
-    }
+    updateMutation.mutate(
+      {
+        id,
+        slider_url: advSlider.slider_url,
+        slider_status: advSlider.slider_status,
+        selectedFile,
+      },
+      {
+        onSuccess: (response) => {
+          if (response.data.code == "200") {
+            toast.success("Adv Slider updated successfully");
+            navigate(`/adv-slider?page=${pageNo}`);
+          } else {
+            toast.error("Duplicate entry");
+          }
+        },
+      },
+    );
   };
 
   const imageUrl = storageImage("slider_images", advSlider.slider_images);
@@ -163,9 +165,9 @@ const EditSlider = () => {
               </div>
 
               <div className="flex justify-start gap-3">
-                <Button type="submit" variant="primary" disabled={isButtonDisabled}>
+                <Button type="submit" variant="primary" disabled={updateMutation.isPending}>
                   <Send />
-                  <span>{isButtonDisabled ? "Updating..." : "Update"}</span>
+                  <span>{updateMutation.isPending ? "Updating..." : "Update"}</span>
                 </Button>
                 <Button type="button" variant="outline" onClick={handleBack}>
                   Back

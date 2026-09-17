@@ -1,11 +1,10 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import { useAppContext } from "@/context/app-context";
-import { PANEL_LOGIN_URL } from "@/modules/auth/api/auth.api";
+import { useLogin } from "@/modules/auth/hooks/useLogin";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,10 +14,10 @@ import { Spinner } from "@/components/ui/spinner";
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const [show, setShow] = useState(true);
   const navigate = useNavigate();
+  const { mutate: login, isPending } = useLogin();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -27,40 +26,7 @@ const SignIn = () => {
       return;
     }
 
-    setLoading(true);
-
-    //create a formData object and append state values
-    const formData = new FormData();
-    formData.append("username", email);
-    formData.append("password", password);
-
-    try {
-      // Send POST request to login API with form data
-      const res = await axios.post(PANEL_LOGIN_URL, formData);
-
-      if (res.status === 200 && res.data?.msg === "success.") {
-        const token = res.data.UserInfo?.token;
-        if (token) {
-          // Store the token in localStorage
-          localStorage.setItem("token", token);
-          localStorage.setItem("id", res.data.UserInfo.user.user_type);
-          localStorage.setItem("name", res.data.UserInfo.user.name);
-          localStorage.setItem("username", res.data.UserInfo.user.mobile);
-          localStorage.setItem("user_type_id", res.data.UserInfo.user.user_type);
-
-          navigate("/home");
-        } else {
-          toast.error("Login Failed, Token not received.");
-        }
-      } else {
-        toast.error("Login Failed, Please check your credentials.");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("An error occurred during login.");
-    }
-
-    setLoading(false);
+    login({ username: email, password });
   };
 
   return (
@@ -111,7 +77,7 @@ const SignIn = () => {
             <CardDescription>If you are already a member, easily log in</CardDescription>
           </CardHeader>
           <CardContent className="relative">
-            {loading ? (
+            {isPending ? (
               <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-surface/60">
                 <Spinner />
               </div>
@@ -158,9 +124,9 @@ const SignIn = () => {
                   Forgot your password?
                 </Link>
               </div>
-              <Button type="submit" disabled={loading} className="w-full">
+              <Button type="submit" disabled={isPending} className="w-full">
                 <LogIn />
-                {loading ? "Checking..." : "Sign In"}
+                {isPending ? "Checking..." : "Sign In"}
               </Button>
               <p className="text-center text-body-md text-on-surface-variant">
                 Don&apos;t have an account?{" "}

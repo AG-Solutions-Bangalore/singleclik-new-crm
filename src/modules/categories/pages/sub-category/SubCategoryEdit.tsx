@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { MdSend } from "react-icons/md";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -16,11 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES_API } from "@/modules/categories/api/categories";
-import type {
-  CategoryRow,
-  SubCategoryEditFormState,
-} from "@/modules/categories/types/categories";
+import { useCategoriesDropdown } from "@/modules/categories/hooks/useCategories";
+import {
+  useSubCategoryDetail,
+  useUpdateSubCategory,
+} from "@/modules/categories/hooks/useSubCategories";
+import type { SubCategoryEditFormState } from "@/modules/categories/types/categories";
 
 const status = [
   { value: "Active", label: "Active" },
@@ -33,11 +32,16 @@ const SubCategoryEdit = () => {
     subcategory: "",
     subcategory_status: "",
   });
-  const [categories, setCategories] = useState<CategoryRow[]>([]);
 
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
+  const { data: subDetail } = useSubCategoryDetail(id);
+  const { data: categories = [] } = useCategoriesDropdown();
+  const updateSubCategory = useUpdateSubCategory(id, {
+    onUpdated: () => {
+      navigate("/");
+    },
+  });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategoriesSub({
@@ -47,65 +51,19 @@ const SubCategoryEdit = () => {
   };
 
   useEffect(() => {
-    axios({
-      url: CATEGORIES_API.subById(String(id ?? "")),
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    }).then((res) => {
-      const payload = res.data?.categoriessub;
+    if (subDetail) {
+      const payload = subDetail;
       setCategoriesSub({
         category_id: String(payload?.category_id ?? ""),
         subcategory: payload?.subcategory ?? "",
         subcategory_status: payload?.subcategory_status ?? "",
       });
-    });
-  }, [id]);
-
-  useEffect(() => {
-    axios({
-      url: CATEGORIES_API.dropdown,
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    }).then((res) => {
-      setCategories(res.data.categories ?? []);
-    });
-  }, []);
-
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    setIsButtonDisabled(true);
-
-    try {
-      const data = {
-        category_id: categoriesSub.category_id,
-        subcategory: categoriesSub.subcategory,
-        subcategory_status: categoriesSub.subcategory_status,
-      };
-
-      const res = await axios({
-        url: CATEGORIES_API.subUpdate(String(id ?? "")),
-        method: "PUT",
-        data,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      if (res.data.code == "200") {
-        toast.success("update succesfull");
-        navigate("/");
-      } else {
-        toast.error("duplicate entry");
-      }
-    } catch (error) {
-      console.error("Error updating sub category", error);
-    } finally {
-      setIsButtonDisabled(false);
     }
+  }, [subDetail]);
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    updateSubCategory.mutate(categoriesSub);
   };
 
   return (
@@ -184,9 +142,9 @@ const SubCategoryEdit = () => {
             </div>
 
             <div className="mt-6 flex justify-center">
-              <Button type="submit" disabled={isButtonDisabled}>
+              <Button type="submit" disabled={updateSubCategory.isPending}>
                 <MdSend />
-                <span>{isButtonDisabled ? "Updating..." : "Update"}</span>
+                <span>{updateSubCategory.isPending ? "Updating..." : "Update"}</span>
               </Button>
             </div>
           </form>

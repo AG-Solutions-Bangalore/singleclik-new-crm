@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
-import { createProduct } from "@/modules/products/api/product";
+import { useCreateProduct } from "@/modules/products/hooks/useProduct";
 
 const ProductAdd = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -17,8 +17,8 @@ const ProductAdd = () => {
     product_name: "",
     product_images: "",
   });
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
+  const createMutation = useCreateProduct();
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setProduct({
@@ -33,24 +33,24 @@ const ProductAdd = () => {
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setIsButtonDisabled(true);
-    const data = new FormData();
-    data.append("product_name", product.product_name);
-    data.append("product_images", selectedFile as unknown as Blob);
+    createMutation.mutate(
+      { product_name: product.product_name, selectedFile },
+      {
+        onSuccess: (res) => {
+          if (res.data.code == "200") {
+            toast.success("Product Create  succesfull");
 
-    createProduct(data).then((res) => {
-      if (res.data.code == "200") {
-        toast.success("Product Create  succesfull");
-
-        setProduct({
-          product_name: "",
-          product_images: "",
-        });
-        navigate("/product");
-      } else {
-        toast.error("duplicate entry");
-      }
-    });
+            setProduct({
+              product_name: "",
+              product_images: "",
+            });
+            navigate("/product");
+          } else {
+            toast.error("duplicate entry");
+          }
+        },
+      },
+    );
   };
 
   return (
@@ -83,9 +83,9 @@ const ProductAdd = () => {
                 </div>
               </div>
               <div className="flex justify-center">
-                <Button type="submit" variant="primary" disabled={isButtonDisabled}>
+                <Button type="submit" variant="primary" disabled={createMutation.isPending}>
                   <Send />
-                  <span>{isButtonDisabled ? "Submiting...." : "Submit"}</span>
+                  <span>{createMutation.isPending ? "Submiting...." : "Submit"}</span>
                 </Button>
               </div>
             </form>

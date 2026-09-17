@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchProductById, updateProduct } from "@/modules/products/api/product";
+import { useProductDetail, useUpdateProduct } from "@/modules/products/hooks/useProduct";
 
 const statusOptions = [
   { value: "Active", label: "Active" },
@@ -33,8 +33,10 @@ const ProductEdit = () => {
   });
   const { id } = useParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
+
+  const { data: productData, error } = useProductDetail(id);
+  const updateMutation = useUpdateProduct();
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setProduct({
@@ -55,37 +57,38 @@ const ProductEdit = () => {
   };
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setProduct(await fetchProductById(id));
-      } catch (error) {
-        console.error("Error fetching ADv Slider:", error);
-      }
-    };
+    if (productData) {
+      setProduct(productData);
+    }
+  }, [productData]);
 
-    fetchProduct();
-  }, [id]);
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching ADv Slider:", error);
+    }
+  }, [error]);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("product_name", product.product_name);
-    formData.append("product_status", product.product_status);
-    formData.append("product_images", selectedFile as unknown as Blob);
-
-    try {
-      setIsButtonDisabled(true);
-      const response = await updateProduct(id, formData);
-      if (response.data.code == "200") {
-        toast.success("Product updated successfully");
-        navigate("/product");
-      } else {
-        toast.error("Duplicate entry");
-      }
-    } finally {
-      setIsButtonDisabled(false);
-    }
+    updateMutation.mutate(
+      {
+        id,
+        product_name: product.product_name,
+        product_status: product.product_status,
+        selectedFile,
+      },
+      {
+        onSuccess: (response) => {
+          if (response.data.code == "200") {
+            toast.success("Product updated successfully");
+            navigate("/product");
+          } else {
+            toast.error("Duplicate entry");
+          }
+        },
+      },
+    );
   };
 
   const imageUrl = storageImage("product_images", product.product_images);
@@ -151,9 +154,9 @@ const ProductEdit = () => {
               </div>
 
               <div className="flex justify-start gap-3">
-                <Button type="submit" variant="primary" disabled={isButtonDisabled}>
+                <Button type="submit" variant="primary" disabled={updateMutation.isPending}>
                   <Send />
-                  <span>{isButtonDisabled ? "Updating..." : "Update"}</span>
+                  <span>{updateMutation.isPending ? "Updating..." : "Update"}</span>
                 </Button>
                 <Button type="button" variant="outline" onClick={() => navigate("/product")}>
                   Back

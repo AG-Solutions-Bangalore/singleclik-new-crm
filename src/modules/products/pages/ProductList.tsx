@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Pencil, Plus } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -10,32 +10,28 @@ import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
 import { Spinner } from "@/components/ui/spinner";
-import { fetchProductList } from "@/modules/products/api/product";
+import { useProductList } from "@/modules/products/hooks/useProduct";
 import type { ProductRow } from "@/modules/products/types/product";
 
 const ProductList = () => {
-  const [productListData, setProductListData] = useState<ProductRow[] | null>(null);
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
 
+  const { data: productListData, isLoading, error } = useProductList({
+    enabled: !!isPanelUp,
+  });
+
   useEffect(() => {
-    const fetchProductListData = async () => {
-      try {
-        if (!isPanelUp) {
-          navigate("/maintenance");
-          return;
-        }
-        setLoading(true);
-        setProductListData(await fetchProductList());
-      } catch (error) {
-        console.error("Error fetching Product list data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProductListData();
-  }, []);
+    if (!isPanelUp) {
+      navigate("/maintenance");
+    }
+  }, [isPanelUp, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching Product list data", error);
+    }
+  }, [error]);
 
   const columns: DataTableColumn<ProductRow>[] = [
     {
@@ -112,7 +108,7 @@ const ProductList = () => {
             </Button>
           }
         />
-        {loading ? (
+        {isLoading ? (
           <div className="rounded-lg border border-outline bg-surface-container-lowest shadow-md">
             <Spinner className="py-16" />
           </div>

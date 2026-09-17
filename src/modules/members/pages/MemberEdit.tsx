@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent, MouseEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { Tag } from "lucide-react";
 import { MdArrowBack, MdSend } from "react-icons/md";
 import { toast } from "react-toastify";
@@ -19,7 +18,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { MEMBERS_API } from "../api/members";
+import { useMemberDetail } from "../hooks/useMemberDetail";
+import { useMemberCategories, useSubCategoriesByValue } from "../hooks/useMemberCategories";
+import { useUpdateMember } from "../hooks/useMemberMutations";
 import type { MemberForm, SubCategoryOption } from "../types/member";
 import Modal from "../components/image-cropper/Modal";
 
@@ -59,17 +60,23 @@ const MemberEdit = () => {
     referred_by_code: "",
     status: "",
   });
-  // Categories feed the (currently hidden) category selects; retained for parity with the source.
-  const [, setCategories] = useState<{ id: number; category: string }[]>([]);
+  // Categories feed the (currently hidden) category selects; fetched for parity with the source.
   const [subcategories, setSubCategories] = useState<SubCategoryOption[]>([]);
   const [selectedFile1, setSelectedFile1] = useState<File | null>(null);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [selectedSubCategoryValue, setSelectedSubCategoryValue] = useState("");
 
   // for pagination
   const storedPageNo = localStorage.getItem("page-no");
   const pageNo = storedPageNo === "null" || storedPageNo === null ? "1" : storedPageNo;
   //
+
+  const { error: categoriesError } = useMemberCategories();
+  const { data: memberDetailData, error: memberDetailError } = useMemberDetail(id);
+  const { data: subCategoriesData, error: subCategoriesError } =
+    useSubCategoriesByValue(member.catg_id);
+  const updateMemberMutation = useUpdateMember(id, () => {
+    navigate(`/member-list?page=${pageNo}`);
+  });
   const avatarUrl = useRef(
     "https://avatarfiles.alphacoders.com/161/161002.jpg"
   );
@@ -80,66 +87,40 @@ const MemberEdit = () => {
   };
 
   useEffect(() => {
-    const fetchMemberData = async () => {
-      try {
-        const response = await axios.get(MEMBERS_API.byId(id ?? ""), {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        if (response.data.user) {
-          setMember(response.data.user);
-        } else {
-          toast.error("No user data found");
-          console.error("no user data found");
+    if (memberDetailData === undefined) return;
+    if (memberDetailData?.user) {
+      setMember(memberDetailData.user);
+    } else {
+      toast.error("No user data found");
+      console.error("no user data found");
 
-          navigate("/member-list");
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchMemberData();
-  }, [id, navigate]);
+      navigate("/member-list");
+    }
+  }, [memberDetailData, navigate]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get(MEMBERS_API.categories, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setCategories(response.data.categories);
-      } catch (error) {
-        console.error("Error fetching Categories:", error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  const fetchSubCategories = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        MEMBERS_API.subCategoriesByValue(member?.catg_id || ""),
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      setSubCategories(response.data.categoriessub);
-    } catch (error) {
-      console.error("Error fetching Sub Categories:", error);
+    if (memberDetailError) {
+      console.error("Error fetching user data:", memberDetailError);
     }
-  }, [member.catg_id]);
+  }, [memberDetailError]);
+
   useEffect(() => {
-    if (member.catg_id) {
-      fetchSubCategories();
+    if (categoriesError) {
+      console.error("Error fetching Categories:", categoriesError);
     }
-  }, [member.catg_id]);
+  }, [categoriesError]);
+
+  useEffect(() => {
+    if (subCategoriesData !== undefined) {
+      setSubCategories(subCategoriesData);
+    }
+  }, [subCategoriesData]);
+
+  useEffect(() => {
+    if (subCategoriesError) {
+      console.error("Error fetching Sub Categories:", subCategoriesError);
+    }
+  }, [subCategoriesError]);
 
   const validateOnlyDigits = (inputtxt: string) => {
     const phoneno = /^\d+$/;
@@ -173,7 +154,7 @@ const MemberEdit = () => {
     navigate(`/member-list?page=${pageNo}`);
   };
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement> | MouseEvent<HTMLButtonElement>) => {
+  const onSubmit = (e: FormEvent<HTMLFormElement> | MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     const formEl = document.getElementById("memberId") as HTMLFormElement | null;
@@ -186,46 +167,11 @@ const MemberEdit = () => {
       toast.error("Fill all required field");
       return;
     }
-    setIsButtonDisabled(true);
-    const formData = new FormData();
-    const record = member as unknown as Record<string, string | number | undefined>;
-    Object.keys(record).forEach((key) => {
-      if (key === "category") {
-        formData.append("category", String(member.catg_id));
-      } else if (key === "sub_category") {
-        formData.append("sub_category", String(member.sub_category));
-      } else if (key === "subcategory") {
-        formData.append("subcategory", selectedSubCategoryValue);
-      } else {
-        formData.append(key, String(record[key]));
-      }
+    updateMemberMutation.mutate({
+      member,
+      selectedSubCategoryValue,
+      file: selectedFile1,
     });
-
-    if (selectedFile1) formData.append("photo", selectedFile1);
-    try {
-      const response = await axios.post(MEMBERS_API.update(id ?? ""), formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (response.data.code == "200") {
-        toast.success("update succesfull");
-        navigate(`/member-list?page=${pageNo}`);
-      } else {
-        if (response.data.code == "401") {
-          toast.error("Mobile No Duplicate Entry");
-        } else {
-          toast.error("Email Id Duplicate Entry");
-        }
-      }
-    } catch (error) {
-      console.error("Error updating member:", error);
-      toast.error("Error updating member");
-    } finally {
-      setIsButtonDisabled(false);
-    }
   };
 
   return (
@@ -464,10 +410,10 @@ const MemberEdit = () => {
                 <Button
                   type="submit"
                   onClick={onSubmit}
-                  disabled={isButtonDisabled}
+                  disabled={updateMemberMutation.isPending}
                 >
                   <MdSend className="size-4" />
-                  <span>{isButtonDisabled ? "Updating..." : "Update"}</span>
+                  <span>{updateMemberMutation.isPending ? "Updating..." : "Update"}</span>
                 </Button>
 
                 <Button

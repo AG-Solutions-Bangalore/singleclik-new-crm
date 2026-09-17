@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { MdSend } from "react-icons/md";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -16,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES_API } from "@/modules/categories/api/categories";
+import { useCreateCategory } from "@/modules/categories/hooks/useCategories";
 import type { CategoryFormState } from "@/modules/categories/types/categories";
 
 const profile_type = [
@@ -33,8 +31,18 @@ const CategoryAdd = () => {
     category_image: "",
     category_sort: "",
   });
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
+  const createCategory = useCreateCategory({
+    onCreated: () => {
+      setCategories({
+        category: "",
+        category_type: "",
+        category_image: "",
+        category_sort: "",
+      });
+      navigate("/category");
+    },
+  });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategories({
@@ -43,44 +51,9 @@ const CategoryAdd = () => {
     });
   };
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsButtonDisabled(true);
-    try {
-      const data = new FormData();
-      data.append("category", categories.category);
-      data.append("category_type", categories.category_type);
-      data.append("category_sort", categories.category_sort);
-      if (selectedFile) {
-        data.append("category_image", selectedFile);
-      }
-
-      const res = await axios({
-        url: CATEGORIES_API.create,
-        method: "POST",
-        data,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      if (res.data.code == "200") {
-        toast.success("Sub Category succesfull");
-
-        setCategories({
-          category: "",
-          category_type: "",
-          category_image: "",
-          category_sort: "",
-        });
-        navigate("/category");
-      } else {
-        toast.error("duplicate entry");
-      }
-    } catch (error) {
-      console.error("Error creating category", error);
-    } finally {
-      setIsButtonDisabled(false);
-    }
+    createCategory.mutate({ form: categories, file: selectedFile });
   };
 
   return (
@@ -163,9 +136,9 @@ const CategoryAdd = () => {
             </div>
 
             <div className="mt-6 flex justify-center">
-              <Button type="submit" disabled={isButtonDisabled}>
+              <Button type="submit" disabled={createCategory.isPending}>
                 <MdSend />
-                <span>{isButtonDisabled ? "Submiting...." : "Submit"}</span>
+                <span>{createCategory.isPending ? "Submiting...." : "Submit"}</span>
               </Button>
             </div>
           </form>

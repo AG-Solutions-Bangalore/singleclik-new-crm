@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { Pencil, Plus } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { DataTable } from "@/components/ui/data-table";
@@ -10,36 +9,25 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useAppContext } from "@/context/app-context";
 import { storageImage } from "@/lib/constants";
-import { NOTIFICATIONS_API, authHeaders } from "../api/notifications";
 import type { NotificationRow } from "../types/notifications";
+import { useNotificationList } from "../hooks/useNotifications";
 
 const NotificationList = () => {
-  const [notiListData, setNotitListData] = useState<NotificationRow[] | null>(null);
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
+  const { data: notiListData, isLoading: loading, error } = useNotificationList();
 
   useEffect(() => {
-    const fetchNotiListData = async () => {
-      try {
-        if (!isPanelUp) {
-          navigate("/maintenance");
-          return;
-        }
-        setLoading(true);
-        const response = await axios.get(NOTIFICATIONS_API.list, {
-          headers: authHeaders(),
-        });
+    if (!isPanelUp) {
+      navigate("/maintenance");
+    }
+  }, [isPanelUp, navigate]);
 
-        setNotitListData(response.data?.notification);
-      } catch (error) {
-        console.error("Error fetching Notification list data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchNotiListData();
-  }, []);
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching Notification list data", error);
+    }
+  }, [error]);
 
   const columns: DataTableColumn<NotificationRow>[] = [
     {
@@ -108,7 +96,7 @@ const NotificationList = () => {
   return (
     <Layout>
       <div className="mt-5">
-        {loading && notiListData === null ? (
+        {loading && notiListData == null ? (
           <Spinner className="py-16" />
         ) : (
           <DataTable

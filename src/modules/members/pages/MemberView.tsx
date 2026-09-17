@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactInstance, ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { Printer } from "lucide-react";
 import ReactToPrint from "react-to-print";
 import Layout from "@/components/layout/Layout";
@@ -11,7 +10,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Spinner } from "@/components/ui/spinner";
 import { useAppContext } from "@/context/app-context";
 import { storageImage } from "@/lib/constants";
-import { MEMBERS_API } from "../api/members";
+import { useMemberDetail } from "../hooks/useMemberDetail";
 import type { MemberCategory, MemberRow, MemberSubCategory } from "../types/member";
 
 const profileTypeLabel = (value: MemberRow["profile_type"] | undefined): string => {
@@ -27,36 +26,30 @@ const MemberView = () => {
   const [profileCategory, setProfileCategory] = useState<MemberCategory[]>([]);
   const [profileSubCategory, setProfileSubCategory] = useState<MemberSubCategory[]>([]);
 
-  const [loading, setLoading] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
 
+  const { data: profileData, isLoading, error: profileError } = useMemberDetail(id);
+
   useEffect(() => {
-    const fetchProfileViewData = async () => {
-      try {
-        if (!isPanelUp) {
-          navigate("/maintenance");
-          return;
-        }
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const response = await axios.get(MEMBERS_API.byId(id ?? ""), {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setProfile(response.data?.user);
-        setProfileCategory(response.data?.categories);
-        setProfileSubCategory(response.data?.subcategories);
-        console.log("sub category ", response.data?.subcategories);
-      } catch (error) {
-        console.error("Error fetching Profile list data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfileViewData();
-  }, [id, isPanelUp, navigate]);
+    if (!isPanelUp) {
+      navigate("/maintenance");
+    }
+  }, [isPanelUp, navigate]);
+
+  useEffect(() => {
+    if (profileData === undefined) return;
+    setProfile(profileData?.user);
+    setProfileCategory(profileData?.categories);
+    setProfileSubCategory(profileData?.subcategories);
+    console.log("sub category ", profileData?.subcategories);
+  }, [profileData]);
+
+  useEffect(() => {
+    if (profileError) {
+      console.error("Error fetching Profile list data", profileError);
+    }
+  }, [profileError]);
 
   const contactRows = [
     { label: "Company", value: profile.company_name },
@@ -109,7 +102,7 @@ const MemberView = () => {
           }
         />
 
-        {loading ? (
+        {isLoading ? (
           <div className="rounded-lg border border-outline bg-surface-container-lowest shadow-md">
             <Spinner className="py-16" />
           </div>
