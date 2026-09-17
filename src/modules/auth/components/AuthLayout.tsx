@@ -1,40 +1,7 @@
-import { useState } from "react";
 import type { ReactNode } from "react";
 import { Check } from "lucide-react";
+import { BrandLogo } from "@/components/common/BrandLogo";
 import { cn } from "@/lib/utils";
-
-const LOGO_URL = "https://singleclik.com/draft/assets/img/logos/logo.png";
-
-export function BrandLogo({ size = "md", dark = false }: { size?: "sm" | "md"; dark?: boolean }) {
-  const [logoOk, setLogoOk] = useState(true);
-  const box = size === "md" ? "h-12 w-12 text-xl" : "h-10 w-10 text-base";
-
-  return (
-    <span className="flex items-center gap-2.5">
-      {logoOk ? (
-        <img
-          src={LOGO_URL}
-          alt="SingleClik logo"
-          onError={() => setLogoOk(false)}
-          className={cn(box, "shrink-0 rounded-xl bg-white object-contain p-1 shadow-sm")}
-        />
-      ) : (
-        <span
-          aria-hidden
-          className={cn(
-            box,
-            "flex shrink-0 items-center justify-center rounded-xl bg-white font-bold text-primary shadow-sm"
-          )}
-        >
-          SC
-        </span>
-      )}
-      <span className={cn("font-bold tracking-tight", size === "md" ? "text-2xl" : "text-xl", dark ? "text-primary" : "text-white")}>
-        SingleClik
-      </span>
-    </span>
-  );
-}
 
 interface AuthLayoutProps {
   title: string;
@@ -76,7 +43,7 @@ export function AuthLayout({
             aria-hidden
             className="pointer-events-none absolute -bottom-24 -left-16 size-72 rounded-full bg-black/10"
           />
-          <BrandLogo />
+          <BrandLogo tone="on-primary" />
           <div className="relative">
             <h1 className="text-headline-md font-semibold tracking-tight text-white">{brandHeading}</h1>
             <p className="mt-3 max-w-sm text-body-md leading-relaxed text-white/85">{brandCopy}</p>
@@ -98,7 +65,7 @@ export function AuthLayout({
 
         <div className={cn("flex flex-col justify-center p-6 sm:p-8", flip && "lg:order-first")}>
           <div className="mb-6 lg:hidden">
-            <BrandLogo size="sm" dark />
+            <BrandLogo tone="default" />
           </div>
           <h2 className="text-headline-md font-semibold tracking-tight">{title}</h2>
           <p className="mt-1 mb-6 text-body-md text-on-surface-variant">{description}</p>

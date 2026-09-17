@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useTheme } from "next-themes";
-import { KeyRound, LogOut, Moon, Sun, X } from "lucide-react";
+import { ChevronRight, KeyRound, LogOut, Moon, Sun, X } from "lucide-react";
 import { TbStackPop, TbCategory2 } from "react-icons/tb";
 import { CgProductHunt } from "react-icons/cg";
 import { TfiLayoutSlider } from "react-icons/tfi";
@@ -14,12 +14,14 @@ import {
   MdOutlineSpaceDashboard,
 } from "react-icons/md";
 import { IoIosNotificationsOutline } from "react-icons/io";
-import Logout from "@/components/layout/Logout";
+import { BrandLogo } from "@/components/common/BrandLogo";
+import ProfileDialog from "@/components/layout/ProfileDialog";
 import { cn } from "@/lib/utils";
 
 interface SideNavProps {
   openSideNav: boolean;
   setOpenSideNav: React.Dispatch<React.SetStateAction<boolean>>;
+  onLogoutRequest: () => void;
 }
 
 const sideItems = [
@@ -36,15 +38,13 @@ const sideItems = [
   { to: "/notification", label: "Notification", Icon: IoIosNotificationsOutline },
 ];
 
-const SideNav = ({ openSideNav, setOpenSideNav }: SideNavProps) => {
+const SideNav = ({ openSideNav, setOpenSideNav, onLogoutRequest }: SideNavProps) => {
   const sidenavRef = useRef<HTMLElement>(null);
   const { pathname } = useLocation();
   const { resolvedTheme, setTheme } = useTheme();
-  const [logoOk, setLogoOk] = useState(true);
-  const [openModal, setOpenModal] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const userName = localStorage.getItem("name") ?? "Admin";
 
-  const handleOpenLogout = () => setOpenModal((v) => !v);
   const toggleTheme = () => setTheme(resolvedTheme === "dark" ? "light" : "dark");
 
   // close sidebar when clicking outside
@@ -81,26 +81,9 @@ const SideNav = ({ openSideNav, setOpenSideNav }: SideNavProps) => {
       )}
     >
       <div className="relative border-b border-outline">
-        <Link to="/home" className="flex items-center gap-3 p-4" onClick={handleItemClick}>
-          {logoOk ? (
-            <img
-              src="https://www.ag-solutions.in/assets/images/logo.png"
-              alt="AG Solution logo"
-              className="h-11 w-auto shrink-0"
-              onError={() => setLogoOk(false)}
-            />
-          ) : (
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary text-label-md font-semibold text-on-primary">
-              SC
-            </span>
-          )}
-          <div className="leading-tight">
-            <div className="text-body-md font-semibold text-on-surface">
-              <span className="font-bold">AG</span> Solution
-            </div>
-            <div className="text-label-sm font-normal text-on-surface-variant">Single Click Solution</div>
-          </div>
-        </Link>
+        <div className="p-4">
+          <BrandLogo to="/home" onNavigate={handleItemClick} />
+        </div>
         <button
           type="button"
           aria-label="Close navigation"
@@ -135,57 +118,60 @@ const SideNav = ({ openSideNav, setOpenSideNav }: SideNavProps) => {
         </ul>
       </nav>
 
-      <div className="border-t border-outline bg-surface-container-low/60 p-3">
-        <Link
-          to="/profile"
-          onClick={handleItemClick}
-          className="flex items-center gap-3 rounded-lg border border-transparent px-2 py-2 transition-colors outline-none hover:border-outline hover:bg-surface focus-visible:outline-[2px] focus-visible:outline-primary"
+      <div className="border-t border-outline p-3">
+        <div className="rounded-xl border border-outline bg-surface-container-low p-2.5">
+        <button
+          type="button"
+          onClick={() => setProfileOpen(true)}
+          className="group flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-1.5 py-1.5 text-left transition-colors outline-none hover:bg-surface focus-visible:outline-[2px] focus-visible:outline-primary"
         >
-          <span
-            aria-hidden
-            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-label-md font-semibold text-on-primary ring-2 ring-primary-container"
-          >
-            {userName.charAt(0).toUpperCase()}
-          </span>
-          <span className="min-w-0 flex-1 leading-tight">
-            <span className="block truncate text-label-md font-medium text-on-surface">{userName}</span>
-            <span className="block text-label-sm text-on-surface-variant">View profile</span>
-          </span>
-        </Link>
-        <div className="mt-2 grid grid-cols-3 gap-1.5">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label="Toggle color theme"
-            title="Toggle color theme"
-            className="inline-flex h-9 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-lg border border-outline bg-surface py-1 text-label-sm text-on-surface-variant transition-colors outline-none hover:border-primary hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
-          >
-            {resolvedTheme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
-            Theme
+            <span className="relative shrink-0" aria-hidden>
+              <span className="flex size-10 items-center justify-center rounded-full bg-primary text-label-md font-semibold text-on-primary ring-2 ring-primary-container">
+                {userName.charAt(0).toUpperCase()}
+              </span>
+              <span className="absolute right-0 bottom-0 size-3 rounded-full border-2 border-surface-container-low bg-emerald-500" />
+            </span>
+            <span className="min-w-0 flex-1 leading-tight">
+              <span className="block truncate text-label-md font-semibold text-on-surface">{userName}</span>
+              <span className="block text-label-sm text-on-surface-variant">View profile</span>
+            </span>
+            <ChevronRight className="size-4 shrink-0 text-on-surface-variant transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
           </button>
-          <Link
-            to="/change-password"
-            onClick={handleItemClick}
-            aria-label="Change password"
-            title="Change password"
-            className="inline-flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg border border-outline bg-surface py-1 text-label-sm text-on-surface-variant transition-colors outline-none hover:border-primary hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
-          >
-            <KeyRound className="size-4" />
-            Security
-          </Link>
-          <button
-            type="button"
-            onClick={handleOpenLogout}
-            aria-label="Log out"
-            title="Log out"
-            className="inline-flex h-9 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-lg border border-error/40 bg-surface py-1 text-label-sm text-error transition-colors outline-none hover:bg-error-container focus-visible:outline-[2px] focus-visible:outline-primary"
-          >
-            <LogOut className="size-4" />
-            Logout
-          </button>
+          <div className="mt-2 grid grid-cols-3 gap-1.5 border-t border-outline pt-2">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label="Toggle color theme"
+              title="Toggle color theme"
+              className="inline-flex h-12 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg text-label-sm font-medium text-on-surface-variant transition-colors outline-none hover:bg-surface hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
+            >
+              {resolvedTheme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
+              Theme
+            </button>
+            <Link
+              to="/change-password"
+              onClick={handleItemClick}
+              aria-label="Change password"
+              title="Change password"
+              className="inline-flex h-12 flex-col items-center justify-center gap-1 rounded-lg text-label-sm font-medium text-on-surface-variant transition-colors outline-none hover:bg-surface hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
+            >
+              <KeyRound className="size-[18px]" />
+              Security
+            </Link>
+            <button
+              type="button"
+              onClick={onLogoutRequest}
+              aria-label="Log out"
+              title="Log out"
+              className="inline-flex h-12 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg text-label-sm font-medium text-error transition-colors outline-none hover:bg-error-container focus-visible:outline-[2px] focus-visible:outline-primary"
+            >
+              <LogOut className="size-[18px]" />
+              Logout
+            </button>
+          </div>
         </div>
       </div>
-      <Logout open={openModal} handleOpen={handleOpenLogout} />
+      <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
     </aside>
   );
 };

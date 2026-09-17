@@ -1,15 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { clearAppStorage } from "@/lib/storage";
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface LogoutProps {
   open: boolean;
@@ -24,22 +25,22 @@ const Logout = ({ open, handleOpen }: LogoutProps) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && handleOpen()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Confirm Logout</DialogTitle>
-          <DialogDescription>Are you sure you want to log out?</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="ghost" onClick={handleOpen}>
-            Cancel
-          </Button>
-          <Button variant="destructive" onClick={handleLogout}>
+    <AlertDialog open={open} onOpenChange={(v) => !v && handleOpen()}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to log out? You will need to sign in again to access the panel.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleLogout}>
             <LogOut /> Confirm
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
