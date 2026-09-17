@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { getToken } from "@/lib/auth-storage";
 import { toast } from "react-toastify";
 import { MEMBERS_API } from "../api/members";
 import type { MemberRow } from "../types/member";
 
 async function fetchMembersList(): Promise<MemberRow[] | null> {
-  const token = localStorage.getItem("token");
+  const token = getToken();
   const response = await axios.get(MEMBERS_API.list, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -25,7 +26,7 @@ export function useHoldMember(onHeld?: (id: number) => void) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await axios({
         url: MEMBERS_API.hold(id),
         method: "PUT",

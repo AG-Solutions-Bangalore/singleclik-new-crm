@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
+import { getToken } from "@/lib/auth-storage";
 import type { ProductFormState, ProductRow } from "../types/product";
 
 export const PRODUCT_LIST_URL = `${BASE_URL}/api/panel-fetch-product-list`;
@@ -10,7 +11,7 @@ export const productUpdateUrl = (id: string | undefined) =>
   `${BASE_URL}/api/panel-update-product/${id}?_method=PUT`;
 
 function authHeaders() {
-  return { Authorization: `Bearer ${localStorage.getItem("token")}` };
+  return { Authorization: `Bearer ${getToken()}` };
 }
 
 export async function fetchProductList(): Promise<ProductRow[]> {

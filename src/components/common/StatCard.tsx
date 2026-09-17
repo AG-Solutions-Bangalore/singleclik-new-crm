@@ -23,9 +23,9 @@ const variantStyles: Record<
   }
 > = {
   amber: {
-    card: "bg-[#FDF4EA] border-[#F9E2CD] hover:border-[#F6D0AF] dark:bg-[#251D16] dark:border-[#3E2E20]",
-    iconBox: "bg-[#FCE6D2] text-[#9A5B2D] dark:bg-[#3E2E20] dark:text-[#F7C69D]",
-    badge: "bg-[#FCE8D5] text-[#9A5B2D] dark:bg-[#3E2E20] dark:text-[#F7C69D]",
+    card: "bg-amber-50/70 border-amber-200 hover:border-amber-300 dark:bg-amber-950/20 dark:border-amber-900/40",
+    iconBox: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
+    badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
   },
   blue: {
     card: "bg-[#EFF6FF] border-[#DBEAFE] hover:border-[#BFDBFE] dark:bg-[#141F32] dark:border-[#1E3252]",

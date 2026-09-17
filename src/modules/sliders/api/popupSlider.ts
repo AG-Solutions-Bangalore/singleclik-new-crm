@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
+import { getToken } from "@/lib/auth-storage";
 import type { SliderFormState, SliderRow } from "../types/slider";
 
 export const POPUP_SLIDER_LIST_URL = `${BASE_URL}/api/panel-fetch-popup-slider-list`;
@@ -10,7 +11,7 @@ export const popupSliderUpdateUrl = (id: string | undefined) =>
   `${BASE_URL}/api/panel-update-popup-slider/${id}?_method=PUT`;
 
 function authHeaders() {
-  return { Authorization: `Bearer ${localStorage.getItem("token")}` };
+  return { Authorization: `Bearer ${getToken()}` };
 }
 
 export async function fetchPopupSliderList(): Promise<SliderRow[]> {

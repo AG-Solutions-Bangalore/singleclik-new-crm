@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
+import { getToken } from "@/lib/auth-storage";
 import type { SliderFormState, SliderRow } from "../types/slider";
 
 export const ADV_SLIDER_LIST_URL = `${BASE_URL}/api/panel-fetch-adv-slider-list`;
@@ -10,7 +11,7 @@ export const advSliderUpdateUrl = (id: string | undefined) =>
   `${BASE_URL}/api/panel-update-adv-slider/${id}?_method=PUT`;
 
 function authHeaders() {
-  return { Authorization: `Bearer ${localStorage.getItem("token")}` };
+  return { Authorization: `Bearer ${getToken()}` };
 }
 
 export async function fetchAdvSliderList(): Promise<SliderRow[]> {

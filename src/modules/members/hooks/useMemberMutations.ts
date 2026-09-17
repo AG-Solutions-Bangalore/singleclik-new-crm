@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { getToken } from "@/lib/auth-storage";
 import { MEMBERS_API } from "../api/members";
 import type { MemberForm } from "../types/member";
 
@@ -37,7 +38,7 @@ export function useUpdateMember(id: string | undefined, onUpdated?: () => void) 
       if (file) formData.append("photo", file);
       const response = await axios.post(MEMBERS_API.update(id ?? ""), formData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getToken()}`,
           "Content-Type": "multipart/form-data",
         },
       });
@@ -69,7 +70,7 @@ export function useUpdateCategoryStatus(
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (rowId: number) => {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await axios({
         url: MEMBERS_API.updateCategoryStatus(rowId),
         method: "PUT",
@@ -101,7 +102,7 @@ export function useUpdateSubCategoryStatus(
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (rowId: number) => {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await axios({
         url: MEMBERS_API.updateSubCategoryStatus(rowId),
         method: "PUT",
@@ -133,7 +134,7 @@ export function useDeleteCategory(
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (rowId: number) => {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await axios({
         url: MEMBERS_API.deleteCategory(rowId),
         method: "DELETE",
@@ -165,7 +166,7 @@ export function useDeleteSubCategory(
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (rowId: number) => {
-      const token = localStorage.getItem("token");
+      const token = getToken();
       const res = await axios({
         url: MEMBERS_API.deleteSubCategory(rowId),
         method: "DELETE",
@@ -212,7 +213,7 @@ export function useCreateCategoryMember(
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${getToken()}`,
           },
         }
       );
@@ -251,7 +252,7 @@ export function useCreateSubCategoryMember(
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${getToken()}`,
           },
         }
       );

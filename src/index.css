@@ -18,73 +18,73 @@
  */
 
 @theme {
-  /* ---------- Colors: surfaces (Warm Luxury Cream / Porcelain) ---------- */
-  --color-surface: #FAF8F5;
-  --color-surface-dim: #F4F0E8;
+  /* ---------- Colors: surfaces (SingleClik Clean Slate & Modern Canvas) ---------- */
+  --color-surface: #F8FAFC;
+  --color-surface-dim: #F1F5F9;
   --color-surface-bright: #FFFFFF;
   --color-surface-container-lowest: #FFFFFF;
-  --color-surface-container-low: #F6F2EA;
-  --color-surface-container: #EFE8DD;
-  --color-surface-container-high: #E7DFD2;
-  --color-surface-container-highest: #DED5C6;
-  --color-surface-variant: #EFE8DD;
-  --color-surface-tint: #8B5E3C;
+  --color-surface-container-low: #F8FAFC;
+  --color-surface-container: #F1F5F9;
+  --color-surface-container-high: #E2E8F0;
+  --color-surface-container-highest: #CBD5E1;
+  --color-surface-variant: #F1F5F9;
+  --color-surface-tint: #2563EB;
 
-  --color-on-surface: #1C1917;
-  --color-on-surface-variant: #6A6359;
-  --color-inverse-surface: #18181B;
-  --color-inverse-on-surface: #FAF8F5;
+  --color-on-surface: #0F172A;
+  --color-on-surface-variant: #475569;
+  --color-inverse-surface: #0F172A;
+  --color-inverse-on-surface: #F8FAFC;
 
-  --color-outline: #E4DDD0;
-  --color-outline-variant: #D1C7B7;
+  --color-outline: #E2E8F0;
+  --color-outline-variant: #CBD5E1;
 
-  --color-background: #FAF8F5;
-  --color-on-background: #1C1917;
+  --color-background: #F8FAFC;
+  --color-on-background: #0F172A;
 
-  /* ---------- Colors: brand (Obsidian Espresso & Warm Cognac Bronze) ---------- */
-  --color-primary: #201D1B;
+  /* ---------- Colors: brand (SingleClik Electric Royal Blue & Verified Accents) ---------- */
+  --color-primary: #2563EB;
   --color-on-primary: #FFFFFF;
-  --color-primary-container: #F0E6D8;
-  --color-on-primary-container: #1C1917;
-  --color-inverse-primary: #EAE2D7;
-  --color-primary-hover: #332E2B;
-  --color-primary-active: #151312;
+  --color-primary-container: #EFF6FF;
+  --color-on-primary-container: #1E40AF;
+  --color-inverse-primary: #93C5FD;
+  --color-primary-hover: #1D4ED8;
+  --color-primary-active: #1E40AF;
 
-  --color-secondary: #8B5E3C;
+  --color-secondary: #10B981;
   --color-on-secondary: #FFFFFF;
-  --color-secondary-container: #FDF4EA;
-  --color-on-secondary-container: #8A4C1C;
+  --color-secondary-container: #ECFDF5;
+  --color-on-secondary-container: #047857;
 
-  --color-tertiary: #C28B38;
+  --color-tertiary: #F59E0B;
   --color-on-tertiary: #FFFFFF;
-  --color-tertiary-container: #FEF7EE;
-  --color-on-tertiary-container: #9A6218;
+  --color-tertiary-container: #FEF3C7;
+  --color-on-tertiary-container: #B45309;
 
-  --color-error: #D33B27;
+  --color-error: #EF4444;
   --color-on-error: #FFFFFF;
-  --color-error-container: #FDE8E5;
-  --color-on-error-container: #992317;
+  --color-error-container: #FEE2E2;
+  --color-on-error-container: #991B1B;
 
   /* ---------- Colors: fixed accents ---------- */
-  --color-primary-fixed: #F0E6D8;
-  --color-primary-fixed-dim: #E3D4C0;
-  --color-on-primary-fixed: #1C1917;
-  --color-on-primary-fixed-variant: #3A3530;
+  --color-primary-fixed: #EFF6FF;
+  --color-primary-fixed-dim: #DBEAFE;
+  --color-on-primary-fixed: #1E40AF;
+  --color-on-primary-fixed-variant: #1D4ED8;
 
-  --color-secondary-fixed: #FDF4EA;
-  --color-secondary-fixed-dim: #F7DEC7;
-  --color-on-secondary-fixed: #3D1F08;
-  --color-on-secondary-fixed-variant: #7E4215;
+  --color-secondary-fixed: #ECFDF5;
+  --color-secondary-fixed-dim: #D1FAE5;
+  --color-on-secondary-fixed: #065F46;
+  --color-on-secondary-fixed-variant: #047857;
 
-  --color-tertiary-fixed: #FEF7EE;
-  --color-tertiary-fixed-dim: #F8E5C4;
-  --color-on-tertiary-fixed: #3B2404;
-  --color-on-tertiary-fixed-variant: #784707;
+  --color-tertiary-fixed: #FEF3C7;
+  --color-tertiary-fixed-dim: #FDE68A;
+  --color-on-tertiary-fixed: #92400E;
+  --color-on-tertiary-fixed-variant: #B45309;
 
   /* ---------- Typography ---------- */
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-display: "Space Grotesk", sans-serif;
-  --font-serif: "Playfair Display", Georgia, serif;
+  --font-serif: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
 
   --text-display: 96px;
   --text-display--line-height: 104px;
@@ -134,66 +134,68 @@
   --radius-full: 9999px;
 
   /* ---------- Elevation ---------- */
-  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.04);
-  --shadow-md: 0 4px 12px rgba(28, 25, 23, 0.06);
-  --shadow-lg: 0 12px 30px rgba(28, 25, 23, 0.08);
-  --shadow-focus-ring: 0 0 0 3px rgba(240, 230, 216, 0.85);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.07);
+  --shadow-lg: 0 12px 30px rgba(15, 23, 42, 0.09);
+  --shadow-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.25);
 
   /* ---------- Layout ---------- */
   --container-page: 1280px;
 }
 
 /*
- * Dark theme (Rich Matte Obsidian & Dark Charcoal)
+ * Dark theme (SingleClik Deep Midnight Slate)
  */
 .dark {
-  --color-surface: #121316;
-  --color-surface-dim: #0C0D0F;
-  --color-surface-bright: #1E2025;
-  --color-surface-container-lowest: #16171B;
-  --color-surface-container-low: #1C1E23;
-  --color-surface-container: #23262D;
-  --color-surface-container-high: #2B2E37;
-  --color-surface-container-highest: #353842;
-  --color-surface-variant: #23262D;
-  --color-surface-tint: #D4AF37;
+  --color-surface: #0B1120;
+  --color-surface-dim: #070C16;
+  --color-surface-bright: #1E293B;
+  --color-surface-container-lowest: #0F172A;
+  --color-surface-container-low: #131D33;
+  --color-surface-container: #1E293B;
+  --color-surface-container-high: #283548;
+  --color-surface-container-highest: #334155;
+  --color-surface-variant: #1E293B;
+  --color-surface-tint: #3B82F6;
 
-  --color-on-surface: #EDEDEE;
-  --color-on-surface-variant: #A4A6B0;
-  --color-inverse-surface: #FAF8F5;
-  --color-inverse-on-surface: #121316;
+  --color-on-surface: #F8FAFC;
+  --color-on-surface-variant: #94A3B8;
+  --color-inverse-surface: #F8FAFC;
+  --color-inverse-on-surface: #0F172A;
 
-  --color-outline: #2C2F38;
-  --color-outline-variant: #404450;
+  --color-outline: #1E293B;
+  --color-outline-variant: #334155;
 
-  --color-background: #121316;
-  --color-on-background: #EDEDEE;
+  --color-background: #0B1120;
+  --color-on-background: #F8FAFC;
 
-  --color-primary: #F0E6D8;
-  --color-on-primary: #121316;
-  --color-primary-container: #2A2724;
-  --color-on-primary-container: #F0E6D8;
-  --color-inverse-primary: #201D1B;
-  --color-primary-hover: #E3D4C0;
-  --color-primary-active: #CFC0AC;
+  --color-primary: #3B82F6;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #1E3A8A;
+  --color-on-primary-container: #DBEAFE;
+  --color-inverse-primary: #1D4ED8;
+  --color-primary-hover: #60A5FA;
+  --color-primary-active: #2563EB;
 
-  --color-secondary: #C89968;
-  --color-on-secondary: #121316;
-  --color-secondary-container: #33271C;
-  --color-on-secondary-container: #FADBBF;
+  --color-secondary: #10B981;
+  --color-on-secondary: #FFFFFF;
+  --color-secondary-container: #064E3B;
+  --color-on-secondary-container: #A7F3D0;
 
-  --color-tertiary-container: #362916;
-  --color-on-tertiary-container: #FBE6BC;
+  --color-tertiary: #F59E0B;
+  --color-on-tertiary: #FFFFFF;
+  --color-tertiary-container: #451A03;
+  --color-on-tertiary-container: #FDE68A;
 
-  --color-error: #FF9D92;
-  --color-on-error: #2B0D08;
-  --color-error-container: #4D1612;
-  --color-on-error-container: #FFDAD6;
+  --color-error: #F87171;
+  --color-on-error: #450A0A;
+  --color-error-container: #7F1D1D;
+  --color-on-error-container: #FEE2E2;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
-  --shadow-focus-ring: 0 0 0 3px rgba(240, 230, 216, 0.2);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.7);
+  --shadow-focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.35);
 
   color-scheme: dark;
 }

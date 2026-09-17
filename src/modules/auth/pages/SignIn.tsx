@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
@@ -9,23 +9,38 @@ import { AuthLayout } from "@/modules/auth/components/AuthLayout";
 import { PasswordInput } from "@/modules/auth/components/PasswordInput";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import {
+  getRememberedUsername,
+  getToken,
+  wasRememberMeChecked,
+} from "@/lib/auth-storage";
 
 const SignIn = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => getRememberedUsername());
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(() => wasRememberMeChecked());
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
   const { mutate: login, isPending } = useLogin();
 
+  // Already have a session (e.g. refresh / back button) — skip the login
+  // form instead of flashing it, and go straight to the dashboard.
+  useEffect(() => {
+    if (getToken() && typeof isPanelUp === "object" && isPanelUp?.success) {
+      navigate("/home", { replace: true });
+    }
+  }, [isPanelUp, navigate]);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!isPanelUp) {
+    // isPanelUp is null while the status check is in flight — only bounce
+    // when the panel is definitively down, not while still loading.
+    if (isPanelUp === false) {
       navigate("/maintenance");
       return;
     }
 
-    login({ username: email, password });
+    login({ username: email, password, remember: rememberMe });
   };
 
   return (
@@ -54,7 +69,7 @@ const SignIn = () => {
       <form onSubmit={handleSubmit} method="POST" className="flex flex-col gap-4">
         {/* Username / Mobile Number input with icon */}
         <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8A7D71]">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
             <User className="size-4" />
           </div>
           <Input
@@ -65,14 +80,14 @@ const SignIn = () => {
             onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
             placeholder="Enter your username or mobile"
             autoComplete="username"
-            className="h-11 rounded-2xl border-[#E5DFD5] bg-[#FAF8F5] pl-10 text-[14px] shadow-2xs transition-colors focus:border-[#8B5E3C] focus:bg-white focus:ring-2 focus:ring-[#8B5E3C]/20 dark:border-[#2C2E38] dark:bg-[#1E2025] dark:focus:border-[#D4AF37]"
+            className="h-11 rounded-2xl border-slate-200 bg-slate-50 pl-10 text-[14px] shadow-2xs transition-colors focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-600/20 dark:border-slate-800 dark:bg-slate-800/60 dark:focus:border-blue-500"
             required
           />
         </div>
 
         {/* Password input with icon */}
         <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8A7D71] z-10">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 z-10">
             <Lock className="size-4" />
           </div>
           <PasswordInput
@@ -82,35 +97,35 @@ const SignIn = () => {
             onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             placeholder="Enter your password"
             autoComplete="current-password"
-            className="h-11 rounded-2xl border-[#E5DFD5] bg-[#FAF8F5] pl-10 pr-10 text-[14px] shadow-2xs transition-colors focus:border-[#8B5E3C] focus:bg-white focus:ring-2 focus:ring-[#8B5E3C]/20 dark:border-[#2C2E38] dark:bg-[#1E2025] dark:focus:border-[#D4AF37]"
+            className="h-11 rounded-2xl border-slate-200 bg-slate-50 pl-10 pr-10 text-[14px] shadow-2xs transition-colors focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-600/20 dark:border-slate-800 dark:bg-slate-800/60 dark:focus:border-blue-500"
             required
           />
         </div>
 
         {/* Remember me + Forgot password row */}
         <div className="flex items-center justify-between text-xs pt-1">
-          <label className="flex cursor-pointer items-center gap-2 text-[#605A51] dark:text-[#A4A6B0]">
+          <label className="flex cursor-pointer items-center gap-2 text-slate-600 dark:text-slate-400">
             <Checkbox
               id="remember"
               checked={rememberMe}
               onCheckedChange={(checked) => setRememberMe(!!checked)}
-              className="rounded-md border-[#D1C7B7] data-[state=checked]:bg-[#18181B] data-[state=checked]:text-white dark:border-[#3E4250] dark:data-[state=checked]:bg-[#F0E6D8] dark:data-[state=checked]:text-[#18181B]"
+              className="rounded-md border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:border-slate-700 dark:data-[state=checked]:bg-blue-600"
             />
             <span>Remember me</span>
           </label>
           <Link
             to="/forget-password"
-            className="font-medium text-[#8B5E3C] transition-colors hover:text-[#6E482D] hover:underline dark:text-[#D4AF37]"
+            className="font-medium text-blue-600 transition-colors hover:text-blue-700 hover:underline dark:text-blue-400"
           >
             Forgot Password?
           </Link>
         </div>
 
-        {/* Primary Submit Button matching Reference 1 */}
+        {/* Primary Submit Button */}
         <button
           type="submit"
           disabled={isPending}
-          className="mt-2 flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-[#18181B] px-5 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#2A2825] active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50 dark:bg-[#F0E6D8] dark:text-[#18181B] dark:hover:bg-[#E3D4C0]"
+          className="mt-2 flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-blue-600 px-5 text-sm font-semibold text-white shadow-md shadow-blue-600/25 transition-all hover:bg-blue-700 active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-500"
         >
           {isPending ? (
             <>
@@ -127,18 +142,18 @@ const SignIn = () => {
 
         {/* Divider */}
         <div className="relative my-2 flex items-center justify-center">
-          <div className="w-full border-t border-[#EBE5DC] dark:border-[#2C2E38]" />
-          <span className="absolute bg-white px-3 text-[11px] font-medium text-[#9E968B] dark:bg-[#16171B]">
+          <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+          <span className="absolute bg-white px-3 text-[11px] font-medium text-slate-400 dark:bg-slate-900">
             or
           </span>
         </div>
 
         {/* Secondary Outline Pill Button */}
-        <div className="flex items-center justify-between gap-2 text-xs text-[#78716C] dark:text-[#A1A1AA]">
+        <div className="flex items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
           <span>Don&apos;t have an account?</span>
           <Link
             to="/register"
-            className="inline-flex items-center justify-center rounded-full border border-[#D5CCC0] bg-transparent px-4 py-2 text-xs font-semibold text-[#1C1917] transition-colors hover:bg-[#FAF8F5] dark:border-[#363945] dark:text-[#FAF8F5] dark:hover:bg-[#1E2025]"
+            className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-transparent px-4 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             Create Account
           </Link>

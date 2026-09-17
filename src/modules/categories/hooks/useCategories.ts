@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { getToken } from "@/lib/auth-storage";
 import { CATEGORIES_API } from "@/modules/categories/api/categories";
 import type {
   CategoryEditFormState,
@@ -17,7 +18,7 @@ export interface CategoryDetailData {
 }
 
 async function fetchCategoriesList(): Promise<CategoryRow[]> {
-  const token = localStorage.getItem("token");
+  const token = getToken();
   const response = await axios.get(CATEGORIES_API.list, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -36,7 +37,7 @@ export function useCategoriesList() {
 async function fetchCategoryDetail(id: string): Promise<CategoryDetailData> {
   const response = await axios.get(CATEGORIES_API.byId(id), {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
   return response.data as CategoryDetailData;
@@ -51,7 +52,7 @@ export function useCategoryDetail(id: string | undefined) {
 }
 
 async function fetchCategoriesDropdown(): Promise<CategoryRow[]> {
-  const token = localStorage.getItem("token");
+  const token = getToken();
   const response = await axios.get(CATEGORIES_API.dropdown, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -89,7 +90,7 @@ export function useCreateCategory(options?: { onCreated?: () => void }) {
         method: "POST",
         data,
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
       return res.data;
@@ -136,7 +137,7 @@ export function useUpdateCategory(
         formData,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${getToken()}`,
           },
         }
       );

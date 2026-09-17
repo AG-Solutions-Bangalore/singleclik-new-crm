@@ -33,60 +33,60 @@ export default function UserMenu({ onLogoutRequest }: UserMenuProps) {
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="group flex cursor-pointer items-center gap-2.5 rounded-full border border-[#E5DFD5] bg-white py-1 pr-3 pl-1 shadow-2xs transition-all duration-200 hover:border-[#8B5E3C] hover:shadow-xs focus-visible:outline-2 focus-visible:outline-[#8B5E3C] dark:border-[#2C2E38] dark:bg-[#18191E] dark:hover:border-[#D4AF37]"
+            className="group flex cursor-pointer items-center gap-2.5 rounded-full border border-slate-200 bg-white py-1 pr-3 pl-1 shadow-2xs transition-all duration-200 hover:border-blue-500 hover:shadow-xs focus-visible:outline-2 focus-visible:outline-blue-600 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-500"
           >
-            <span className="flex size-7.5 items-center justify-center rounded-full bg-[#8B5E3C] font-display text-[13px] font-bold text-white shadow-2xs ring-2 ring-[#8B5E3C]/20">
+            <span className="flex size-7.5 items-center justify-center rounded-full bg-blue-600 font-display text-[13px] font-bold text-white shadow-2xs ring-2 ring-blue-500/20">
               {userName.charAt(0).toUpperCase()}
             </span>
             <div className="flex flex-col text-left leading-none">
-              <span className="text-[13px] font-semibold text-[#1C1917] dark:text-[#FAF8F5]">{userName}</span>
-              <span className="text-[10px] font-medium text-[#78716C] dark:text-[#A1A1AA]">{userRole}</span>
+              <span className="text-[13px] font-semibold text-slate-900 dark:text-slate-100">{userName}</span>
+              <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">{userRole}</span>
             </div>
-            <ChevronDown className="size-3.5 text-[#8A7D71] transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            <ChevronDown className="size-3.5 text-slate-400 transition-transform duration-200 group-data-[state=open]:rotate-180" />
           </button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
           align="end"
           sideOffset={8}
-          className="w-60 rounded-2xl border border-[#E8E1D5] bg-white p-2 shadow-xl dark:border-[#282B34] dark:bg-[#16171B]"
+          className="w-60 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-800 dark:bg-slate-900"
         >
           {/* Header Card inside Dropdown */}
-          <div className="flex items-center gap-3 rounded-xl bg-[#FAF8F5] p-2.5 dark:bg-[#1E2026]">
-            <span className="flex size-10 items-center justify-center rounded-full bg-[#8B5E3C] font-display text-base font-bold text-white shadow-xs">
+          <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-2.5 dark:bg-slate-800/70">
+            <span className="flex size-10 items-center justify-center rounded-full bg-blue-600 font-display text-base font-bold text-white shadow-xs">
               {userName.charAt(0).toUpperCase()}
             </span>
             <div className="min-w-0 flex-1 leading-tight">
-              <p className="truncate text-[14px] font-bold text-[#1C1917] dark:text-[#FAF8F5]">{userName}</p>
-              <p className="truncate text-[11px] font-medium text-[#78716C] dark:text-[#A1A1AA]">{userRole}</p>
+              <p className="truncate text-[14px] font-bold text-slate-900 dark:text-slate-100">{userName}</p>
+              <p className="truncate text-[11px] font-medium text-slate-500 dark:text-slate-400">{userRole}</p>
             </div>
           </div>
 
           <button
             type="button"
             onClick={() => setProfileOpen(true)}
-            className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium text-[#8B5E3C] transition-colors hover:bg-[#F6F2EA] dark:text-[#D4AF37] dark:hover:bg-white/5"
+            className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
           >
             <UserRound className="size-3.5" />
             <span>View Full Profile</span>
           </button>
 
-          <DropdownMenuSeparator className="my-1.5 bg-[#EFE8DD] dark:bg-[#282B34]" />
+          <DropdownMenuSeparator className="my-1.5 bg-slate-100 dark:bg-slate-800" />
 
           {/* Theme Toggle */}
           <DropdownMenuItem
             onClick={toggleTheme}
-            className="flex cursor-pointer items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium text-[#1C1917] hover:bg-[#F6F2EA] dark:text-[#FAF8F5] dark:hover:bg-white/5"
+            className="flex cursor-pointer items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             <div className="flex items-center gap-2.5">
               {resolvedTheme === "dark" ? (
-                <Sun className="size-4 text-[#F59E0B]" />
+                <Sun className="size-4 text-amber-500" />
               ) : (
-                <Moon className="size-4 text-[#6366F1]" />
+                <Moon className="size-4 text-blue-600" />
               )}
               <span>Theme</span>
             </div>
-            <span className="rounded-full bg-[#EFE8DD] px-2 py-0.5 text-[10px] font-semibold text-[#605A51] uppercase dark:bg-[#282B34] dark:text-[#A1A1AA]">
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 uppercase dark:bg-slate-800 dark:text-slate-300">
               {resolvedTheme === "dark" ? "Dark" : "Light"}
             </span>
           </DropdownMenuItem>
@@ -94,20 +94,20 @@ export default function UserMenu({ onLogoutRequest }: UserMenuProps) {
           {/* Security / Password */}
           <DropdownMenuItem
             onClick={() => setSecurityOpen(true)}
-            className="flex cursor-pointer items-center gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-[#1C1917] hover:bg-[#F6F2EA] dark:text-[#FAF8F5] dark:hover:bg-white/5"
+            className="flex cursor-pointer items-center gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
           >
-            <KeyRound className="size-4 text-[#78716C] dark:text-[#A1A1AA]" />
+            <KeyRound className="size-4 text-slate-500 dark:text-slate-400" />
             <span>Security & Password</span>
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator className="my-1.5 bg-[#EFE8DD] dark:bg-[#282B34]" />
+          <DropdownMenuSeparator className="my-1.5 bg-slate-100 dark:bg-slate-800" />
 
           {/* Logout */}
           <DropdownMenuItem
             onClick={onLogoutRequest}
-            className="flex cursor-pointer items-center gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-[#DC2626] hover:bg-red-50 focus:bg-red-50 focus:text-[#DC2626] dark:text-[#F87171] dark:hover:bg-red-950/30 dark:focus:bg-red-950/30"
+            className="flex cursor-pointer items-center gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-red-600 hover:bg-red-50 focus:bg-red-50 focus:text-red-600 dark:text-red-400 dark:hover:bg-red-950/30 dark:focus:bg-red-950/30"
           >
-            <LogOut className="size-4 text-[#DC2626] dark:text-[#F87171]" />
+            <LogOut className="size-4 text-red-600 dark:text-red-400" />
             <span>Logout</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

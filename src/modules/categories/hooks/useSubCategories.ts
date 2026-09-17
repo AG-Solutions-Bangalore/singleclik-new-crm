@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { getToken } from "@/lib/auth-storage";
 import { CATEGORIES_API } from "@/modules/categories/api/categories";
 import type {
   SubCategoryAddFormState,
@@ -9,7 +10,7 @@ import type {
 } from "@/modules/categories/types/categories";
 
 async function fetchSubCategoriesList(): Promise<SubCategoryRow[]> {
-  const token = localStorage.getItem("token");
+  const token = getToken();
   const response = await axios.get(CATEGORIES_API.subList, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -30,7 +31,7 @@ async function fetchSubCategoryDetail(id: string): Promise<any> {
     url: CATEGORIES_API.subById(id),
     method: "GET",
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
   return res.data?.categoriessub;
@@ -58,7 +59,7 @@ export function useCreateSubCategory(options?: { onCreated?: () => void }) {
         method: "POST",
         data,
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
       return res.data;
@@ -97,7 +98,7 @@ export function useUpdateSubCategory(
         method: "PUT",
         data,
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
       return res.data;
@@ -143,7 +144,7 @@ export function useUpdateSubCategoryRow() {
         method: "PUT",
         data,
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
       return res.data;

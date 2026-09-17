@@ -7,8 +7,18 @@ export const THEME_STORAGE_KEY = "theme";
  */
 export function clearAppStorage(): void {
   const theme = localStorage.getItem(THEME_STORAGE_KEY);
+  const rememberedUsername = localStorage.getItem("remembered_username");
+  const rememberMe = localStorage.getItem("remember_me");
   localStorage.clear();
+  sessionStorage.clear();
   if (theme) {
     localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }
+  // Keep the remembered username so the login form can prefill it.
+  if (rememberedUsername) {
+    localStorage.setItem("remembered_username", rememberedUsername);
+  }
+  if (rememberMe) {
+    localStorage.setItem("remember_me", rememberMe);
   }
 }

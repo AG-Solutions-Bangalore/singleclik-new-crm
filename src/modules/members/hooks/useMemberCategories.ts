@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { getToken } from "@/lib/auth-storage";
 import { MEMBERS_API } from "../api/members";
 import type { CategoryOption, SubCategoryOption } from "../types/member";
 
@@ -9,7 +10,7 @@ export function useMemberCategories() {
     queryFn: async (): Promise<CategoryOption[]> => {
       const response = await axios.get(MEMBERS_API.categories, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
       return response.data.categories;
@@ -23,7 +24,7 @@ export function useUserCategories(memberId: string | undefined) {
     queryFn: async (): Promise<CategoryOption[]> => {
       const response = await axios.get(MEMBERS_API.userCategoriesById(memberId ?? ""), {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
       return response.data?.categories;
@@ -38,7 +39,7 @@ export function useSubCategoriesByValue(catgId: string | number) {
     queryFn: async (): Promise<SubCategoryOption[]> => {
       const response = await axios.get(MEMBERS_API.subCategoriesByValue(catgId || ""), {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
       return response.data.categoriessub;
@@ -55,7 +56,7 @@ export function useRegisterSubCategoriesByValue(catgId: string) {
         MEMBERS_API.registerSubCategoriesByValue(catgId || ""),
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${getToken()}`,
           },
         }
       );

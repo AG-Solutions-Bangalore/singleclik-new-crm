@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
 import { clearAppStorage } from "@/lib/storage";
+import { getToken } from "@/lib/auth-storage";
 
 export interface PanelStatus {
   success?: boolean;
@@ -13,8 +14,9 @@ export interface PanelStatus {
 }
 
 interface AppContextValue {
-  isPanelUp: PanelStatus | boolean;
-  setIsPanelUp: React.Dispatch<React.SetStateAction<PanelStatus | boolean>>;
+  isPanelUp: PanelStatus | boolean | null;
+  isPanelLoading: boolean;
+  setIsPanelUp: React.Dispatch<React.SetStateAction<PanelStatus | boolean | null>>;
 }
 
 export const AppContext = createContext<AppContextValue | null>(null);
@@ -29,13 +31,22 @@ export function useAppContext(): AppContextValue {
 export const ContextPanel = AppContext;
 
 const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [isPanelUp, setIsPanelUp] = useState<PanelStatus | boolean>(true);
+  // null = panel status not known yet — do NOT redirect until the check resolves.
+  // This is what caused the auth flash: the old code defaulted to `true`
+  // (a boolean, not the `{ success }` object), so ProtectedRoute bounced
+  // every refresh to "/" and then back to "/home" once the query finished.
+  const [isPanelUp, setIsPanelUp] = useState<PanelStatus | boolean | null>(null);
 
   const [error, setError] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { data: panelData, error: panelError } = useQuery({
+  const {
+    data: panelData,
+    error: panelError,
+    isLoading: isPanelLoading,
+    isFetched,
+  } = useQuery({
     queryKey: ["panel-status"],
     queryFn: async (): Promise<PanelStatus> => {
       const response = await axios.get(`${BASE_URL}/api/panel-check-status`);
@@ -59,12 +70,20 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [panelError]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    // Wait for the panel check before deciding any redirect — otherwise the
+    // login page flashes on every refresh while the request is in flight.
+    if (!isFetched || isPanelLoading) return;
+
+    const token = getToken();
     const currentPath = location.pathname;
+
+    const go = (to: string) => {
+      if (to !== currentPath) navigate(to, { replace: true });
+    };
 
     if (error) {
       clearAppStorage();
-      navigate("/maintenance");
+      go("/maintenance");
     } else if (typeof isPanelUp === "object" && isPanelUp?.success) {
       if (token) {
         const allowedPaths = [
@@ -97,22 +116,26 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
           "/edit-notification",
         ];
         const isAllowedPath = allowedPaths.some((path) => currentPath.startsWith(path));
-        if (isAllowedPath) {
-          navigate(currentPath);
-        } else {
-          navigate("/home");
+        // Stay where the user is (covers refresh); only bounce unknown /
+        // auth paths to the dashboard instead of flashing the login page.
+        if (!isAllowedPath) {
+          go("/home");
         }
       } else {
         if (currentPath === "/" || currentPath === "/register" || currentPath === "/forget-password") {
-          navigate(currentPath);
-        } else {
-          navigate("/"); // Redirect to login if no token
+          return; // public route, stay put
         }
+        go("/"); // Redirect to login if no token
       }
     }
-  }, [error, navigate, isPanelUp, location.pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error, isFetched, isPanelLoading, isPanelUp, location.pathname]);
 
-  return <AppContext.Provider value={{ isPanelUp, setIsPanelUp }}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={{ isPanelUp, isPanelLoading, setIsPanelUp }}>
+      {children}
+    </AppContext.Provider>
+  );
 };
 
 export default AppProvider;

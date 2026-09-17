@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { getToken } from "@/lib/auth-storage";
 import { MEMBERS_API } from "../api/members";
 
 async function fetchMemberById(id: string) {
   const response = await axios.get(MEMBERS_API.byId(id), {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
   return response.data;

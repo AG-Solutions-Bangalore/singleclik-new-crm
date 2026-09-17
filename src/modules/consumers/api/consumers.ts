@@ -1,4 +1,5 @@
 import { BASE_URL } from "@/lib/constants";
+import { getToken } from "@/lib/auth-storage";
 
 export const CONSUMERS_API = {
   userList: `${BASE_URL}/api/panel-fetch-user-list`,
@@ -10,5 +11,5 @@ export const CONSUMERS_API = {
 } as const;
 
 export function authHeaders() {
-  return { Authorization: `Bearer ${localStorage.getItem("token")}` };
+  return { Authorization: `Bearer ${getToken()}` };
 }

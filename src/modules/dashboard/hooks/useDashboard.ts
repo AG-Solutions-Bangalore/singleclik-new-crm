@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { getToken } from "@/lib/auth-storage";
 import { DASHBOARD_URL } from "@/modules/dashboard/api/dashboard.api";
 import type { CategoryStat } from "@/modules/dashboard/types/dashboard.types";
 
 async function fetchDashboardStats(): Promise<CategoryStat[]> {
-  const token = localStorage.getItem("token");
+  const token = getToken();
   const response = await axios.get(DASHBOARD_URL, {
     headers: {
       Authorization: `Bearer ${token}`,
