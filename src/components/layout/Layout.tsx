@@ -16,7 +16,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         setOpenSideNav={setOpenSideNav}
         onLogoutRequest={() => setLogoutOpen(true)}
       />
-      <div className="flex min-h-screen flex-col p-4 transition-[margin] duration-300 md:p-6 xl:ml-72">
+      <div className="flex min-h-screen flex-col p-3 transition-[margin] duration-300 md:p-4 xl:ml-72">
         <main className="flex-1">{children}</main>
         <Footer />
       </div>

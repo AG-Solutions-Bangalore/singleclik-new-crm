@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Switch } from "@/components/ui/switch";
 import { TableSkeleton } from "@/components/ui/table-skeleton";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -21,6 +22,8 @@ const UserList = () => {
   const updateMutation = useUpdateUserStatus();
   const deleteMutation = useDeleteUser();
   const loading = isLoading || updateMutation.isPending || deleteMutation.isPending;
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+  const [pendingDeactivateId, setPendingDeactivateId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isPanelUp) {
@@ -34,12 +37,28 @@ const UserList = () => {
     }
   }, [error]);
 
-  const handleUpdate = (id: number) => {
+  const handleStatusToggle = (row: ConsumerRow, nextChecked: boolean) => {
     if (!isPanelUp) {
       navigate("/maintenance");
       return;
     }
-    updateMutation.mutate(id);
+    // Activating is immediate; deactivating needs confirmation.
+    if (!nextChecked && row.status === "Active") {
+      setPendingDeactivateId(row.id);
+      return;
+    }
+    updateMutation.mutate(row.id);
+  };
+
+  const confirmDeactivate = () => {
+    if (!isPanelUp) {
+      navigate("/maintenance");
+      return;
+    }
+    if (pendingDeactivateId !== null) {
+      updateMutation.mutate(pendingDeactivateId);
+    }
+    setPendingDeactivateId(null);
   };
 
   const handleDelete = (e: React.SyntheticEvent, id: number) => {
@@ -48,7 +67,18 @@ const UserList = () => {
       navigate("/maintenance");
       return;
     }
-    deleteMutation.mutate(id);
+    setPendingDeleteId(id);
+  };
+
+  const confirmDelete = () => {
+    if (!isPanelUp) {
+      navigate("/maintenance");
+      return;
+    }
+    if (pendingDeleteId !== null) {
+      deleteMutation.mutate(pendingDeleteId);
+    }
+    setPendingDeleteId(null);
   };
 
   const columns: DataTableColumn<ConsumerRow>[] = [
@@ -103,7 +133,7 @@ const UserList = () => {
         <div className="flex items-center gap-2">
           <Switch
             checked={row.status === "Active"}
-            onCheckedChange={() => handleUpdate(row.id)}
+            onCheckedChange={(next) => handleStatusToggle(row, next)}
             aria-label={row.status === "Active" ? "Deactivate user" : "Activate user"}
           />
           <Button
@@ -141,6 +171,24 @@ const UserList = () => {
             emptyMessage="No users found."
           />
         )}
+        <ConfirmDialog
+          open={pendingDeleteId !== null}
+          onOpenChange={(v) => !v && setPendingDeleteId(null)}
+          title="Delete user?"
+          description="This user will be moved to the deleted list. This action cannot be undone from here."
+          confirmLabel="Delete"
+          loading={deleteMutation.isPending}
+          onConfirm={confirmDelete}
+        />
+        <ConfirmDialog
+          open={pendingDeactivateId !== null}
+          onOpenChange={(v) => !v && setPendingDeactivateId(null)}
+          title="Deactivate user?"
+          description="This user will become inactive and lose access until reactivated."
+          confirmLabel="Deactivate"
+          loading={updateMutation.isPending}
+          onConfirm={confirmDeactivate}
+        />
       </div>
     </Layout>
   );

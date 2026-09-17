@@ -1,5 +1,14 @@
 import * as React from "react";
 import {
+  useTable,
+  type ColumnDef,
+  type ColumnVisibilityState,
+  type PaginationState,
+  type Row,
+  type RowData,
+  type SortingState,
+} from "@tanstack/react-table";
+import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
@@ -13,8 +22,8 @@ import {
   Printer,
   Search,
 } from "lucide-react";
+import { features, type DataTableFeatures } from "@/components/ui/data-table-features";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -80,7 +89,18 @@ function cellText<T>(row: T, col: DataTableColumn<T>): string {
   return String(v);
 }
 
-function DataTable<T>({
+function alignClass<T>(col: DataTableColumn<T> | undefined): string | undefined {
+  return cn(col?.align === "center" && "text-center", col?.align === "right" && "text-right") || undefined;
+}
+
+/**
+ * Reusable data table for every list in the app, powered by
+ * TanStack Table (https://ui.shadcn.com/docs/components/base/data-table).
+ * Data fetching stays in each page via React Query (`useQuery`);
+ * this component only handles client-side search, sorting,
+ * column visibility and pagination.
+ */
+function DataTable<TData extends RowData>({
   title,
   description,
   data,
@@ -96,71 +116,82 @@ function DataTable<T>({
   disableDownload = false,
   disablePrint = false,
   emptyMessage = "No records found.",
-}: DataTableProps<T>) {
+}: DataTableProps<TData>) {
   const [query, setQuery] = React.useState("");
-  const [sortKey, setSortKey] = React.useState<string | null>(null);
-  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("asc");
-  const [page, setPage] = React.useState(0);
-  const [pageSize, setPageSize] = React.useState(initialPageSize);
-  const [hidden, setHidden] = React.useState<Set<string>>(
-    () => new Set(columns.filter((c) => c.defaultVisible === false).map((c) => c.key))
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<ColumnVisibilityState>(() =>
+    Object.fromEntries(columns.filter((c) => c.defaultVisible === false).map((c) => [c.key, false]))
   );
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: initialPageSize,
+  });
 
-  const visibleColumns = React.useMemo(() => columns.filter((c) => !hidden.has(c.key)), [columns, hidden]);
-  const toggleableColumns = React.useMemo(() => columns.filter((c) => c.hideable !== false), [columns]);
+  const columnById = React.useMemo(() => new Map(columns.map((c) => [c.key, c])), [columns]);
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
-    let rows = data;
-    if (q) {
-      const searchable = columns.filter((c) => c.searchable !== false);
-      rows = data.filter((row) => searchable.some((c) => cellText(row, c).toLowerCase().includes(q)));
-    }
-    if (sortKey) {
-      const col = columns.find((c) => c.key === sortKey);
-      if (col) {
-        rows = [...rows].sort((a, b) =>
-          cellText(a, col).localeCompare(cellText(b, col), undefined, { numeric: true, sensitivity: "base" }) *
-          (sortDir === "asc" ? 1 : -1)
-        );
-      }
-    }
-    return rows;
-  }, [data, query, sortKey, sortDir, columns]);
+    if (!q) return data;
+    const searchable = columns.filter((c) => c.searchable !== false);
+    return data.filter((row) => searchable.some((c) => cellText(row, c).toLowerCase().includes(q)));
+  }, [data, query, columns]);
 
-  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const safePage = Math.min(page, pageCount - 1);
-  const pageRows = filtered.slice(safePage * pageSize, safePage * pageSize + pageSize);
+  const tanstackColumns = React.useMemo<ColumnDef<DataTableFeatures, TData>[]>(() => {
+    return columns.map((col) => ({
+      id: col.key,
+      header:
+        col.sortable === false
+          ? col.header
+          : ({ column }) => (
+              <button
+                type="button"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                className="inline-flex cursor-pointer items-center gap-1 font-medium text-on-surface-variant transition-colors outline-none hover:text-on-surface focus-visible:rounded-sm focus-visible:outline-[2px] focus-visible:outline-primary"
+              >
+                {col.header}
+                {column.getIsSorted() === "asc" ? (
+                  <ArrowUp className="size-3.5" />
+                ) : column.getIsSorted() === "desc" ? (
+                  <ArrowDown className="size-3.5" />
+                ) : (
+                  <ArrowUpDown className="size-3.5 opacity-50" />
+                )}
+              </button>
+            ),
+      enableSorting: col.sortable !== false,
+      enableHiding: col.hideable !== false,
+      sortFn: (rowA: Row<DataTableFeatures, TData>, rowB: Row<DataTableFeatures, TData>) =>
+        cellText(rowA.original, col).localeCompare(cellText(rowB.original, col), undefined, {
+          numeric: true,
+          sensitivity: "base",
+        }),
+    }));
+  }, [columns]);
+
+  const table = useTable({
+    features,
+    data: filtered,
+    columns: tanstackColumns,
+    state: { sorting, columnVisibility, pagination },
+    onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
+  });
 
   React.useEffect(() => {
-    setPage(0);
-  }, [query, pageSize, data.length]);
+    setPagination((prev) => (prev.pageIndex === 0 ? prev : { ...prev, pageIndex: 0 }));
+  }, [query, pagination.pageSize, filtered.length]);
 
-  const toggleSort = (key: string) => {
-    if (sortKey !== key) {
-      setSortKey(key);
-      setSortDir("asc");
-    } else if (sortDir === "asc") {
-      setSortDir("desc");
-    } else {
-      setSortKey(null);
-      setSortDir("asc");
-    }
-  };
-
-  const toggleColumn = (key: string, visible: boolean) => {
-    setHidden((prev) => {
-      const next = new Set(prev);
-      if (visible) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  };
+  const toggleableColumns = table.getAllColumns().filter((c) => c.getCanHide());
+  const visibleSourceColumns = table
+    .getVisibleLeafColumns()
+    .map((c) => columnById.get(c.id))
+    .filter((c): c is DataTableColumn<TData> => c !== undefined);
 
   const downloadCsv = () => {
-    const header = visibleColumns.map((c) => `"${c.header.replace(/"/g, '""')}"`).join(",");
+    const header = visibleSourceColumns.map((c) => `"${c.header.replace(/"/g, '""')}"`).join(",");
     const lines = filtered.map((row) =>
-      visibleColumns.map((c) => `"${cellText(row, c).replace(/"/g, '""')}"`).join(",")
+      visibleSourceColumns.map((c) => `"${cellText(row, c).replace(/"/g, '""')}"`).join(",")
     );
     const blob = new Blob([[header, ...lines].join("\n")], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -174,11 +205,11 @@ function DataTable<T>({
   const printTable = () => {
     const win = window.open("", "_blank", "width=900,height=700");
     if (!win) return;
-    const head = visibleColumns.map((c) => `<th>${c.header}</th>`).join("");
+    const head = visibleSourceColumns.map((c) => `<th>${c.header}</th>`).join("");
     const body = filtered
       .map(
         (row) =>
-          `<tr>${visibleColumns.map((c) => `<td>${cellText(row, c)}</td>`).join("")}</tr>`
+          `<tr>${visibleSourceColumns.map((c) => `<td>${cellText(row, c)}</td>`).join("")}</tr>`
       )
       .join("");
     win.document.write(
@@ -189,9 +220,14 @@ function DataTable<T>({
     win.print();
   };
 
+  const pageIndex = table.state.pagination.pageIndex;
+  const pageSize = table.state.pagination.pageSize;
+  const pageCount = Math.max(1, table.getPageCount());
+  const pageRows = table.getRowModel().rows;
+
   return (
     <div data-slot="data-table" className="overflow-hidden rounded-lg border border-outline bg-surface-container-lowest shadow-md">
-      <div className="flex flex-col gap-3 border-b border-outline p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-outline p-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-title-lg font-semibold leading-8">{title}</h2>
           {description ? <p className="mt-0.5 text-body-md text-on-surface-variant">{description}</p> : null}
@@ -218,14 +254,14 @@ function DataTable<T>({
               <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
                 <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {toggleableColumns.map((c) => (
+                {toggleableColumns.map((column) => (
                   <DropdownMenuCheckboxItem
-                    key={c.key}
-                    checked={!hidden.has(c.key)}
-                    onCheckedChange={(v) => toggleColumn(c.key, v === true)}
+                    key={column.id}
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(v) => column.toggleVisibility(v === true)}
                     onSelect={(e) => e.preventDefault()}
                   >
-                    {c.header}
+                    {columnById.get(column.id)?.header ?? column.id}
                   </DropdownMenuCheckboxItem>
                 ))}
               </DropdownMenuContent>
@@ -235,7 +271,7 @@ function DataTable<T>({
       </div>
 
       {!disableSearch ? (
-        <div className="border-b border-outline p-4">
+        <div className="border-b border-outline p-3">
           <div className="relative max-w-sm">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-on-surface-variant" />
             <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={searchPlaceholder} className="pl-9" aria-label="Search table" />
@@ -245,59 +281,47 @@ function DataTable<T>({
 
       <Table>
         <TableHeader>
-          <TableRow className="bg-surface-container-low hover:bg-surface-container-low">
-            {visibleColumns.map((col) => {
-              const sortable = col.sortable !== false;
-              const active = sortKey === col.key;
-              return (
-                <TableHead key={col.key} className={cn(col.align === "center" && "text-center", col.align === "right" && "text-right")}>
-                  {sortable ? (
-                    <button
-                      type="button"
-                      onClick={() => toggleSort(col.key)}
-                      className="inline-flex cursor-pointer items-center gap-1 font-medium text-on-surface-variant transition-colors outline-none hover:text-on-surface focus-visible:rounded-sm focus-visible:outline-[2px] focus-visible:outline-primary"
-                    >
-                      {col.header}
-                      {active ? (
-                        sortDir === "asc" ? <ArrowUp className="size-3.5" /> : <ArrowDown className="size-3.5" />
-                      ) : (
-                        <ArrowUpDown className="size-3.5 opacity-50" />
-                      )}
-                    </button>
-                  ) : (
-                    col.header
-                  )}
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id} className="bg-surface-container-low hover:bg-surface-container-low">
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id} className={alignClass(columnById.get(header.column.id))}>
+                  {header.isPlaceholder ? null : <table.FlexRender header={header} />}
                 </TableHead>
-              );
-            })}
-          </TableRow>
+              ))}
+            </TableRow>
+          ))}
         </TableHeader>
         <TableBody>
           {loading ? (
             <TableRow>
-              <TableCell colSpan={visibleColumns.length}>
+              <TableCell colSpan={visibleSourceColumns.length}>
                 <Spinner className="py-8" />
               </TableCell>
             </TableRow>
           ) : pageRows.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={visibleColumns.length} className="py-10 text-center text-on-surface-variant">
+              <TableCell colSpan={visibleSourceColumns.length} className="py-10 text-center text-on-surface-variant">
                 {emptyMessage}
               </TableCell>
             </TableRow>
           ) : (
-            pageRows.map((row, i) => {
-              const globalIndex = safePage * pageSize + i;
+            pageRows.map((row, posInPage) => {
+              const original = row.original;
+              const globalIndex = pageIndex * pageSize + posInPage;
               return (
-                <TableRow key={rowKey(row, globalIndex)}>
-                  {visibleColumns.map((col) => (
-                    <TableCell
-                      key={col.key}
-                      className={cn(col.align === "center" && "text-center", col.align === "right" && "text-right", col.className)}
-                    >
-                      {col.render ? col.render(row, globalIndex) : String(rawValue(row, col.key) ?? "")}
-                    </TableCell>
-                  ))}
+                <TableRow key={rowKey(original, globalIndex)}>
+                  {row.getVisibleCells().map((cell) => {
+                    const src = columnById.get(cell.column.id);
+                    if (!src) return null;
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={cn(alignClass(src), src.className)}
+                      >
+                        {src.render ? src.render(original, globalIndex) : String(rawValue(original, src.key) ?? "")}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               );
             })
@@ -305,9 +329,9 @@ function DataTable<T>({
         </TableBody>
       </Table>
 
-      <div className="flex flex-col gap-3 border-t border-outline p-4 text-body-md text-on-surface-variant sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-t border-outline p-3 text-body-md text-on-surface-variant sm:flex-row sm:items-center sm:justify-between">
         <p>
-          Showing {filtered.length === 0 ? 0 : safePage * pageSize + 1}–{Math.min(filtered.length, safePage * pageSize + pageSize)} of{" "}
+          Showing {filtered.length === 0 ? 0 : pageIndex * pageSize + 1}–{Math.min(filtered.length, pageIndex * pageSize + pageSize)} of{" "}
           {filtered.length} record{filtered.length === 1 ? "" : "s"}
         </p>
         <div className="flex flex-wrap items-center gap-2">
@@ -315,7 +339,7 @@ function DataTable<T>({
             Rows
             <select
               value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
+              onChange={(e) => table.setPageSize(Number(e.target.value))}
               className="h-8 cursor-pointer rounded-default border border-outline bg-surface-container-low px-2 text-[14px] text-on-surface outline-none focus:border-primary"
               aria-label="Rows per page"
             >
@@ -327,38 +351,28 @@ function DataTable<T>({
             </select>
           </label>
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon-sm" onClick={() => setPage(0)} disabled={safePage === 0} aria-label="First page">
+            <Button variant="ghost" size="icon-sm" onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()} aria-label="First page">
               <ChevronsLeft />
             </Button>
-            <Button variant="ghost" size="icon-sm" onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={safePage === 0} aria-label="Previous page">
+            <Button variant="ghost" size="icon-sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} aria-label="Previous page">
               <ChevronLeft />
             </Button>
             <span className="px-2 text-[14px]">
-              {safePage + 1} / {pageCount}
+              {pageIndex + 1} / {pageCount}
             </span>
             <Button
               variant="ghost"
               size="icon-sm"
-              onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
-              disabled={safePage >= pageCount - 1}
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
               aria-label="Next page"
             >
               <ChevronRight />
             </Button>
-            <Button variant="ghost" size="icon-sm" onClick={() => setPage(pageCount - 1)} disabled={safePage >= pageCount - 1} aria-label="Last page">
+            <Button variant="ghost" size="icon-sm" onClick={() => table.setPageIndex(pageCount - 1)} disabled={!table.getCanNextPage()} aria-label="Last page">
               <ChevronsRight />
             </Button>
           </div>
-          <label className="flex items-center gap-2">
-            <Checkbox
-              checked={false}
-              onCheckedChange={() => undefined}
-              className="hidden"
-              aria-hidden
-              tabIndex={-1}
-            />
-            <span className="sr-only">placeholder</span>
-          </label>
         </div>
       </div>
     </div>

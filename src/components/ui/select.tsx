@@ -22,7 +22,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       className={cn(
         "flex w-full cursor-pointer items-center justify-between gap-2 rounded-default border border-outline bg-surface-container-low px-3 py-2 text-body-md text-on-surface shadow-xs transition-colors outline-none hover:border-outline-variant focus:border-primary focus:shadow-focus-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:truncate",
-        size === "default" ? "min-h-10" : "min-h-8 text-[14px]",
+        size === "default" ? "min-h-9" : "min-h-8 text-[14px]",
         className
       )}
       {...props}

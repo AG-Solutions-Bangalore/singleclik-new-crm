@@ -10,6 +10,7 @@ import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -40,6 +41,7 @@ const MemberList = () => {
   const location = useLocation();
   const [position, setPosition] = useState<PhotoFilter>("All");
   const [globalWhatsappMessage, setGlobalWhatsappMessage] = useState("");
+  const [pendingHoldId, setPendingHoldId] = useState<number | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
   const pageParam = searchParams.get("page");
@@ -114,7 +116,18 @@ const MemberList = () => {
       navigate("/maintenance");
       return;
     }
-    holdMemberMutation.mutate(id);
+    setPendingHoldId(id);
+  };
+
+  const confirmHold = () => {
+    if (!isPanelUp) {
+      navigate("/maintenance");
+      return;
+    }
+    if (pendingHoldId !== null) {
+      holdMemberMutation.mutate(pendingHoldId);
+    }
+    setPendingHoldId(null);
   };
 
   const handleEdit = (e: MouseEvent, id: number) => {
@@ -283,6 +296,15 @@ const MemberList = () => {
             disablePrint
           />
         )}
+        <ConfirmDialog
+          open={pendingHoldId !== null}
+          onOpenChange={(v) => !v && setPendingHoldId(null)}
+          title="Hold member?"
+          description="This member will be moved to the Hold list. You can activate them again from the Hold User page."
+          confirmLabel="Hold"
+          loading={holdMemberMutation.isPending}
+          onConfirm={confirmHold}
+        />
       </div>
     </Layout>
   );

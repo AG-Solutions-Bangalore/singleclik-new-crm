@@ -35,14 +35,14 @@ function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTableCell
   return (
     <th
       data-slot="table-head"
-      className={cn("h-11 px-4 text-left align-middle text-label-sm font-medium text-on-surface-variant whitespace-nowrap", className)}
+      className={cn("h-9 px-3 text-left align-middle text-label-sm font-medium text-on-surface-variant whitespace-nowrap", className)}
       {...props}
     />
   );
 }
 
 function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td data-slot="table-cell" className={cn("px-4 py-3 align-middle whitespace-nowrap", className)} {...props} />;
+  return <td data-slot="table-cell" className={cn("px-3 py-2 align-middle", className)} {...props} />;
 }
 
 function TableCaption({ className, ...props }: React.HTMLAttributes<HTMLTableCaptionElement>) {

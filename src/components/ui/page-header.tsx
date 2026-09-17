@@ -16,7 +16,7 @@ function PageHeader({ title, description, actions, backTo, backLabel = "Back", c
     <div
       data-slot="page-header"
       className={cn(
-        "flex flex-col gap-3 rounded-lg border border-outline bg-surface-container-lowest p-4 shadow-md sm:flex-row sm:items-center sm:justify-between",
+        "flex flex-col gap-2 rounded-lg border border-outline bg-surface-container-lowest p-3 shadow-md sm:flex-row sm:items-center sm:justify-between",
         className
       )}
       {...props}
@@ -26,7 +26,7 @@ function PageHeader({ title, description, actions, backTo, backLabel = "Back", c
           <Link
             to={backTo}
             aria-label={backLabel}
-            className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-outline bg-surface text-on-surface transition-colors outline-none hover:bg-surface-container-low focus-visible:outline-[3px] focus-visible:outline-primary-container"
+            className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-outline bg-surface text-on-surface transition-colors outline-none hover:bg-surface-container-low focus-visible:outline-[3px] focus-visible:outline-primary-container"
           >
             <ArrowLeft className="size-4" />
           </Link>

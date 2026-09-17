@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { MdOutlineDelete } from "react-icons/md";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
@@ -32,6 +33,9 @@ const CategoryView = () => {
   //
   const [openModal, setOpenModal] = useState(false);
   const [openSubModal, setOpenSubModal] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<
+    { kind: "category" | "subcategory"; id: number } | null
+  >(null);
   const handleOpenCat = () => setOpenModal(!openModal);
   const handleOpenSubCat = () => setOpenSubModal(!openSubModal);
   //
@@ -149,7 +153,7 @@ const CategoryView = () => {
       navigate("/maintenance");
       return;
     }
-    deleteCategoryMutation.mutate(rowId);
+    setPendingDelete({ kind: "category", id: rowId });
   };
 
   // delete function for subcategory
@@ -159,7 +163,20 @@ const CategoryView = () => {
       navigate("/maintenance");
       return;
     }
-    deleteSubCategoryMutation.mutate(rowId);
+    setPendingDelete({ kind: "subcategory", id: rowId });
+  };
+
+  const confirmDelete = () => {
+    if (!isPanelUp) {
+      navigate("/maintenance");
+      return;
+    }
+    if (pendingDelete?.kind === "category") {
+      deleteCategoryMutation.mutate(pendingDelete.id);
+    } else if (pendingDelete?.kind === "subcategory") {
+      deleteSubCategoryMutation.mutate(pendingDelete.id);
+    }
+    setPendingDelete(null);
   };
 
   const columns: DataTableColumn<MemberCategory>[] = [
@@ -289,6 +306,23 @@ const CategoryView = () => {
           open={openSubModal}
           handleOpenSubCategory={handleOpenSubCat}
           id={id}
+        />
+        <ConfirmDialog
+          open={pendingDelete !== null}
+          onOpenChange={(v) => !v && setPendingDelete(null)}
+          title={pendingDelete?.kind === "subcategory" ? "Delete sub-category?" : "Delete category?"}
+          description={
+            pendingDelete?.kind === "subcategory"
+              ? "This sub-category will be permanently removed from the member. This action cannot be undone."
+              : "This category will be permanently removed from the member. This action cannot be undone."
+          }
+          confirmLabel="Delete"
+          loading={
+            pendingDelete?.kind === "subcategory"
+              ? deleteSubCategoryMutation.isPending
+              : deleteCategoryMutation.isPending
+          }
+          onConfirm={confirmDelete}
         />
       </div>
     </Layout>

@@ -85,7 +85,7 @@ const SideNav = ({ openSideNav, setOpenSideNav, onLogoutRequest }: SideNavProps)
       )}
     >
       <div className="relative border-b border-outline">
-        <div className="p-4">
+        <div className="p-3">
           <BrandLogo to="/home" onNavigate={handleItemClick} />
         </div>
         <button
@@ -106,7 +106,7 @@ const SideNav = ({ openSideNav, setOpenSideNav, onLogoutRequest }: SideNavProps)
                 {({ isActive }) => (
                   <span
                     className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2.5 text-label-md transition-colors duration-150",
+                      "flex items-center gap-3 rounded-md px-3 py-2 text-label-md transition-colors duration-150",
                       isActive
                         ? "bg-primary font-medium text-on-primary shadow-sm"
                         : "font-normal text-on-surface hover:bg-surface-container-low"
@@ -122,8 +122,8 @@ const SideNav = ({ openSideNav, setOpenSideNav, onLogoutRequest }: SideNavProps)
         </ul>
       </nav>
 
-      <div className="border-t border-outline p-3">
-        <div className="rounded-xl border border-outline bg-surface-container-low p-2.5">
+      <div className="border-t border-outline p-2.5">
+        <div className="rounded-xl border border-outline bg-surface-container-low p-2">
         <button
           type="button"
           onClick={() => setProfileOpen(true)}
@@ -147,7 +147,7 @@ const SideNav = ({ openSideNav, setOpenSideNav, onLogoutRequest }: SideNavProps)
               onClick={toggleTheme}
               aria-label="Toggle color theme"
               title="Toggle color theme"
-              className="inline-flex h-12 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg text-label-sm font-medium text-on-surface-variant transition-colors outline-none hover:bg-surface hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
+              className="inline-flex h-10 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg text-label-sm font-medium text-on-surface-variant transition-colors outline-none hover:bg-surface hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
             >
               {resolvedTheme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
               Theme
@@ -157,7 +157,7 @@ const SideNav = ({ openSideNav, setOpenSideNav, onLogoutRequest }: SideNavProps)
               onClick={() => setSecurityOpen(true)}
               aria-label="Change password"
               title="Change password"
-              className="inline-flex h-12 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg text-label-sm font-medium text-on-surface-variant transition-colors outline-none hover:bg-surface hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
+              className="inline-flex h-10 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg text-label-sm font-medium text-on-surface-variant transition-colors outline-none hover:bg-surface hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
             >
               <KeyRound className="size-[18px]" />
               Security
@@ -167,7 +167,7 @@ const SideNav = ({ openSideNav, setOpenSideNav, onLogoutRequest }: SideNavProps)
               onClick={onLogoutRequest}
               aria-label="Log out"
               title="Log out"
-              className="inline-flex h-12 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg text-label-sm font-medium text-error transition-colors outline-none hover:bg-error-container focus-visible:outline-[2px] focus-visible:outline-primary"
+              className="inline-flex h-10 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg text-label-sm font-medium text-error transition-colors outline-none hover:bg-error-container focus-visible:outline-[2px] focus-visible:outline-primary"
             >
               <LogOut className="size-[18px]" />
               Logout
