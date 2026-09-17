@@ -79,8 +79,19 @@ const Home = () => {
     <Layout>
       <div className="flex flex-col gap-6 md:gap-8">
         {/* Top Hero Greeting Banner matching Reference Image 3 */}
-        <div className="relative overflow-hidden rounded-[26px] border border-[#E8E1D5] bg-gradient-to-r from-[#FBF9F5] via-[#F6F1E8] to-[#ECE3D4] p-6 shadow-sm dark:border-[#282B34] dark:from-[#1A1B20] dark:via-[#16171B] dark:to-[#121316] md:p-8">
-          <div className="grid items-center gap-6 lg:grid-cols-12">
+        <div className="group relative overflow-hidden rounded-[26px] border border-[#E8E1D5] bg-gradient-to-r from-[#FBF9F5] via-[#F6F1E8] to-[#ECE3D4] shadow-sm dark:border-[#282B34] dark:from-[#1A1B20] dark:via-[#16171B] dark:to-[#121316]">
+          {/* Card background image — aligned to the right side */}
+          <div aria-hidden className="absolute inset-0">
+            <img
+              src="https://singleclik.com/api/public/assets/images/web_images/about.webp"
+              alt=""
+              className="absolute inset-y-0 right-0 h-full w-full object-cover opacity-15 transition-transform duration-700 group-hover:scale-[1.02] lg:left-auto lg:w-[46%] lg:opacity-100 lg:[mask-image:linear-gradient(to_right,transparent,black_28%)]"
+            />
+            {/* Readability fade so left text stays legible over the bg */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FBF9F5] via-[#F6F1E8]/80 to-transparent dark:from-[#1A1B20] dark:via-[#16171B]/80 dark:to-transparent lg:via-[#F6F1E8]/40 lg:to-transparent dark:lg:via-[#16171B]/40" />
+          </div>
+
+          <div className="relative z-10 grid items-center gap-6 p-6 md:p-8 lg:grid-cols-12">
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 rounded-full border border-[#DFD5C6] bg-white/70 px-3 py-1 text-[11px] font-semibold tracking-wider text-[#8B5E3C] uppercase shadow-2xs dark:border-[#333742] dark:bg-[#20222A] dark:text-[#D4AF37]">
                 <Sparkles className="size-3.5" />
@@ -126,24 +137,7 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Right side banner visual matching Reference 3 */}
-            <div className="relative hidden lg:col-span-5 lg:block">
-              <div className="relative overflow-hidden rounded-2xl border border-[#E0D7C9] shadow-md dark:border-[#2C2F3A]">
-                <img
-                  src="/assets/dashboard_banner_hero.jpg"
-                  alt="Showroom and business curation"
-                  className="h-44 w-full object-cover transition-transform duration-700 hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
-                  <span className="font-serif-accent italic text-lg font-normal text-[#F0E6D8]">
-                    Connect. Enquire. Grow.
-                  </span>
-                  <span className="text-[10px] font-semibold tracking-wider text-white/80 uppercase">
-                    Verified Excellence · Privacy Assured
-                  </span>
-                </div>
-              </div>
-            </div>
+          
           </div>
         </div>
 
