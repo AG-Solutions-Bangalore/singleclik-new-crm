@@ -6,19 +6,29 @@ interface StatCardProps {
   label: string;
   value: string;
   accent: string;
+  hint?: string;
 }
 
-function StatCard({ icon: Icon, label, value, accent }: StatCardProps) {
+function StatCard({ icon: Icon, label, value, accent, hint }: StatCardProps) {
   return (
-    <Card className="p-4">
-      <div className="flex items-center gap-3">
-        <span className={`flex size-11 shrink-0 items-center justify-center rounded-lg ${accent}`}>
+    <Card className="p-5 transition-shadow hover:shadow-lg">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-label-sm font-medium tracking-wide text-on-surface-variant uppercase">
+            {label}
+          </p>
+          <p className="mt-1 text-[32px] leading-9 font-semibold tracking-tight text-on-surface tabular-nums">
+            {value}
+          </p>
+          {hint ? (
+            <p className="mt-1 truncate text-body-md text-on-surface-variant">{hint}</p>
+          ) : null}
+        </div>
+        <span
+          className={`flex size-12 shrink-0 items-center justify-center rounded-xl shadow-sm ring-1 ring-inset ring-outline/40 ${accent}`}
+        >
           <Icon className="size-5" aria-hidden />
         </span>
-        <div className="min-w-0">
-          <p className="truncate text-label-sm font-medium text-on-surface-variant">{label}</p>
-          <p className="text-headline-md font-semibold tracking-tight">{value}</p>
-        </div>
       </div>
     </Card>
   );

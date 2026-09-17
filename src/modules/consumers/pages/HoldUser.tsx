@@ -4,14 +4,26 @@ import { UserCheck } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
+import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { AvatarImage } from "@/components/common/AvatarImage";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { PageHeader } from "@/components/ui/page-header";
+import { TableSkeleton } from "@/components/ui/table-skeleton";
 import { useAppContext } from "@/context/app-context";
 import type { ConsumerRow } from "../types/consumers";
 import { profileTypeLabel } from "../types/consumers";
 import { useActivateHoldUser, useHoldConsumerList } from "../hooks/useConsumers";
+
+const profileBadgeVariant = (
+  value: ConsumerRow["profile_type"]
+): "primary" | "secondary" | "accent" | "muted" => {
+  const normalized = String(value ?? "");
+  if (normalized === "0") return "primary";
+  if (normalized === "1") return "secondary";
+  if (normalized === "0,1") return "accent";
+  return "muted";
+};
 
 const HoldUser = () => {
   const { isPanelUp } = useAppContext();
@@ -47,7 +59,7 @@ const HoldUser = () => {
       header: "SL No",
       sortable: false,
       searchable: false,
-      render: (_row, i) => i + 1,
+      render: (_row, i) => <span className="text-on-surface-variant tabular-nums">{i + 1}</span>,
     },
     {
       key: "photo",
@@ -55,7 +67,13 @@ const HoldUser = () => {
       sortable: false,
       searchable: false,
       render: (row) => (
-        <AvatarImage folder="user_images" file={row.photo} alt="Member" size="sm" />
+        <AvatarImage
+          folder="user_images"
+          file={row.photo}
+          alt={row.name ?? "Member"}
+          size="sm"
+          className="ring-1 ring-outline transition-shadow hover:shadow-md"
+        />
       ),
       exportValue: (row) => row.photo ?? "",
     },
@@ -64,19 +82,31 @@ const HoldUser = () => {
       header: "Full Name",
       sortable: false,
       searchable: false,
+      render: (row) => <span className="font-medium text-on-surface">{row.name}</span>,
     },
     {
       key: "company_name",
       header: "Company",
+      render: (row) =>
+        row.company_name ? (
+          <span className="text-on-surface">{row.company_name}</span>
+        ) : (
+          <span className="text-on-surface-variant">—</span>
+        ),
     },
     {
       key: "mobile",
       header: "Mobile",
+      render: (row) => <span className="whitespace-nowrap tabular-nums">{row.mobile}</span>,
     },
     {
       key: "profile_type",
       header: "Profile",
-      render: (row) => profileTypeLabel(row.profile_type),
+      render: (row) => (
+        <Badge variant={profileBadgeVariant(row.profile_type)} className="whitespace-nowrap">
+          {profileTypeLabel(row.profile_type)}
+        </Badge>
+      ),
       exportValue: (row) => profileTypeLabel(row.profile_type),
     },
     {
@@ -92,37 +122,55 @@ const HoldUser = () => {
       sortable: false,
       searchable: false,
       render: (row) => (
-        <div className="flex items-center gap-2">
+        <div className="inline-flex items-center rounded-lg border border-outline/70 bg-surface p-0.5 shadow-sm">
           <Button
             variant="ghost"
             size="icon-sm"
             onClick={(e) => handleActivate(e, row.id)}
             title="Activate the user"
             aria-label="Activate the user"
+            className="rounded-md hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950 dark:hover:text-emerald-300"
           >
-            <UserCheck />
+            <UserCheck className="size-4" />
           </Button>
         </div>
       ),
     },
   ];
 
+  const total = holdUserData?.length ?? 0;
+
   return (
     <Layout>
-      <div className="mt-5">
+      <div className="flex flex-col gap-4 md:gap-5">
+        <PageHeader
+          title="Hold Users"
+          description={
+            holdUserData == null
+              ? "Loading users currently on hold…"
+              : `${total} ${total === 1 ? "user" : "users"} waiting to be reactivated`
+          }
+          actions={
+            total > 0 ? (
+              <Badge variant="secondary" className="tabular-nums">
+                {total} on hold
+              </Badge>
+            ) : undefined
+          }
+        />
         {loading && holdUserData == null ? (
-          <Spinner className="py-16" />
+          <TableSkeleton />
         ) : (
           <DataTable
-            title="Hold User List"
-            description="Users currently on hold"
+            title={`Hold list · ${total} total`}
+            description="Review paused accounts and reactivate them with one click."
             data={holdUserData ?? []}
             columns={columns}
             loading={loading}
             rowKey={(row) => row.id}
             disableDownload
             disablePrint
-            searchPlaceholder="Search hold users…"
+            searchPlaceholder="Search by name, company or mobile…"
             emptyMessage="No hold users found."
           />
         )}

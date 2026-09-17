@@ -11,6 +11,7 @@ import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
 import { Switch } from "@/components/ui/switch";
+import { StatusBadge } from "@/components/common/StatusBadge";
 import { useAppContext } from "@/context/app-context";
 import { useCategoryView } from "../hooks/useMemberDetail";
 import {
@@ -185,17 +186,26 @@ const CategoryView = () => {
       header: "SL No",
       sortable: false,
       searchable: false,
-      render: (_row, i) => i + 1,
+      render: (_row, i) => <span className="text-on-surface-variant tabular-nums">{i + 1}</span>,
     },
-    { key: "category", header: "Category name" },
-    { key: "u_catg_status", header: "Status", sortable: false },
+    {
+      key: "category",
+      header: "Category name",
+      render: (row) => <span className="font-medium text-on-surface">{row.category}</span>,
+    },
+    {
+      key: "u_catg_status",
+      header: "Status",
+      sortable: false,
+      render: (row) => <StatusBadge status={row.u_catg_status} inactiveVariant="destructive" />,
+    },
     {
       key: "id",
       header: "Action",
       sortable: false,
       searchable: false,
       render: (row) => (
-        <div className="flex items-center gap-1">
+        <div className="inline-flex items-center gap-1 rounded-lg border border-outline/70 bg-surface px-1.5 py-1 shadow-sm">
           <Switch
             checked={row.u_catg_status === "Active"}
             onCheckedChange={() => handleUpdate(row.id)}
@@ -207,9 +217,9 @@ const CategoryView = () => {
             onClick={(e) => handleDelete(e, row.id)}
             title="Delete Category"
             aria-label="Delete Category"
-            className="text-error hover:text-error"
+            className="rounded-md text-error hover:bg-error-container hover:text-error"
           >
-            <MdOutlineDelete className="size-5" />
+            <MdOutlineDelete className="size-4" />
           </Button>
         </div>
       ),
@@ -222,17 +232,26 @@ const CategoryView = () => {
       header: "SL No",
       sortable: false,
       searchable: false,
-      render: (_row, i) => i + 1,
+      render: (_row, i) => <span className="text-on-surface-variant tabular-nums">{i + 1}</span>,
     },
-    { key: "subcategory", header: "SubCategory name" },
-    { key: "u_subcatg_status", header: "Status", sortable: false },
+    {
+      key: "subcategory",
+      header: "SubCategory name",
+      render: (row) => <span className="font-medium text-on-surface">{row.subcategory}</span>,
+    },
+    {
+      key: "u_subcatg_status",
+      header: "Status",
+      sortable: false,
+      render: (row) => <StatusBadge status={row.u_subcatg_status} inactiveVariant="destructive" />,
+    },
     {
       key: "id",
       header: "Action",
       sortable: false,
       searchable: false,
       render: (row) => (
-        <div className="flex items-center gap-1">
+        <div className="inline-flex items-center gap-1 rounded-lg border border-outline/70 bg-surface px-1.5 py-1 shadow-sm">
           <Switch
             checked={row.u_subcatg_status === "Active"}
             onCheckedChange={() => handleSubUpdate(row.id)}
@@ -244,9 +263,9 @@ const CategoryView = () => {
             onClick={(e) => handleSubDelete(e, row.id)}
             title="Delete SubCategory"
             aria-label="Delete SubCategory"
-            className="text-error hover:text-error"
+            className="rounded-md text-error hover:bg-error-container hover:text-error"
           >
-            <MdOutlineDelete className="size-5" />
+            <MdOutlineDelete className="size-4" />
           </Button>
         </div>
       ),
@@ -255,16 +274,17 @@ const CategoryView = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 md:gap-5">
         <PageHeader
           title="Member Categories"
-          description="Manage categories and sub-categories assigned to this member."
+          description={`Manage categories and sub-categories assigned to this member · ${category.length} ${category.length === 1 ? "category" : "categories"} · ${subCategory.length} sub-${subCategory.length === 1 ? "category" : "categories"}`}
           backTo={`/member-edit/${id}`}
         />
-        <div className="flex flex-col gap-4 xl:flex-row">
+        <div className="flex flex-col gap-4 md:gap-5 xl:flex-row">
           <div className="w-full">
             <DataTable
-              title="Category List"
+              title="Categories"
+              description="Toggle status or remove a category."
               data={category ? category : []}
               columns={columns}
               loading={loading}
@@ -277,23 +297,28 @@ const CategoryView = () => {
               rowKey={(row) => row.id}
               disableDownload
               disablePrint
+              searchPlaceholder="Search categories…"
+              emptyMessage="No categories assigned."
             />
           </div>
           <div className="w-full">
             <DataTable
-              title="SubCategory List"
+              title="Sub-categories"
+              description="Toggle status or remove a sub-category."
               data={subCategory ? subCategory : []}
               columns={columnsSub}
               loading={loading}
               actions={
                 <Button size="sm" onClick={handleOpenSubCat}>
                   <Plus />
-                  SubCategory
+                  Sub-category
                 </Button>
               }
               rowKey={(row) => row.id}
               disableDownload
               disablePrint
+              searchPlaceholder="Search sub-categories…"
+              emptyMessage="No sub-categories assigned."
             />
           </div>
         </div>

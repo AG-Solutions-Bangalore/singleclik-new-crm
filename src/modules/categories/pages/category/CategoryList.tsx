@@ -6,6 +6,7 @@ import Layout from "@/components/layout/Layout";
 import { useAppContext } from "@/context/app-context";
 import { storageImage } from "@/lib/constants";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
@@ -38,7 +39,9 @@ const CategoryList = () => {
       sortable: false,
       searchable: false,
       hideable: false,
-      render: (_row, index) => index + 1,
+      render: (_row, index) => (
+        <span className="text-on-surface-variant tabular-nums">{index + 1}</span>
+      ),
     },
     {
       key: "category_image",
@@ -49,7 +52,8 @@ const CategoryList = () => {
         <img
           src={storageImage("categories_images", row.category_image)}
           alt={row.category}
-          className="h-10 w-10 rounded-md border border-outline object-cover"
+          loading="lazy"
+          className="h-10 w-10 rounded-lg border border-outline object-cover shadow-sm"
         />
       ),
       exportValue: (row) => row.category_image ?? "",
@@ -57,11 +61,27 @@ const CategoryList = () => {
     {
       key: "category",
       header: "Category",
+      render: (row) => <span className="font-medium text-on-surface">{row.category}</span>,
     },
     {
       key: "category_type",
       header: "Category Type",
-      render: (row) => categoryTypeLabel(row.category_type),
+      render: (row) => (
+        <Badge
+          variant={
+            String(row.category_type) === "0"
+              ? "primary"
+              : String(row.category_type) === "1"
+                ? "secondary"
+                : String(row.category_type) === "0,1"
+                  ? "accent"
+                  : "muted"
+          }
+          className="whitespace-nowrap"
+        >
+          {categoryTypeLabel(row.category_type)}
+        </Badge>
+      ),
       exportValue: (row) => categoryTypeLabel(row.category_type),
     },
     {
@@ -76,15 +96,18 @@ const CategoryList = () => {
       searchable: false,
       hideable: false,
       render: (row) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate(`/category-edit/${row.id}`)}
-          aria-label="Edit category"
-          title="Edit Category Info"
-        >
-          <RiEditLine />
-        </Button>
+        <div className="inline-flex items-center rounded-lg border border-outline/70 bg-surface p-0.5 shadow-sm">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => navigate(`/category-edit/${row.id}`)}
+            aria-label="Edit category"
+            title="Edit Category Info"
+            className="rounded-md hover:bg-primary-container hover:text-on-primary-container"
+          >
+            <RiEditLine className="size-4" />
+          </Button>
+        </div>
       ),
       exportValue: () => "",
     },
@@ -92,20 +115,24 @@ const CategoryList = () => {
 
   return (
     <Layout>
-      <PageHeader
-        title="Category List"
-        description="Manage business and service categories."
-        actions={
-          <Button asChild size="sm">
-            <Link to="/add-category">
-              <Plus /> Add Category
-            </Link>
-          </Button>
-        }
-      />
-      <div className="mt-4">
+      <div className="flex flex-col gap-4 md:gap-5">
+        <PageHeader
+          title="Categories"
+          description={
+            isLoading
+              ? "Loading categories…"
+              : `${categoryListData.length} ${categoryListData.length === 1 ? "category" : "categories"} · manage types and status`
+          }
+          actions={
+            <Button asChild size="sm">
+              <Link to="/add-category">
+                <Plus /> Add Category
+              </Link>
+            </Button>
+          }
+        />
         <DataTable
-          title="Category List"
+          title={`All categories · ${categoryListData.length} total`}
           description="All categories with type and status."
           data={categoryListData}
           columns={columns}

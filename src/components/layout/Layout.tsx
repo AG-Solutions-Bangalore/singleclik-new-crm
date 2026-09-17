@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
+import { MotionConfig } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import Logout from "@/components/layout/Logout";
@@ -10,6 +11,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const [logoutOpen, setLogoutOpen] = useState(false);
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen bg-surface-dim text-on-background">
       <SideNav
         openSideNav={openSideNav}
@@ -30,6 +32,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       </button>
       <Logout open={logoutOpen} handleOpen={() => setLogoutOpen(false)} />
     </div>
+    </MotionConfig>
   );
 };
 

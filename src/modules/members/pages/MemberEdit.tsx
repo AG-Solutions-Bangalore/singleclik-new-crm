@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent, MouseEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Tag } from "lucide-react";
+import { ImagePlus, Tag } from "lucide-react";
 import { MdArrowBack, MdSend } from "react-icons/md";
 import { toast } from "react-toastify";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
@@ -35,6 +35,10 @@ const profileOptions = [
   { value: "1", label: "Service" },
   { value: "0,1", label: "Business/Service" },
 ];
+
+function Field({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-col gap-2">{children}</div>;
+}
 
 const MemberEdit = () => {
   const navigate = useNavigate();
@@ -176,29 +180,30 @@ const MemberEdit = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 md:gap-5">
         <PageHeader
-          title="Edit Member"
-          description="Update member personal details, profile and photo."
+          title="Edit Business"
+          description="Update personal details, contact info, profile and photo."
           backTo={`/member-list?page=${pageNo}`}
           actions={
             <Link to={`/category-view/${id}`}>
-              <Button variant="secondary">
+              <Button variant="secondary" size="sm">
                 <Tag />
-                Category
+                Categories
               </Button>
             </Link>
           }
         />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Personal Details</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form id="memberId" autoComplete="off" onSubmit={onSubmit}>
-              <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-                <div className="flex flex-col gap-2">
+        <form id="memberId" autoComplete="off" onSubmit={onSubmit} className="flex flex-col gap-4 md:gap-5">
+          <Card>
+            <CardHeader>
+              <CardTitle>Personal Details</CardTitle>
+              <CardDescription>Name, company and email address.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+                <Field>
                   <Label htmlFor="member-name">
                     Full Name <span className="text-error">*</span>
                   </Label>
@@ -211,9 +216,8 @@ const MemberEdit = () => {
                     onChange={onInputChange}
                     placeholder="Full Name"
                   />
-                </div>
-
-                <div className="flex flex-col gap-2">
+                </Field>
+                <Field>
                   <Label htmlFor="member-company">
                     Company <span className="text-error">*</span>
                   </Label>
@@ -226,9 +230,8 @@ const MemberEdit = () => {
                     placeholder="Company"
                     required
                   />
-                </div>
-
-                <div className="flex flex-col gap-2">
+                </Field>
+                <Field>
                   <Label htmlFor="member-email">
                     Email <span className="text-error">*</span>
                   </Label>
@@ -241,11 +244,19 @@ const MemberEdit = () => {
                     placeholder="Email"
                     required
                   />
-                </div>
+                </Field>
               </div>
+            </CardContent>
+          </Card>
 
-              <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-                <div className="flex flex-col gap-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Contact Information</CardTitle>
+              <CardDescription>Phone numbers and website.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+                <Field>
                   <Label htmlFor="member-mobile">
                     Mobile No <span className="text-error">*</span>
                   </Label>
@@ -260,11 +271,10 @@ const MemberEdit = () => {
                     placeholder="Mobile No"
                     required
                   />
-                </div>
-
-                <div className="flex flex-col gap-2">
+                </Field>
+                <Field>
                   <Label htmlFor="member-whatsapp">
-                    Whats App <span className="text-error">*</span>
+                    WhatsApp <span className="text-error">*</span>
                   </Label>
                   <Input
                     id="member-whatsapp"
@@ -274,12 +284,11 @@ const MemberEdit = () => {
                     name="whatsapp"
                     value={member.whatsapp}
                     onChange={(e) => onInputChange(e)}
-                    placeholder="Whats App"
+                    placeholder="WhatsApp"
                     required
                   />
-                </div>
-
-                <div className="flex flex-col gap-2">
+                </Field>
+                <Field>
                   <Label htmlFor="member-website">Website</Label>
                   <Input
                     id="member-website"
@@ -287,13 +296,21 @@ const MemberEdit = () => {
                     name="website"
                     value={member.website}
                     onChange={(e) => onInputChange(e)}
-                    placeholder="Website"
+                    placeholder="https://example.com"
                   />
-                </div>
+                </Field>
               </div>
+            </CardContent>
+          </Card>
 
-              <div className="mb-6 grid grid-cols-1 gap-6">
-                <div className="flex flex-col gap-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Profile & Photo</CardTitle>
+              <CardDescription>Business profile, area, photo and account status.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+                <Field>
                   <Label htmlFor="member-profile">
                     Business Profile <span className="text-error">*</span>
                   </Label>
@@ -315,11 +332,8 @@ const MemberEdit = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-              </div>
-
-              <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-                <div className="flex flex-col gap-2">
+                </Field>
+                <Field>
                   <Label htmlFor="member-area">Area</Label>
                   <Input
                     id="member-area"
@@ -329,43 +343,8 @@ const MemberEdit = () => {
                     onChange={(e) => onInputChange(e)}
                     placeholder="Area"
                   />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label>Photo</Label>
-                  <div className="flex min-h-10 items-center justify-between gap-3 rounded-default border border-outline bg-surface-container-low px-3 py-2">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={avatarUrl.current}
-                        alt="Avatar"
-                        className="h-10 w-10 rounded-lg border-2 border-outline"
-                      />
-                      <button
-                        type="button"
-                        className="cursor-pointer rounded-default border border-outline bg-surface px-3 py-1.5 text-label-sm text-on-surface transition-colors hover:bg-surface-container-low"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setModalOpen(true);
-                        }}
-                      >
-                        Choose Image
-                      </button>
-                      <small className="text-[10px] text-on-surface-variant">
-                        {member.photo}
-                      </small>
-                    </div>
-
-                    {modalOpen && (
-                      <Modal
-                        onFileChange={(file) => setSelectedFile1(file)}
-                        updateAvatar={updateAvatar}
-                        closeModal={() => setModalOpen(false)}
-                      />
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2">
+                </Field>
+                <Field>
                   <Label htmlFor="member-status">
                     Status <span className="text-error">*</span>
                   </Label>
@@ -387,47 +366,82 @@ const MemberEdit = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </Field>
               </div>
 
-              <div className="mb-6 grid grid-cols-1 gap-6">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="member-about">
-                    About Your Buisness <span className="text-error">*</span>
-                  </Label>
-                  <Textarea
-                    id="member-about"
-                    name="about_us"
-                    value={member.about_us}
-                    onChange={(e) => onInputChange(e)}
-                    placeholder="About Your Buisness"
-                    required
-                  />
+              <div className="mt-5 flex flex-col gap-3 rounded-xl border border-outline bg-surface-container-low p-4 sm:flex-row sm:items-center">
+                <img
+                  src={avatarUrl.current}
+                  alt="Member photo preview"
+                  className="size-16 shrink-0 rounded-xl border border-outline object-cover shadow-sm"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-label-md font-medium text-on-surface">Profile photo</p>
+                  <p className="truncate text-body-md text-on-surface-variant">
+                    {selectedFile1 ? selectedFile1.name : (member.photo || "No new photo chosen yet")}
+                  </p>
                 </div>
-              </div>
-
-              <div className="mt-4 flex justify-center gap-2">
-                <Button
-                  type="submit"
-                  onClick={onSubmit}
-                  disabled={updateMemberMutation.isPending}
-                >
-                  <MdSend className="size-4" />
-                  <span>{updateMemberMutation.isPending ? "Updating..." : "Update"}</span>
-                </Button>
-
                 <Button
                   type="button"
-                  variant="secondary"
-                  onClick={handleBack}
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setModalOpen(true);
+                  }}
                 >
-                  <MdArrowBack className="size-4" />
-                  <span>Back</span>
+                  <ImagePlus />
+                  Choose Image
                 </Button>
+                {modalOpen && (
+                  <Modal
+                    onFileChange={(file) => setSelectedFile1(file)}
+                    updateAvatar={updateAvatar}
+                    closeModal={() => setModalOpen(false)}
+                  />
+                )}
               </div>
-            </form>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>About the Business</CardTitle>
+              <CardDescription>A short description shown on the profile.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Field>
+                <Label htmlFor="member-about">
+                  About Your Business <span className="text-error">*</span>
+                </Label>
+                <Textarea
+                  id="member-about"
+                  name="about_us"
+                  value={member.about_us}
+                  onChange={(e) => onInputChange(e)}
+                  placeholder="About Your Business"
+                  required
+                  rows={4}
+                />
+              </Field>
+            </CardContent>
+          </Card>
+
+          <div className="flex flex-col-reverse justify-end gap-2 sm:flex-row">
+            <Button type="button" variant="outline" onClick={handleBack}>
+              <MdArrowBack className="size-4" />
+              <span>Back</span>
+            </Button>
+            <Button
+              type="submit"
+              onClick={onSubmit}
+              disabled={updateMemberMutation.isPending}
+            >
+              <MdSend className="size-4" />
+              <span>{updateMemberMutation.isPending ? "Updating..." : "Update"}</span>
+            </Button>
+          </div>
+        </form>
       </div>
     </Layout>
   );

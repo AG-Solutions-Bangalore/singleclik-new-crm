@@ -77,19 +77,20 @@ const SubCategoryAdd = () => {
 
   return (
     <Layout>
-      <PageHeader
-        title="Create Sub Category"
-        description="Add a new sub category under a category."
-        backTo="/sub-category"
-      />
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle>Sub Category Details</CardTitle>
-          <CardDescription>Choose the parent category and enter the sub category name.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form id="addIndiv" autoComplete="off" onSubmit={onSubmit}>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="flex flex-col gap-4 md:gap-5">
+        <PageHeader
+          title="Create Sub Category"
+          description="Add a new sub category under a category."
+          backTo="/sub-category"
+        />
+        <Card>
+          <CardHeader>
+            <CardTitle>Sub Category Details</CardTitle>
+            <CardDescription>Choose the parent category and enter the sub category name.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form id="addIndiv" autoComplete="off" onSubmit={onSubmit}>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="category">
                   Category Name <span className="text-error">*</span>
@@ -135,9 +136,10 @@ const SubCategoryAdd = () => {
               pendingLabel="Submiting...."
               submitLabel="Submit"
             />
-          </form>
-        </CardContent>
-      </Card>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </Layout>
   );
 };

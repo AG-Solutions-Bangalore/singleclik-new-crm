@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Pencil, Send } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Pencil, Send } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { AvatarImage } from "@/components/common/AvatarImage";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import type { NotificationForm } from "../types/notifications";
 import { useNotificationDetail, useUpdateNotification } from "../hooks/useNotifications";
 
@@ -38,7 +39,7 @@ const EditNotification = () => {
   const updateMutation = useUpdateNotification();
   const isPending = updateMutation.isPending;
 
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNotify({
       ...notify,
       [e.target.name]: e.target.value,
@@ -79,34 +80,40 @@ const EditNotification = () => {
 
   return (
     <Layout>
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4 md:gap-5">
         <PageHeader
           title="Edit Notification"
-          description="Update notification details"
+          description="Update the broadcast content and status."
           backTo="/notification"
         />
         <Card>
+          <CardHeader>
+            <CardTitle>Notification Content</CardTitle>
+            <CardDescription>Preview the artwork, then update the fields below.</CardDescription>
+          </CardHeader>
           <CardContent>
-            <div className="relative mx-auto mb-6 flex w-44 flex-col items-center">
-              <AvatarImage
-                folder="notification_images"
-                file={notify.notification_images}
-                alt="Notification"
-                size="xl"
-              />
-              <div className="absolute right-4 bottom-0">
+            <div className="mb-6 flex flex-col items-center gap-2">
+              <div className="relative">
+                <AvatarImage
+                  folder="notification_images"
+                  file={notify.notification_images}
+                  alt={notify.notification_heading || "Notification"}
+                  size="xl"
+                  className="rounded-2xl border"
+                />
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   aria-label="Change notification image"
-                  className="cursor-pointer rounded-full border border-outline bg-surface-container-low p-1.5 text-on-surface transition-colors hover:bg-surface-container"
+                  className="absolute -right-2 -bottom-2 cursor-pointer rounded-full border border-outline bg-surface p-1.5 shadow-md transition-colors hover:bg-surface-container-low"
                 >
-                  <Pencil className="h-5 w-5" />
+                  <Pencil className="size-4 text-on-surface" />
                 </button>
                 <input
                   type="file"
                   ref={fileInputRef}
                   name="notification_images"
+                  accept="image/*"
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setSelectedFile(e.target.files?.[0] ?? null)
                   }
@@ -114,14 +121,18 @@ const EditNotification = () => {
                 />
               </div>
               {selectedFile && (
-                <p className="mt-2 text-sm text-on-surface-variant">{selectedFile.name}</p>
+                <p className="max-w-56 truncate text-body-md text-on-surface-variant">
+                  {selectedFile.name}
+                </p>
               )}
             </div>
 
             <form id="categoryForm" autoComplete="off" onSubmit={handleSubmit}>
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="notification_heading">Heading</Label>
+                  <Label htmlFor="notification_heading">
+                    Heading <span className="text-error">*</span>
+                  </Label>
                   <Input
                     id="notification_heading"
                     type="text"
@@ -133,20 +144,8 @@ const EditNotification = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="notification_des">Description</Label>
-                  <Input
-                    id="notification_des"
-                    type="text"
-                    name="notification_des"
-                    onChange={onInputChange}
-                    value={notify.notification_des}
-                    placeholder="Enter description"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
                   <Label htmlFor="notification_status">
-                    Notification Status <span className="text-error">*</span>
+                    Status <span className="text-error">*</span>
                   </Label>
                   <Select
                     name="notification_status"
@@ -168,18 +167,29 @@ const EditNotification = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="notification_des">
+                    Description <span className="text-error">*</span>
+                  </Label>
+                  <Textarea
+                    id="notification_des"
+                    name="notification_des"
+                    onChange={onInputChange}
+                    value={notify.notification_des}
+                    placeholder="Enter description"
+                    required
+                    rows={4}
+                  />
+                </div>
               </div>
 
-              <div className="mt-6 flex items-center justify-between">
-                <Button type="submit" variant="primary" disabled={isPending}>
+              <div className="mt-6 flex flex-col-reverse justify-end gap-2 sm:flex-row">
+                <Button type="button" variant="outline" onClick={() => navigate("/notification")}>
+                  Back
+                </Button>
+                <Button type="submit" disabled={isPending}>
                   <Send />
                   <span>{isPending ? "Updating..." : "Update"}</span>
-                </Button>
-                <Button variant="ghost" asChild>
-                  <Link to="/notification">
-                    <ArrowLeft />
-                    <span>Back</span>
-                  </Link>
                 </Button>
               </div>
             </form>

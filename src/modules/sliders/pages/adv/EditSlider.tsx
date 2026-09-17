@@ -6,7 +6,7 @@ import { Pencil, Send } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { AvatarImage } from "@/components/common/AvatarImage";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
@@ -100,77 +100,93 @@ const EditSlider = () => {
 
   return (
     <Layout>
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4 md:gap-5">
         <PageHeader
-          title="Adv Slider Edit"
-          description="Update advertisement slider details"
+          title="Edit Ad Slider"
+          description="Update the banner image, link and status."
           backTo={`/adv-slider?page=${pageNo}`}
         />
         <Card>
+          <CardHeader>
+            <CardTitle>Banner Details</CardTitle>
+            <CardDescription>Preview the artwork, then update the fields below.</CardDescription>
+          </CardHeader>
           <CardContent>
-            <div className="relative m-auto mb-6 flex w-44 flex-col items-center">
-              <AvatarImage
-                folder="slider_images"
-                file={advSlider.slider_images}
-                alt="Slider"
-                size="xl"
-                className="mb-2 border-2"
-              />
-              <div className="absolute right-0 bottom-0 -translate-x-6 -translate-y-1/4 transform">
-                <div
-                  className="cursor-pointer rounded-full border border-outline bg-surface-container-low p-[3px] hover:bg-surface-container"
+            <div className="mb-6 flex flex-col items-center gap-2">
+              <div className="relative">
+                <AvatarImage
+                  folder="slider_images"
+                  file={advSlider.slider_images}
+                  alt="Slider"
+                  size="xl"
+                  className="rounded-2xl border"
+                />
+                <button
+                  type="button"
                   onClick={() => fileInputRef.current?.click()}
+                  aria-label="Change slider image"
+                  className="absolute -right-2 -bottom-2 cursor-pointer rounded-full border border-outline bg-surface p-1.5 shadow-md transition-colors hover:bg-surface-container-low"
                 >
-                  <Pencil className="h-6 w-6 text-on-surface" />
-                </div>
+                  <Pencil className="size-4 text-on-surface" />
+                </button>
                 <input
                   type="file"
                   ref={fileInputRef}
                   name="slider_images"
+                  accept="image/*"
                   onChange={onFileChange}
                   className="hidden"
                 />
               </div>
-              {selectedFile && <p className="text-sm text-on-surface-variant">{selectedFile.name}</p>}
+              {selectedFile && (
+                <p className="max-w-56 truncate text-body-md text-on-surface-variant">
+                  {selectedFile.name}
+                </p>
+              )}
             </div>
 
-            <form id="categoryForm" autoComplete="off" onSubmit={handleSubmit} className="mt-2">
-              <div className="mb-4 space-y-1.5">
-                <Label htmlFor="slider_url">Slider Url</Label>
-                <Input
-                  id="slider_url"
-                  type="text"
-                  name="slider_url"
-                  onChange={onInputChange}
-                  value={advSlider.slider_url}
-                  required
-                />
-              </div>
-              <div className="mb-4 space-y-1.5">
-                <Label htmlFor="slider_status">
-                  Adv Slider Status <span className="text-red-700">*</span>
-                </Label>
-                <Select value={advSlider.slider_status} onValueChange={onStatusChange} required>
-                  <SelectTrigger id="slider_status">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {statusOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <form id="categoryForm" autoComplete="off" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="slider_url">
+                    Destination URL <span className="text-error">*</span>
+                  </Label>
+                  <Input
+                    id="slider_url"
+                    type="text"
+                    name="slider_url"
+                    onChange={onInputChange}
+                    value={advSlider.slider_url}
+                    placeholder="https://example.com/offer"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="slider_status">
+                    Status <span className="text-error">*</span>
+                  </Label>
+                  <Select value={advSlider.slider_status} onValueChange={onStatusChange} required>
+                    <SelectTrigger id="slider_status">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {statusOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <div className="flex justify-start gap-3">
-                <Button type="submit" variant="primary" disabled={updateMutation.isPending}>
-                  <Send />
-                  <span>{updateMutation.isPending ? "Updating..." : "Update"}</span>
-                </Button>
+              <div className="mt-6 flex flex-col-reverse justify-end gap-2 sm:flex-row">
                 <Button type="button" variant="outline" onClick={handleBack}>
                   Back
+                </Button>
+                <Button type="submit" disabled={updateMutation.isPending}>
+                  <Send />
+                  <span>{updateMutation.isPending ? "Updating..." : "Update"}</span>
                 </Button>
               </div>
             </form>

@@ -3,13 +3,25 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
+import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { AvatarImage } from "@/components/common/AvatarImage";
-import { Spinner } from "@/components/ui/spinner";
+import { PageHeader } from "@/components/ui/page-header";
+import { TableSkeleton } from "@/components/ui/table-skeleton";
 import { useAppContext } from "@/context/app-context";
 import type { ConsumerRow } from "../types/consumers";
 import { profileTypeLabel } from "../types/consumers";
 import { useDeletedConsumerList } from "../hooks/useConsumers";
+
+const profileBadgeVariant = (
+  value: ConsumerRow["profile_type"]
+): "primary" | "secondary" | "accent" | "muted" => {
+  const normalized = String(value ?? "");
+  if (normalized === "0") return "primary";
+  if (normalized === "1") return "secondary";
+  if (normalized === "0,1") return "accent";
+  return "muted";
+};
 
 const DeleteUser = () => {
   const { isPanelUp } = useAppContext();
@@ -34,7 +46,7 @@ const DeleteUser = () => {
       header: "SL No",
       sortable: false,
       searchable: false,
-      render: (_row, i) => i + 1,
+      render: (_row, i) => <span className="text-on-surface-variant tabular-nums">{i + 1}</span>,
     },
     {
       key: "photo",
@@ -42,7 +54,13 @@ const DeleteUser = () => {
       sortable: false,
       searchable: false,
       render: (row) => (
-        <AvatarImage folder="user_images" file={row.photo} alt="Member" size="sm" />
+        <AvatarImage
+          folder="user_images"
+          file={row.photo}
+          alt={row.name ?? "Member"}
+          size="sm"
+          className="ring-1 ring-outline"
+        />
       ),
       exportValue: (row) => row.photo ?? "",
     },
@@ -50,19 +68,31 @@ const DeleteUser = () => {
       key: "name",
       header: "Full name",
       sortable: false,
+      render: (row) => <span className="font-medium text-on-surface">{row.name}</span>,
     },
     {
       key: "company_name",
       header: "Company",
+      render: (row) =>
+        row.company_name ? (
+          <span className="text-on-surface">{row.company_name}</span>
+        ) : (
+          <span className="text-on-surface-variant">—</span>
+        ),
     },
     {
       key: "mobile",
       header: "Mobile",
+      render: (row) => <span className="whitespace-nowrap tabular-nums">{row.mobile}</span>,
     },
     {
       key: "profile_type",
       header: "Profile",
-      render: (row) => profileTypeLabel(row.profile_type),
+      render: (row) => (
+        <Badge variant={profileBadgeVariant(row.profile_type)} className="whitespace-nowrap">
+          {profileTypeLabel(row.profile_type)}
+        </Badge>
+      ),
       exportValue: (row) => profileTypeLabel(row.profile_type),
     },
     {
@@ -74,22 +104,39 @@ const DeleteUser = () => {
     },
   ];
 
+  const total = deleteData?.length ?? 0;
+
   return (
     <Layout>
-      <div className="mt-5">
+      <div className="flex flex-col gap-4 md:gap-5">
+        <PageHeader
+          title="Deleted Users"
+          description={
+            deleteData == null
+              ? "Loading deleted user records…"
+              : `${total} deleted ${total === 1 ? "record" : "records"} kept for reference`
+          }
+          actions={
+            total > 0 ? (
+              <Badge variant="destructive" className="tabular-nums">
+                {total} deleted
+              </Badge>
+            ) : undefined
+          }
+        />
         {loading && deleteData == null ? (
-          <Spinner className="py-16" />
+          <TableSkeleton />
         ) : (
           <DataTable
-            title="Delete User List"
-            description="Deleted user records"
+            title={`Deleted records · ${total} total`}
+            description="Read-only archive of removed users."
             data={deleteData ?? []}
             columns={columns}
             loading={loading}
             rowKey={(row) => row.id}
             disableDownload
             disablePrint
-            searchPlaceholder="Search deleted users…"
+            searchPlaceholder="Search by name, company or mobile…"
             emptyMessage="No deleted users found."
           />
         )}

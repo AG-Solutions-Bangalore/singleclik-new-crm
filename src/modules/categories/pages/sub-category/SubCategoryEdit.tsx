@@ -67,87 +67,89 @@ const SubCategoryEdit = () => {
 
   return (
     <Layout>
-      <PageHeader title="Edit Sub Category" description="Update the sub category details." backTo="/" />
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle>Sub Category Details</CardTitle>
-          <CardDescription>Change the parent category, name or status.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form id="addIndiv" autoComplete="off" onSubmit={onSubmit}>
-            <div className="grid grid-cols-1 gap-5">
-              <div className="space-y-2">
-                <Label htmlFor="category_id">
-                  Category Name <span className="text-error">*</span>
-                </Label>
-                <Select
-                  name="category_id"
-                  value={categoriesSub.category_id}
-                  onValueChange={(value) =>
-                    setCategoriesSub({ ...categoriesSub, category_id: value })
-                  }
-                  required
-                >
-                  <SelectTrigger id="category_id">
-                    <SelectValue placeholder="Select Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((data) => (
-                      <SelectItem key={data.id} value={String(data.id)}>
-                        {data.category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+      <div className="flex flex-col gap-4 md:gap-5">
+        <PageHeader title="Edit Sub Category" description="Update the sub category details." backTo="/" />
+        <Card>
+          <CardHeader>
+            <CardTitle>Sub Category Details</CardTitle>
+            <CardDescription>Change the parent category, name or status.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form id="addIndiv" autoComplete="off" onSubmit={onSubmit}>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="category_id">
+                    Category Name <span className="text-error">*</span>
+                  </Label>
+                  <Select
+                    name="category_id"
+                    value={categoriesSub.category_id}
+                    onValueChange={(value) =>
+                      setCategoriesSub({ ...categoriesSub, category_id: value })
+                    }
+                    required
+                  >
+                    <SelectTrigger id="category_id">
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((data) => (
+                        <SelectItem key={data.id} value={String(data.id)}>
+                          {data.category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="subcategory">
+                    Sub Category Name <span className="text-error">*</span>
+                  </Label>
+                  <Input
+                    id="subcategory"
+                    name="subcategory"
+                    type="text"
+                    onChange={onInputChange}
+                    value={categoriesSub.subcategory}
+                    placeholder="Sub Category Name"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="subcategory_status">
+                    Category Status <span className="text-error">*</span>
+                  </Label>
+                  <Select
+                    name="subcategory_status"
+                    value={categoriesSub.subcategory_status}
+                    onValueChange={(value) =>
+                      setCategoriesSub({ ...categoriesSub, subcategory_status: value })
+                    }
+                    required
+                  >
+                    <SelectTrigger id="subcategory_status">
+                      <SelectValue placeholder="Select Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {status.map((data) => (
+                        <SelectItem key={data.label} value={data.value}>
+                          {data.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="subcategory">
-                  Sub Category Name <span className="text-error">*</span>
-                </Label>
-                <Input
-                  id="subcategory"
-                  name="subcategory"
-                  type="text"
-                  onChange={onInputChange}
-                  value={categoriesSub.subcategory}
-                  placeholder="Sub Category Name"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="subcategory_status">
-                  Category Status <span className="text-error">*</span>
-                </Label>
-                <Select
-                  name="subcategory_status"
-                  value={categoriesSub.subcategory_status}
-                  onValueChange={(value) =>
-                    setCategoriesSub({ ...categoriesSub, subcategory_status: value })
-                  }
-                  required
-                >
-                  <SelectTrigger id="subcategory_status">
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {status.map((data) => (
-                      <SelectItem key={data.label} value={data.value}>
-                        {data.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
 
-            <FormActions
-              isPending={updateSubCategory.isPending}
-              pendingLabel="Updating..."
-              submitLabel="Update"
-            />
-          </form>
-        </CardContent>
-      </Card>
+              <FormActions
+                isPending={updateSubCategory.isPending}
+                pendingLabel="Updating..."
+                submitLabel="Update"
+              />
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </Layout>
   );
 };

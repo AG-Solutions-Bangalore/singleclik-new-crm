@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactInstance, ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Printer } from "lucide-react";
+import { Building2, Info, Phone, Printer } from "lucide-react";
 import ReactToPrint from "react-to-print";
 import Layout from "@/components/layout/Layout";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { AvatarImage } from "@/components/common/AvatarImage";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { Spinner } from "@/components/ui/spinner";
 import { useAppContext } from "@/context/app-context";
@@ -19,6 +20,25 @@ const profileTypeLabel = (value: MemberRow["profile_type"] | undefined): string 
   if (value == 1) return "Service";
   return "Business/Service";
 };
+
+function InfoRows({ rows }: { rows: { label: string; value: ReactNode }[] }) {
+  return (
+    <dl className="divide-y divide-outline">
+      {rows.map((item) => (
+        <div key={item.label} className="grid grid-cols-[140px_1fr] gap-3 px-4 py-3 sm:grid-cols-[180px_1fr]">
+          <dt className="text-label-sm font-medium text-on-surface-variant">{item.label}</dt>
+          <dd className="min-w-0 text-body-md text-on-surface wrap-break-word">
+            {item.value == null || item.value === "" ? (
+              <span className="text-on-surface-variant">—</span>
+            ) : (
+              item.value
+            )}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
 
 const MemberView = () => {
   const componentRef = useRef<HTMLDivElement>(null);
@@ -82,21 +102,18 @@ const MemberView = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 md:gap-5">
         <PageHeader
-          title="Profile Details"
-          description="Member contact, identification and business information."
+          title="Business Profile"
+          description="Contact, identification and business information for this member."
           backTo="/member-list"
           actions={
             <ReactToPrint
               trigger={() => (
-                <button
-                  type="button"
-                  className="inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-[15px] py-1.5 font-medium text-on-primary transition-colors duration-200 outline-none hover:bg-primary-hover focus-visible:outline-[3px] focus-visible:outline-primary-container active:bg-primary-active"
-                >
-                  <Printer className="size-4" />
+                <Button size="sm">
+                  <Printer />
                   <span>Print</span>
-                </button>
+                </Button>
               )}
               content={() => componentRef.current as unknown as ReactInstance}
             />
@@ -104,89 +121,93 @@ const MemberView = () => {
         />
 
         {isLoading ? (
-          <div className="rounded-lg border border-outline bg-surface-container-lowest shadow-md">
+          <div className="rounded-xl border border-outline bg-surface-container-lowest shadow-md">
             <Spinner className="py-16" />
           </div>
         ) : (
-          <Card>
-            <div ref={componentRef} className="flex flex-col gap-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="border-b border-dashed border-outline-variant pb-2 text-headline-md font-semibold">
-                    {profile.name} - {profile.status}
-                  </h2>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <Badge variant="primary">{profileTypeLabel(profile.profile_type)}</Badge>
-                    <StatusBadge status={profile.status} inactiveVariant="secondary" />
-                  </div>
-                </div>
+          <div ref={componentRef} className="flex flex-col gap-4 md:gap-5">
+            <Card className="p-5 sm:p-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                 <AvatarImage
                   folder="user_images"
                   file={profile.photo}
                   alt={profile.name ?? "Member"}
-                  size="lg"
-                  className="border-2 border-tertiary"
+                  size="xl"
+                  className="ring-2 ring-primary-container"
                 />
+                <div className="min-w-0 flex-1">
+                  <p className="text-label-sm font-medium tracking-wide text-on-surface-variant uppercase">
+                    {profile.status ?? "Member"}
+                  </p>
+                  <h2 className="mt-0.5 truncate text-headline-md font-semibold tracking-tight">
+                    {profile.name ?? "—"}
+                  </h2>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <Badge variant="primary">{profileTypeLabel(profile.profile_type)}</Badge>
+                    <StatusBadge status={profile.status} inactiveVariant="secondary" />
+                    {profile.company_name ? (
+                      <Badge variant="muted">{profile.company_name}</Badge>
+                    ) : null}
+                  </div>
+                </div>
               </div>
+            </Card>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <Card className="p-0">
-                  <CardHeader className="rounded-t-lg bg-primary-container p-3 pb-3">
-                    <CardTitle className="text-on-primary-container">
-                      Contact Information
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <table className="w-full">
-                      <tbody>
-                        {contactRows.map((item, index) => (
-                          <tr key={index} className="border-b border-outline last:border-b-0">
-                            <th className="bg-surface-container-low p-3 text-left">
-                              {item.label}
-                            </th>
-                            <td className="p-3">{item.value}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </CardContent>
-                </Card>
-
-                <Card className="p-0">
-                  <CardHeader className="rounded-t-lg bg-secondary-container p-3 pb-3">
-                    <CardTitle className="text-on-secondary-container">
-                      Identification
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <table className="w-full">
-                      <tbody>
-                        {identityRows.map((item, index) => (
-                          <tr key={index} className="border-b border-outline last:border-b-0">
-                            <th className="bg-surface-container-low p-3 text-left">
-                              {item.label}
-                            </th>
-                            <td className="p-3">{item.value}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <Card className="p-0">
-                <CardHeader className="rounded-t-lg bg-tertiary-container p-3 pb-3">
-                  <CardTitle className="text-on-tertiary-container">
-                    About Your Business
-                  </CardTitle>
+            <div className="grid grid-cols-1 gap-4 md:gap-5 xl:grid-cols-2">
+              <Card className="overflow-hidden p-0">
+                <CardHeader className="px-4 pt-4 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex size-9 items-center justify-center rounded-lg bg-primary-container text-on-primary-container">
+                      <Phone className="size-4" aria-hidden />
+                    </span>
+                    <div>
+                      <CardTitle className="text-title-lg">Contact Information</CardTitle>
+                      <CardDescription>How to reach this business.</CardDescription>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="p-3">{profile.about_us}</p>
+                <CardContent className="px-0 pb-1">
+                  <InfoRows rows={contactRows} />
+                </CardContent>
+              </Card>
+
+              <Card className="overflow-hidden p-0">
+                <CardHeader className="px-4 pt-4 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex size-9 items-center justify-center rounded-lg bg-secondary-container text-on-secondary-container">
+                      <Building2 className="size-4" aria-hidden />
+                    </span>
+                    <div>
+                      <CardTitle className="text-title-lg">Business Details</CardTitle>
+                      <CardDescription>Profile, categories and location.</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="px-0 pb-1">
+                  <InfoRows rows={identityRows} />
                 </CardContent>
               </Card>
             </div>
-          </Card>
+
+            <Card className="overflow-hidden p-0">
+              <CardHeader className="px-4 pt-4 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex size-9 items-center justify-center rounded-lg bg-tertiary-container text-on-tertiary-container">
+                    <Info className="size-4" aria-hidden />
+                  </span>
+                  <div>
+                    <CardTitle className="text-title-lg">About the Business</CardTitle>
+                    <CardDescription>In their own words.</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="px-4 pb-5">
+                <p className="text-body-lg leading-relaxed text-on-surface">
+                  {profile.about_us || <span className="text-on-surface-variant">—</span>}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         )}
       </div>
     </Layout>

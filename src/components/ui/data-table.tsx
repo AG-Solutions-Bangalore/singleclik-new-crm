@@ -1,4 +1,5 @@
 import * as React from "react";
+import { motion } from "framer-motion";
 import {
   useTable,
   type ColumnDef,
@@ -89,8 +90,16 @@ function cellText<T>(row: T, col: DataTableColumn<T>): string {
   return String(v);
 }
 
+/**
+ * Narrow badge / action / index columns look balanced centered.
+ * Any column can opt out by setting an explicit `align`.
+ */
+const CENTERED_HEADERS = new Set(["sl no", "image", "product image", "status", "action"]);
+
 function alignClass<T>(col: DataTableColumn<T> | undefined): string | undefined {
-  return cn(col?.align === "center" && "text-center", col?.align === "right" && "text-right") || undefined;
+  const align =
+    col?.align ?? (col && CENTERED_HEADERS.has(col.header.trim().toLowerCase()) ? "center" : undefined);
+  return cn(align === "center" && "text-center", align === "right" && "text-right") || undefined;
 }
 
 /**
@@ -226,7 +235,13 @@ function DataTable<TData extends RowData>({
   const pageRows = table.getRowModel().rows;
 
   return (
-    <div data-slot="data-table" className="overflow-hidden rounded-lg border border-outline bg-surface-container-lowest shadow-md">
+    <motion.div
+      data-slot="data-table"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="overflow-hidden rounded-lg border border-outline bg-surface-container-lowest shadow-md"
+    >
       <div className="flex flex-col gap-3 border-b border-outline p-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-title-lg font-semibold leading-8">{title}</h2>
@@ -279,7 +294,7 @@ function DataTable<TData extends RowData>({
         </div>
       ) : null}
 
-      <Table>
+      <Table className="min-w-[760px]">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="bg-surface-container-low hover:bg-surface-container-low">
@@ -309,7 +324,17 @@ function DataTable<TData extends RowData>({
               const original = row.original;
               const globalIndex = pageIndex * pageSize + posInPage;
               return (
-                <TableRow key={rowKey(original, globalIndex)}>
+                <motion.tr
+                  key={`${pageIndex}-${pageSize}-${rowKey(original, globalIndex)}`}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.25,
+                    ease: "easeOut",
+                    delay: Math.min(posInPage * 0.03, 0.3),
+                  }}
+                  className="border-b border-outline transition-colors last:border-0 hover:bg-surface-container-low"
+                >
                   {row.getVisibleCells().map((cell) => {
                     const src = columnById.get(cell.column.id);
                     if (!src) return null;
@@ -322,7 +347,7 @@ function DataTable<TData extends RowData>({
                       </TableCell>
                     );
                   })}
-                </TableRow>
+                </motion.tr>
               );
             })
           )}
@@ -375,7 +400,7 @@ function DataTable<TData extends RowData>({
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

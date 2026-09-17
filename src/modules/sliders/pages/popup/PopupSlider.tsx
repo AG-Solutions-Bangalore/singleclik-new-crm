@@ -40,7 +40,7 @@ const PopupSlider = () => {
       sortable: false,
       searchable: false,
       hideable: false,
-      render: (_row, i) => i + 1,
+      render: (_row, i) => <span className="text-on-surface-variant tabular-nums">{i + 1}</span>,
     },
     {
       key: "slider_images",
@@ -51,7 +51,8 @@ const PopupSlider = () => {
         <img
           src={storageImage("slider_images", row.slider_images)}
           alt="Popup slider"
-          className="h-10 w-10 rounded-md object-cover"
+          loading="lazy"
+          className="h-10 w-14 rounded-lg border border-outline object-cover shadow-sm"
         />
       ),
       exportValue: (row) => row.slider_images,
@@ -59,6 +60,11 @@ const PopupSlider = () => {
     {
       key: "slider_url",
       header: "URL",
+      render: (row) => (
+        <span className="block max-w-64 truncate text-body-md text-on-surface" title={row.slider_url}>
+          {row.slider_url}
+        </span>
+      ),
       exportValue: (row) => row.slider_url,
     },
     {
@@ -75,15 +81,18 @@ const PopupSlider = () => {
       searchable: false,
       hideable: false,
       render: (row) => (
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => navigate(`/popup-slider-edit/${row.id}`)}
-          title="Edit Popup Slider"
-          aria-label="Edit Popup Slider"
-        >
-          <Pencil />
-        </Button>
+        <div className="inline-flex items-center rounded-lg border border-outline/70 bg-surface p-0.5 shadow-sm">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => navigate(`/popup-slider-edit/${row.id}`)}
+            title="Edit Popup Slider"
+            aria-label="Edit Popup Slider"
+            className="rounded-md hover:bg-primary-container hover:text-on-primary-container"
+          >
+            <Pencil className="size-4" />
+          </Button>
+        </div>
       ),
       exportValue: () => "",
     },
@@ -91,12 +100,16 @@ const PopupSlider = () => {
 
   return (
     <Layout>
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4 md:gap-5">
         <PageHeader
-          title="Popup Slider List"
-          description="Manage popup sliders"
+          title="Popup Sliders"
+          description={
+            isLoading
+              ? "Loading popup sliders…"
+              : `${popupListData?.length ?? 0} ${(popupListData?.length ?? 0) === 1 ? "popup" : "popups"} · shown on app launch`
+          }
           actions={
-            <Button asChild variant="primary">
+            <Button asChild size="sm">
               <Link to="/add-popup-slider">
                 <Plus /> Add Popup Slider
               </Link>
@@ -104,18 +117,19 @@ const PopupSlider = () => {
           }
         />
         {isLoading ? (
-          <div className="rounded-lg border border-outline bg-surface-container-lowest shadow-md">
+          <div className="rounded-xl border border-outline bg-surface-container-lowest shadow-md">
             <Spinner className="py-16" />
           </div>
         ) : (
           <DataTable
-            title="Popup Slider List"
+            title={`All popup sliders · ${popupListData?.length ?? 0} total`}
+            description="Popups, destinations and visibility."
             data={popupListData ? popupListData : []}
             columns={columns}
             rowKey={(row) => row.id}
             disableDownload
             disablePrint
-            searchPlaceholder="Search popup sliders…"
+            searchPlaceholder="Search by URL…"
             emptyMessage="No popup sliders found."
           />
         )}

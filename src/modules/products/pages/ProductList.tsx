@@ -40,7 +40,7 @@ const ProductList = () => {
       sortable: false,
       searchable: false,
       hideable: false,
-      render: (_row, i) => i + 1,
+      render: (_row, i) => <span className="text-on-surface-variant tabular-nums">{i + 1}</span>,
     },
     {
       key: "product_images",
@@ -50,8 +50,9 @@ const ProductList = () => {
       render: (row) => (
         <img
           src={storageImage("product_images", row.product_images)}
-          alt="Product"
-          className="h-10 w-10 rounded-md object-cover"
+          alt={row.product_name || "Product"}
+          loading="lazy"
+          className="h-10 w-10 rounded-lg border border-outline object-cover shadow-sm"
         />
       ),
       exportValue: (row) => row.product_images,
@@ -59,6 +60,7 @@ const ProductList = () => {
     {
       key: "product_name",
       header: "Product Name",
+      render: (row) => <span className="font-medium text-on-surface">{row.product_name}</span>,
       exportValue: (row) => row.product_name,
     },
     {
@@ -75,15 +77,18 @@ const ProductList = () => {
       searchable: false,
       hideable: false,
       render: (row) => (
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => navigate(`/edit-product/${row.id}`)}
-          title="Edit Product"
-          aria-label="Edit Product"
-        >
-          <Pencil />
-        </Button>
+        <div className="inline-flex items-center rounded-lg border border-outline/70 bg-surface p-0.5 shadow-sm">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => navigate(`/edit-product/${row.id}`)}
+            title="Edit Product"
+            aria-label="Edit Product"
+            className="rounded-md hover:bg-primary-container hover:text-on-primary-container"
+          >
+            <Pencil className="size-4" />
+          </Button>
+        </div>
       ),
       exportValue: () => "",
     },
@@ -91,12 +96,16 @@ const ProductList = () => {
 
   return (
     <Layout>
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4 md:gap-5">
         <PageHeader
-          title="Products List"
-          description="Manage products"
+          title="Products"
+          description={
+            isLoading
+              ? "Loading products…"
+              : `${productListData?.length ?? 0} ${(productListData?.length ?? 0) === 1 ? "product" : "products"} · names, images and availability`
+          }
           actions={
-            <Button asChild variant="primary">
+            <Button asChild size="sm">
               <Link to="/add-product">
                 <Plus /> Add Product
               </Link>
@@ -104,12 +113,13 @@ const ProductList = () => {
           }
         />
         {isLoading ? (
-          <div className="rounded-lg border border-outline bg-surface-container-lowest shadow-md">
+          <div className="rounded-xl border border-outline bg-surface-container-lowest shadow-md">
             <Spinner className="py-16" />
           </div>
         ) : (
           <DataTable
-            title="Products List"
+            title={`All products · ${productListData?.length ?? 0} total`}
+            description="Catalog entries shown to customers."
             data={productListData ? productListData : []}
             columns={columns}
             rowKey={(row) => row.id}

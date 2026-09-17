@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { StatusBadge } from "@/components/common/StatusBadge";
 import { storageImage } from "@/lib/constants";
 import SubCategoryEditList from "@/modules/categories/components/SubCategoryEditList";
 import {
@@ -86,164 +87,178 @@ const CategoryEdit = () => {
 
   return (
     <Layout>
-      <PageHeader
-        title="Edit Category"
-        description="Update category details, image and status."
-        backTo="/category"
-      />
-      <Card className="mt-4">
-        <CardContent>
-          <div className="flex flex-col items-center gap-4 lg:flex-row">
-            <div className="relative flex w-44 flex-shrink-0 items-center justify-center">
-              <img
-                src={imageUrl}
-                alt="Category"
-                className="mb-2 h-20 w-20 rounded-full border-l-4 border-dashed border-primary"
-              />
-              <div className="absolute right-0 bottom-0 -translate-x-10 -translate-y-6 lg:right-0 lg:bottom-1/2 lg:-translate-x-10 lg:-translate-y-1">
-                <button
-                  type="button"
-                  className="cursor-pointer rounded-full border border-outline bg-emerald-400 p-[3px] hover:bg-emerald-300"
-                  onClick={() => fileInputRef.current?.click()}
-                  aria-label="Change category image"
-                >
-                  <MdEdit title="Edit Pic" className="h-4 w-4 text-on-surface" />
-                </button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  name="category_image"
-                  onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
-                  className="hidden"
-                />
-              </div>
-            </div>
-
-            <form
-              id="categoryForm"
-              autoComplete="off"
-              onSubmit={handleSubmit}
-              className="flex-grow"
-            >
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
-                <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
-                  <Input
-                    id="category"
-                    type="text"
-                    name="category"
-                    onChange={onInputChange}
-                    value={categoryData.category}
-                    disabled
-                    required
+      <div className="flex flex-col gap-4 md:gap-5">
+        <PageHeader
+          title="Edit Category"
+          description="Update category details, image and status."
+          backTo="/category"
+        />
+        <Card>
+          <CardHeader>
+            <CardTitle>Category Details</CardTitle>
+            <CardDescription>Image, sort order and visibility status.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-5 lg:flex-row">
+              <div className="flex shrink-0 flex-col items-center gap-2">
+                <div className="relative">
+                  <img
+                    src={imageUrl}
+                    alt="Category"
+                    className="size-24 rounded-2xl border border-outline object-cover shadow-sm"
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="category_type">Category Type</Label>
-                  <Input
-                    id="category_type"
-                    type="text"
-                    name="category_type"
-                    disabled
-                    onChange={onInputChange}
-                    value={
-                      profileOptions.find(
-                        (type) => type.value === categoryData.category_type
-                      )?.label || "Category Type"
-                    }
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="category_sort">
-                    Category Sort <span className="text-error">*</span>
-                  </Label>
-                  <Input
-                    id="category_sort"
-                    type="number"
-                    min="0"
-                    name="category_sort"
-                    onChange={onInputChange}
-                    value={categoryData.category_sort}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="category_status">
-                    Category Status <span className="text-error">*</span>
-                  </Label>
-                  <Select
-                    name="category_status"
-                    value={categoryData.category_status}
-                    onValueChange={(value) =>
-                      setCategoryData({ ...categoryData, category_status: value })
-                    }
-                    required
+                  <button
+                    type="button"
+                    className="absolute -right-2 -bottom-2 cursor-pointer rounded-full border border-outline bg-surface p-1.5 shadow-md transition-colors hover:bg-surface-container-low"
+                    onClick={() => fileInputRef.current?.click()}
+                    aria-label="Change category image"
                   >
-                    <SelectTrigger id="category_status">
-                      <SelectValue placeholder="Select Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {statusOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    <MdEdit title="Edit Pic" className="size-4 text-on-surface" />
+                  </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    name="category_image"
+                    accept="image/*"
+                    onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+                    className="hidden"
+                  />
                 </div>
+                {selectedFile ? (
+                  <p className="max-w-36 truncate text-body-md text-on-surface-variant">
+                    {selectedFile.name}
+                  </p>
+                ) : (
+                  <StatusBadge status={categoryData.category_status} />
+                )}
               </div>
 
-              <div className="mt-4 flex flex-col justify-between gap-4 lg:flex-row">
-                <div>
-                  {selectedFile && (
-                    <div className="mt-2">
-                      <p className="text-sm text-error">{selectedFile.name}</p>
-                    </div>
-                  )}
+              <form
+                id="categoryForm"
+                autoComplete="off"
+                onSubmit={handleSubmit}
+                className="min-w-0 flex-1"
+              >
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Category</Label>
+                    <Input
+                      id="category"
+                      type="text"
+                      name="category"
+                      onChange={onInputChange}
+                      value={categoryData.category}
+                      disabled
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="category_type">Category Type</Label>
+                    <Input
+                      id="category_type"
+                      type="text"
+                      name="category_type"
+                      disabled
+                      onChange={onInputChange}
+                      value={
+                        profileOptions.find(
+                          (type) => type.value === categoryData.category_type
+                        )?.label || "Category Type"
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="category_sort">
+                      Category Sort <span className="text-error">*</span>
+                    </Label>
+                    <Input
+                      id="category_sort"
+                      type="number"
+                      min="0"
+                      name="category_sort"
+                      onChange={onInputChange}
+                      value={categoryData.category_sort}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="category_status">
+                      Category Status <span className="text-error">*</span>
+                    </Label>
+                    <Select
+                      name="category_status"
+                      value={categoryData.category_status}
+                      onValueChange={(value) =>
+                        setCategoryData({ ...categoryData, category_status: value })
+                      }
+                      required
+                    >
+                      <SelectTrigger id="category_status">
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {statusOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2 lg:flex-row">
-                  <Button type="submit" size="sm" disabled={updateCategory.isPending}>
+
+                <div className="mt-5 flex justify-end">
+                  <Button type="submit" disabled={updateCategory.isPending}>
                     <MdSend />
                     <span>{updateCategory.isPending ? "Updating..." : "Update"}</span>
                   </Button>
                 </div>
-              </div>
-            </form>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="mt-2 flex flex-col gap-2 lg:flex-row">
-        <Card className="h-[420px] w-full overflow-hidden lg:max-w-md">
-          <CardHeader>
-            <CardTitle>User List</CardTitle>
-            <CardDescription>Users under this category.</CardDescription>
-          </CardHeader>
-          <CardContent className="h-full overflow-y-auto pb-16">
-            {categoryUser.length === 0 ? (
-              <p className="text-center text-body-md text-on-surface-variant italic">
-                No users available
-              </p>
-            ) : (
-              categoryUser.map((item, index) => (
-                <div
-                  key={index}
-                  className="mb-4 flex flex-row items-center gap-4 border-b border-dashed border-outline pb-2"
-                >
-                  <img
-                    src={storageImage("user_images", item.photo)}
-                    alt="User photo"
-                    className="h-12 w-12 rounded-full border-r-2 border-primary shadow-sm"
-                  />
-                  <p className="text-sm font-semibold text-on-surface">{item.name}</p>
-                </div>
-              ))
-            )}
+              </form>
+            </div>
           </CardContent>
         </Card>
 
-        <SubCategoryEditList />
+        <div className="flex flex-col gap-4 md:gap-5 lg:flex-row">
+          <Card className="w-full overflow-hidden p-0 lg:max-w-md">
+            <CardHeader className="px-4 pt-4 pb-3">
+              <CardTitle>Users in this Category</CardTitle>
+              <CardDescription>
+                {categoryUser.length} {categoryUser.length === 1 ? "member" : "members"} assigned.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="max-h-[380px] overflow-y-auto px-2 pb-3">
+              {categoryUser.length === 0 ? (
+                <p className="py-8 text-center text-body-md text-on-surface-variant italic">
+                  No users available
+                </p>
+              ) : (
+                <ul className="flex flex-col">
+                  {categoryUser.map((item, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-surface-container-low"
+                    >
+                      <img
+                        src={storageImage("user_images", item.photo)}
+                        alt={item.name}
+                        loading="lazy"
+                        className="size-10 shrink-0 rounded-full border border-outline object-cover"
+                      />
+                      <p className="truncate text-body-md font-medium text-on-surface">
+                        {item.name}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+
+          <div className="min-w-0 flex-1">
+            <SubCategoryEditList />
+          </div>
+        </div>
       </div>
     </Layout>
   );

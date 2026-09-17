@@ -51,7 +51,7 @@ const SliderList = () => {
       sortable: false,
       searchable: false,
       hideable: false,
-      render: (_row, i) => i + 1,
+      render: (_row, i) => <span className="text-on-surface-variant tabular-nums">{i + 1}</span>,
     },
     {
       key: "slider_images",
@@ -62,7 +62,8 @@ const SliderList = () => {
         <img
           src={storageImage("slider_images", row.slider_images)}
           alt="Slider"
-          className="h-10 w-10 rounded-md object-cover"
+          loading="lazy"
+          className="h-10 w-14 rounded-lg border border-outline object-cover shadow-sm"
         />
       ),
       exportValue: (row) => row.slider_images,
@@ -70,6 +71,11 @@ const SliderList = () => {
     {
       key: "slider_url",
       header: "URL",
+      render: (row) => (
+        <span className="block max-w-64 truncate text-body-md text-on-surface" title={row.slider_url}>
+          {row.slider_url}
+        </span>
+      ),
       exportValue: (row) => row.slider_url,
     },
     {
@@ -86,15 +92,18 @@ const SliderList = () => {
       searchable: false,
       hideable: false,
       render: (row) => (
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={(e) => handleEdit(e, row.id)}
-          title="Edit Slider Info"
-          aria-label="Edit Slider Info"
-        >
-          <Pencil />
-        </Button>
+        <div className="inline-flex items-center rounded-lg border border-outline/70 bg-surface p-0.5 shadow-sm">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={(e) => handleEdit(e, row.id)}
+            title="Edit Slider Info"
+            aria-label="Edit Slider Info"
+            className="rounded-md hover:bg-primary-container hover:text-on-primary-container"
+          >
+            <Pencil className="size-4" />
+          </Button>
+        </div>
       ),
       exportValue: () => "",
     },
@@ -102,12 +111,16 @@ const SliderList = () => {
 
   return (
     <Layout>
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4 md:gap-5">
         <PageHeader
-          title="Adv Slider List"
-          description="Manage advertisement sliders"
+          title="Ad Sliders"
+          description={
+            isLoading
+              ? "Loading advertisement sliders…"
+              : `${sliderListData.length} ${sliderListData.length === 1 ? "banner" : "banners"} · shown across the app`
+          }
           actions={
-            <Button asChild variant="primary">
+            <Button asChild size="sm">
               <Link to="/add-slider">
                 <Plus /> Add Slider
               </Link>
@@ -115,18 +128,19 @@ const SliderList = () => {
           }
         />
         {isLoading ? (
-          <div className="rounded-lg border border-outline bg-surface-container-lowest shadow-md">
+          <div className="rounded-xl border border-outline bg-surface-container-lowest shadow-md">
             <Spinner className="py-16" />
           </div>
         ) : (
           <DataTable
-            title="Adv Slider List"
+            title={`All ad sliders · ${sliderListData.length} total`}
+            description="Banners, destinations and visibility."
             data={sliderListData}
             columns={columns}
             rowKey={(row) => row.id}
             disableDownload
             disablePrint
-            searchPlaceholder="Search sliders…"
+            searchPlaceholder="Search by URL…"
             emptyMessage="No sliders found."
           />
         )}

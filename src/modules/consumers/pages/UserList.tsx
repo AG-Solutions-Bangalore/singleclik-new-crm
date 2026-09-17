@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { PageHeader } from "@/components/ui/page-header";
 import { Switch } from "@/components/ui/switch";
 import { TableSkeleton } from "@/components/ui/table-skeleton";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -14,6 +17,16 @@ import { useAppContext } from "@/context/app-context";
 import type { ConsumerRow } from "../types/consumers";
 import { profileTypeLabel } from "../types/consumers";
 import { useConsumerList, useDeleteUser, useUpdateUserStatus } from "../hooks/useConsumers";
+
+const profileBadgeVariant = (
+  value: ConsumerRow["profile_type"]
+): "primary" | "secondary" | "accent" | "muted" => {
+  const normalized = String(value ?? "");
+  if (normalized === "0") return "primary";
+  if (normalized === "1") return "secondary";
+  if (normalized === "0,1") return "accent";
+  return "muted";
+};
 
 const UserList = () => {
   const { isPanelUp } = useAppContext();
@@ -85,41 +98,62 @@ const UserList = () => {
     {
       key: "slNo",
       header: "SL No",
+      align: "center",
       sortable: false,
       searchable: false,
-      render: (_row, i) => i + 1,
+      render: (_row, i) => <span className="text-on-surface-variant tabular-nums">{i + 1}</span>,
     },
     {
       key: "photo",
       header: "Image",
+      align: "center",
       sortable: false,
       searchable: false,
       render: (row) => (
-        <AvatarImage folder="user_images" file={row.photo} alt="Member" size="sm" />
+        <AvatarImage
+          folder="user_images"
+          file={row.photo}
+          alt={row.name ?? "Consumer"}
+          size="sm"
+          className="ring-1 ring-outline transition-shadow hover:shadow-md"
+        />
       ),
       exportValue: (row) => row.photo ?? "",
     },
     {
       key: "name",
       header: "Full name",
+      render: (row) => <span className="font-medium text-on-surface">{row.name}</span>,
     },
     {
       key: "company_name",
       header: "Company",
+      render: (row) =>
+        row.company_name ? (
+          <span className="text-on-surface">{row.company_name}</span>
+        ) : (
+          <span className="text-on-surface-variant">—</span>
+        ),
     },
     {
       key: "mobile",
       header: "Mobile",
+      render: (row) => <span className="whitespace-nowrap tabular-nums">{row.mobile}</span>,
     },
     {
       key: "profile_type",
       header: "Profile",
-      render: (row) => profileTypeLabel(row.profile_type),
+      render: (row) => (
+        <Badge variant={profileBadgeVariant(row.profile_type)} className="whitespace-nowrap">
+          {profileTypeLabel(row.profile_type)}
+        </Badge>
+      ),
       exportValue: (row) => profileTypeLabel(row.profile_type),
     },
     {
       key: "status",
       header: "Status",
+      align: "center",
       sortable: false,
       render: (row) => <StatusBadge status={row.status} inactiveVariant="destructive" />,
       exportValue: (row) => row.status ?? "",
@@ -127,10 +161,11 @@ const UserList = () => {
     {
       key: "id",
       header: "Action",
+      align: "center",
       sortable: false,
       searchable: false,
       render: (row) => (
-        <div className="flex items-center gap-2">
+        <div className="inline-flex items-center gap-1 rounded-lg border border-outline/70 bg-surface px-1.5 py-1 shadow-sm">
           <Switch
             checked={row.status === "Active"}
             onCheckedChange={(next) => handleStatusToggle(row, next)}
@@ -142,8 +177,9 @@ const UserList = () => {
             onClick={(e) => handleDelete(e, row.id)}
             title="Delete the user"
             aria-label="Delete the user"
+            className="rounded-md hover:bg-error-container hover:text-error"
           >
-            <Trash2 className="text-error" />
+            <Trash2 className="size-4 text-error" />
           </Button>
         </div>
       ),
@@ -151,24 +187,51 @@ const UserList = () => {
   ];
 
   const total = userListData?.length ?? 0;
+  const { activeCount, inactiveCount } = useMemo(() => {
+    const list = userListData ?? [];
+    const active = list.filter((u) => u.status === "Active").length;
+    return { activeCount: active, inactiveCount: list.length - active };
+  }, [userListData]);
 
   return (
     <Layout>
-      <div className="mt-5">
+      <div className="flex flex-col gap-4 md:gap-5">
+        <PageHeader
+          title="Consumers"
+          description={
+            userListData == null
+              ? "Loading registered consumers…"
+              : `${total} ${total === 1 ? "consumer" : "consumers"} registered · ${activeCount} active · ${inactiveCount} inactive`
+          }
+          actions={
+            userListData != null && total > 0 ? (
+              <div className="flex items-center gap-2">
+                <Badge variant="success" className="tabular-nums">
+                  {activeCount} active
+                </Badge>
+                {inactiveCount > 0 ? (
+                  <Badge variant="destructive" className="tabular-nums">
+                    {inactiveCount} inactive
+                  </Badge>
+                ) : null}
+              </div>
+            ) : undefined
+          }
+        />
         {loading && userListData == null ? (
           <TableSkeleton />
         ) : (
           <DataTable
-            title="User List"
-            description={total > 0 ? `Manage all registered users · ${total} total` : "Manage all registered users"}
+            title={`All consumers · ${total} total`}
+            description="Toggle access instantly or remove a consumer. Deactivation asks for confirmation."
             data={userListData ?? []}
             columns={columns}
             loading={loading}
             rowKey={(row) => row.id}
             disableDownload
             disablePrint
-            searchPlaceholder="Search users…"
-            emptyMessage="No users found."
+            searchPlaceholder="Search by name, company or mobile…"
+            emptyMessage="No consumers found."
           />
         )}
         <ConfirmDialog

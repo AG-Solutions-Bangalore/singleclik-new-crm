@@ -36,15 +36,19 @@ const SubCategoryList = () => {
       sortable: false,
       searchable: false,
       hideable: false,
-      render: (_row, index) => index + 1,
+      render: (_row, index) => (
+        <span className="text-on-surface-variant tabular-nums">{index + 1}</span>
+      ),
     },
     {
       key: "category",
       header: "Category",
+      render: (row) => <span className="text-on-surface">{row.category}</span>,
     },
     {
       key: "subcategory",
       header: "Sub Category",
+      render: (row) => <span className="font-medium text-on-surface">{row.subcategory}</span>,
     },
     {
       key: "subcategory_status",
@@ -58,15 +62,18 @@ const SubCategoryList = () => {
       searchable: false,
       hideable: false,
       render: (row) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate(`/sub-category-edit/${row.id}`)}
-          aria-label="Edit sub category"
-          title="Edit Sub Category"
-        >
-          <RiEditLine />
-        </Button>
+        <div className="inline-flex items-center rounded-lg border border-outline/70 bg-surface p-0.5 shadow-sm">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => navigate(`/sub-category-edit/${row.id}`)}
+            aria-label="Edit sub category"
+            title="Edit Sub Category"
+            className="rounded-md hover:bg-primary-container hover:text-on-primary-container"
+          >
+            <RiEditLine className="size-4" />
+          </Button>
+        </div>
       ),
       exportValue: () => "",
     },
@@ -74,20 +81,24 @@ const SubCategoryList = () => {
 
   return (
     <Layout>
-      <PageHeader
-        title="Sub Category List"
-        description="Manage sub categories under each category."
-        actions={
-          <Button asChild size="sm">
-            <Link to="/add-subCategory">
-              <Plus /> Add Sub Category
-            </Link>
-          </Button>
-        }
-      />
-      <div className="mt-4">
+      <div className="flex flex-col gap-4 md:gap-5">
+        <PageHeader
+          title="Sub-categories"
+          description={
+            isLoading
+              ? "Loading sub-categories…"
+              : `${subCategoryListData.length} sub-${subCategoryListData.length === 1 ? "category" : "categories"} · grouped under parent categories`
+          }
+          actions={
+            <Button asChild size="sm">
+              <Link to="/add-subCategory">
+                <Plus /> Add Sub Category
+              </Link>
+            </Button>
+          }
+        />
         <DataTable
-          title="Sub Category List"
+          title={`All sub-categories · ${subCategoryListData.length} total`}
           description="All sub categories with parent category and status."
           data={subCategoryListData}
           columns={columns}
