@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
+import { clearAppStorage } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,7 +18,7 @@ interface LogoutProps {
 const Logout = ({ open, handleOpen }: LogoutProps) => {
   const navigate = useNavigate();
   const handleLogout = () => {
-    localStorage.clear();
+    clearAppStorage();
     navigate("/");
   };
 

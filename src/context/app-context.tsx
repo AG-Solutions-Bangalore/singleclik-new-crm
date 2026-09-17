@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
+import { clearAppStorage } from "@/lib/storage";
 
 export interface PanelStatus {
   success?: boolean;
@@ -62,7 +63,7 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
     const currentPath = location.pathname;
 
     if (error) {
-      localStorage.clear();
+      clearAppStorage();
       navigate("/maintenance");
     } else if (typeof isPanelUp === "object" && isPanelUp?.success) {
       if (token) {

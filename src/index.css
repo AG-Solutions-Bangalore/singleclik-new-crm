@@ -12,7 +12,7 @@
  *   text-display text-headline-lg text-body-md text-label-sm
  *   rounded-sm rounded-md rounded-lg rounded-xl rounded-full rounded-default
  *   shadow-sm shadow-md shadow-lg
- *   p-xs p-sm p-md p-lg p-xl  |  gap-gutter  |  max-w-page
+ *   max-w-page (1280px container; standard max-w-sm/md/lg/xl untouched)
  * Dark mode: same utilities + `dark:` overrides where needed; theme values
  * flip automatically via the `.dark` block below (next-themes, system default).
  */
@@ -136,13 +136,20 @@
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
   --shadow-focus-ring: 0 0 0 3px #e6f3fe;
 
-  /* ---------- Spacing (DESIGN.md semantic scale; base unit 8px) ---------- */
-  --spacing-xs: 4px;
-  --spacing-sm: 12px;
-  --spacing-md: 24px;
-  --spacing-lg: 40px;
-  --spacing-xl: 64px;
-  --spacing-gutter: 24px;
+  /* ---------- Spacing (DESIGN.md semantic scale; base unit 8px) ----------
+     NOTE: these are documented values, NOT --spacing-* theme keys. Defining
+     --spacing-sm/md/lg/etc. would hijack standard utilities (max-w-sm,
+     w-md, min-w-lg, …) because Tailwind v4 resolves those names through the
+     spacing namespace. Use the standard equivalents instead:
+       xs  4px -> p-1 / gap-1 / size-1      sm  12px -> p-3 / gap-3
+       md  24px -> p-6 / gap-6              lg  40px -> p-10 / gap-10
+       xl  64px -> p-16 / gap-16            gutter 24px -> gap-6 / px-6
+  --space-xs: 4px;
+  --space-sm: 12px;
+  --space-md: 24px;
+  --space-lg: 40px;
+  --space-xl: 64px;
+  --space-gutter: 24px;
 
   /* ---------- Layout ---------- */
   --container-page: 1280px;
