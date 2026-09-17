@@ -220,6 +220,9 @@
 
   html {
     scroll-behavior: smooth;
+    /* Reserve space for the page scrollbar so content never
+       jumps sideways when it appears/disappears after data loads. */
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -242,6 +245,17 @@
   :focus-visible {
     outline: 3px solid var(--color-primary-container);
     outline-offset: 2px;
+  }
+}
+
+/* Hide scrollbars while keeping scroll/swipe working.
+   Used on table scroll regions so appearing scrollbars
+   never push content around after data loads. */
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
