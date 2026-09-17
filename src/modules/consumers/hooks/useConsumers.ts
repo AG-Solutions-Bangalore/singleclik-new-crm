@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { CONSUMERS_API, authHeaders } from "../api/consumers";
 import type { ConsumerRow } from "../types/consumers";
 

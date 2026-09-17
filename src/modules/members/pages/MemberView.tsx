@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import type { ReactInstance, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Building2, Info, Phone, Printer } from "lucide-react";
-import ReactToPrint from "react-to-print";
+import { useReactToPrint } from "react-to-print";
 import Layout from "@/components/layout/Layout";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { AvatarImage } from "@/components/common/AvatarImage";
@@ -51,6 +51,14 @@ const MemberView = () => {
   const navigate = useNavigate();
 
   const { data: profileData, isLoading, error: profileError } = useMemberDetail(id);
+
+  // Latest react-to-print (v3) hook API — React 19 compatible, no findDOMNode.
+  const handlePrint = useReactToPrint({
+    contentRef: componentRef,
+    documentTitle: profile.name ? `Business Profile - ${profile.name}` : "Business Profile",
+    onPrintError: (location, error) =>
+      console.error(`Print failed during ${location}`, error),
+  });
 
   useEffect(() => {
     if (!isPanelUp) {
@@ -108,15 +116,10 @@ const MemberView = () => {
           description="Contact, identification and business information for this member."
           backTo="/member-list"
           actions={
-            <ReactToPrint
-              trigger={() => (
-                <Button size="sm">
-                  <Printer />
-                  <span>Print</span>
-                </Button>
-              )}
-              content={() => componentRef.current as unknown as ReactInstance}
-            />
+            <Button size="sm" onClick={() => handlePrint()} disabled={isLoading}>
+              <Printer />
+              <span>Print</span>
+            </Button>
           }
         />
 

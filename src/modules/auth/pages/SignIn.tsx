@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
 import { ArrowRight, Loader2, Lock, User } from "lucide-react";
 import { useAppContext } from "@/context/app-context";
 import { useLogin } from "@/modules/auth/hooks/useLogin";
@@ -48,24 +47,6 @@ const SignIn = () => {
       title="Sign In"
       description="Login to your CRM account"
     >
-      <Toaster
-        toastOptions={{
-          success: {
-            style: {
-              background: "#10B981",
-              color: "#FFFFFF",
-            },
-          },
-          error: {
-            style: {
-              background: "#EF4444",
-              color: "#FFFFFF",
-            },
-          },
-        }}
-        position="top-right"
-        reverseOrder={false}
-      />
       <form onSubmit={handleSubmit} method="POST" className="flex flex-col gap-4">
         {/* Username / Mobile Number input with icon */}
         <div className="relative">

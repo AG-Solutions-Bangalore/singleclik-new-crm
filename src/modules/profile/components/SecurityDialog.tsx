@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { KeyRound } from "lucide-react";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import type { ChangePasswordForm } from "@/modules/profile/types/profile.types";
 import { Button } from "@/components/ui/button";
 import {

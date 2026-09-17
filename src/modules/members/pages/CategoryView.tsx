@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { SyntheticEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 import { MdOutlineDelete } from "react-icons/md";
 import Layout from "@/components/layout/Layout";

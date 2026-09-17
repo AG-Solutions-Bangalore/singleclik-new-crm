@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { NOTIFICATIONS_API, authHeaders } from "../api/notifications";
 import type { NotificationForm, NotificationRow } from "../types/notifications";
 

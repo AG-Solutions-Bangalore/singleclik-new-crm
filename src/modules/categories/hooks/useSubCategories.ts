@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { getToken } from "@/lib/auth-storage";
 import { CATEGORIES_API } from "@/modules/categories/api/categories";
 import type {

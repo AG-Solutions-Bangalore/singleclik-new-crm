@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Save } from "lucide-react";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import type { ProfileForm } from "@/modules/profile/types/profile.types";
 import { getDefaultProfileForm } from "@/modules/profile/types/profile.types";
 import { Button } from "@/components/ui/button";

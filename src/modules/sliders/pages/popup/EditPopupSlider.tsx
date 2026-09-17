@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { Pencil, Send } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { AvatarImage } from "@/components/common/AvatarImage";

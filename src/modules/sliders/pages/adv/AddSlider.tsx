@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { ImagePlus } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { FormActions } from "@/components/common/FormActions";

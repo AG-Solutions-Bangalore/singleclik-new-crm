@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { getToken } from "@/lib/auth-storage";
 import { MEMBERS_API } from "../api/members";
 import type { MemberForm } from "../types/member";

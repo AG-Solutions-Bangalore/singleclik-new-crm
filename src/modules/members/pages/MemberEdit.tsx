@@ -3,7 +3,7 @@ import type { ChangeEvent, FormEvent, MouseEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ImagePlus, Tag } from "lucide-react";
 import { MdArrowBack, MdSend } from "react-icons/md";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

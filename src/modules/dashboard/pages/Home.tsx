@@ -17,6 +17,8 @@ import Layout from "@/components/layout/Layout";
 import { useAppContext } from "@/context/app-context";
 import { NO_IMAGE, storageImage } from "@/lib/constants";
 import { useDashboardStats } from "@/modules/dashboard/hooks/useDashboard";
+import { useConsumerList } from "@/modules/consumers/hooks/useConsumers";
+import { useFeedbackList } from "@/modules/feedback/hooks/useFeedbackList";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatCard } from "@/components/common/StatCard";
@@ -49,6 +51,9 @@ const Home = () => {
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
   const { data: categoriesData = [], isLoading: loading, error } = useDashboardStats();
+  const { data: consumerList = [], isLoading: consumersLoading } = useConsumerList();
+  const { data: feedbackList = [], isLoading: feedbackLoading } = useFeedbackList();
+  const statsLoading = loading || consumersLoading || feedbackLoading;
   const [searchTerm, setSearchTerm] = useState("");
   const userName = localStorage.getItem("name") ?? "Admin";
 
@@ -139,8 +144,8 @@ const Home = () => {
           </div>
         </div>
 
-        {/* 4 Metrics Cards */}
-        {loading ? (
+        {/* 4 Metrics Cards — every value comes from a live API query, no mock data */}
+        {statsLoading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <Card key={i} className="p-5">
@@ -155,34 +160,30 @@ const Home = () => {
             <StatCard
               icon={Tags}
               label="Total Categories"
-              value={String(categoriesData.length)}
+              value={categoriesData.length.toLocaleString("en-IN")}
               variant="amber"
-              badge="+12%"
               hint="Active marketplace groupings"
             />
             <StatCard
               icon={Building2}
               label="Verified Businesses"
-              value={String(totalMembers)}
+              value={totalMembers.toLocaleString("en-IN")}
               variant="blue"
-              badge="↑ 8%"
               hint="Registered service providers"
             />
             <StatCard
-              icon={MessageSquare}
-              label="Active Inquiries"
-              value="1,650"
-              variant="mint"
-              badge="↑ 14%"
-              hint="Private in-app negotiations"
+              icon={Users}
+              label="Consumers"
+              value={consumerList.length.toLocaleString("en-IN")}
+              variant="purple"
+              hint="Registered consumer accounts"
             />
             <StatCard
-              icon={Users}
-              label="Consumer Reach"
-              value="100+"
-              variant="purple"
-              badge="98%"
-              hint="Zero contact sharing"
+              icon={MessageSquare}
+              label="Feedback Received"
+              value={feedbackList.length.toLocaleString("en-IN")}
+              variant="mint"
+              hint="Customer feedback submitted"
             />
           </div>
         )}

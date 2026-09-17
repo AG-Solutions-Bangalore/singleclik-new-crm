@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "react-hot-toast";
 import "react-image-crop/dist/ReactCrop.css";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import Home from "@/modules/dashboard/pages/Home";
@@ -38,7 +37,24 @@ import EditNotification from "@/modules/notifications/pages/EditNotification";
 const App = () => {
   return (
     <>
-      <ToastContainer />
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        toastOptions={{
+          success: {
+            style: {
+              background: "#10B981",
+              color: "#FFFFFF",
+            },
+          },
+          error: {
+            style: {
+              background: "#EF4444",
+              color: "#FFFFFF",
+            },
+          },
+        }}
+      />
       <Routes>
         <Route path="/" element={<SignIn />} />
         <Route path="/register" element={<SignUp />} />
