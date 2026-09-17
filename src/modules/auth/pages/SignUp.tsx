@@ -1,56 +1,94 @@
 import { Link } from "react-router-dom";
-import { UserPlus } from "lucide-react";
+import { ArrowRight, Lock, Mail, User } from "lucide-react";
 import { AuthLayout } from "@/modules/auth/components/AuthLayout";
 import { PasswordInput } from "@/modules/auth/components/PasswordInput";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 const SignUp = () => {
   return (
     <AuthLayout
-      title="Create account"
-      description="Nice to meet you! Enter your details to register."
-      brandHeading="Join us today"
-      brandCopy="Get your business discovered, manage customers and grow faster with the SingleClik CRM panel."
-      brandPoints={["Free business listing", "Customer management", "Real-time inquiries"]}
+      title="Create Account"
+      description="Register your business on Single Clik"
     >
       <form className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="name">Your Name</Label>
-          <Input id="name" name="name" placeholder="Full name" autoComplete="name" />
+        {/* Full Name */}
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8A7D71]">
+            <User className="size-4" />
+          </div>
+          <Input
+            id="name"
+            name="name"
+            placeholder="Full Name / Business Name"
+            autoComplete="name"
+            className="h-11 rounded-2xl border-[#E5DFD5] bg-[#FAF8F5] pl-10 text-[14px] shadow-2xs transition-colors focus:border-[#8B5E3C] focus:bg-white focus:ring-2 focus:ring-[#8B5E3C]/20 dark:border-[#2C2E38] dark:bg-[#1E2025]"
+            required
+          />
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="email">Your Email</Label>
-          <Input id="email" name="email" type="email" placeholder="name@mail.com" autoComplete="email" />
+
+        {/* Email */}
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8A7D71]">
+            <Mail className="size-4" />
+          </div>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Official Business Email"
+            autoComplete="email"
+            className="h-11 rounded-2xl border-[#E5DFD5] bg-[#FAF8F5] pl-10 text-[14px] shadow-2xs transition-colors focus:border-[#8B5E3C] focus:bg-white focus:ring-2 focus:ring-[#8B5E3C]/20 dark:border-[#2C2E38] dark:bg-[#1E2025]"
+            required
+          />
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="password">Password</Label>
-          <PasswordInput id="password" name="password" placeholder="Create a password" autoComplete="new-password" />
+
+        {/* Password */}
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8A7D71] z-10">
+            <Lock className="size-4" />
+          </div>
+          <PasswordInput
+            id="password"
+            name="password"
+            placeholder="Create password"
+            autoComplete="new-password"
+            className="h-11 rounded-2xl border-[#E5DFD5] bg-[#FAF8F5] pl-10 pr-10 text-[14px] shadow-2xs transition-colors focus:border-[#8B5E3C] focus:bg-white focus:ring-2 focus:ring-[#8B5E3C]/20 dark:border-[#2C2E38] dark:bg-[#1E2025]"
+            required
+          />
         </div>
-        <label className="flex cursor-pointer items-center gap-2 text-body-md text-on-surface-variant">
-          <Checkbox id="terms" />
+
+        <label className="flex cursor-pointer items-center gap-2 pt-1 text-xs text-[#605A51] dark:text-[#A4A6B0]">
+          <Checkbox
+            id="terms"
+            defaultChecked
+            className="rounded-md border-[#D1C7B7] data-[state=checked]:bg-[#18181B] data-[state=checked]:text-white dark:border-[#3E4250] dark:data-[state=checked]:bg-[#F0E6D8] dark:data-[state=checked]:text-[#18181B]"
+          />
           <span>
-            I agree to the{" "}
-            <a href="#" className="font-medium text-primary hover:underline">
-              Terms and Conditions
+            I agree to Single Clik{" "}
+            <a href="#" className="font-medium text-[#8B5E3C] underline hover:text-[#6E482D] dark:text-[#D4AF37]">
+              Terms and Privacy Policy
             </a>
           </span>
         </label>
-        <Button type="submit" className="w-full">
-          <UserPlus />
-          Sign Up
-        </Button>
-        <p className="text-center text-body-md text-on-surface-variant">
-          Already have an account?{" "}
+
+        <button
+          type="submit"
+          className="mt-2 flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-[#18181B] px-5 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#2A2825] active:scale-[0.99] dark:bg-[#F0E6D8] dark:text-[#18181B] dark:hover:bg-[#E3D4C0]"
+        >
+          <span>Register Business</span>
+          <ArrowRight className="size-4" />
+        </button>
+
+        <div className="flex items-center justify-center gap-2 text-xs text-[#78716C] dark:text-[#A1A1AA]">
+          <span>Already have an account?</span>
           <Link
             to="/"
-            className="font-medium text-primary outline-none hover:underline focus-visible:rounded-sm focus-visible:outline-[2px] focus-visible:outline-primary"
+            className="font-semibold text-[#1C1917] hover:underline dark:text-[#FAF8F5]"
           >
             Sign In
           </Link>
-        </p>
+        </div>
       </form>
     </AuthLayout>
   );

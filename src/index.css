@@ -18,72 +18,73 @@
  */
 
 @theme {
-  /* ---------- Colors: surfaces ---------- */
-  --color-surface: #ffffff;
-  --color-surface-dim: #f8f9fa;
-  --color-surface-bright: #ffffff;
-  --color-surface-container-lowest: #f8f9fa;
-  --color-surface-container-low: #f0f2f5;
-  --color-surface-container: #e9ecef;
-  --color-surface-container-high: #e0e3e8;
-  --color-surface-container-highest: #d9dce1;
-  --color-surface-variant: #e9ecef;
-  --color-surface-tint: #0075de;
+  /* ---------- Colors: surfaces (Warm Luxury Cream / Porcelain) ---------- */
+  --color-surface: #FAF8F5;
+  --color-surface-dim: #F4F0E8;
+  --color-surface-bright: #FFFFFF;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-container-low: #F6F2EA;
+  --color-surface-container: #EFE8DD;
+  --color-surface-container-high: #E7DFD2;
+  --color-surface-container-highest: #DED5C6;
+  --color-surface-variant: #EFE8DD;
+  --color-surface-tint: #8B5E3C;
 
-  --color-on-surface: #202124;
-  --color-on-surface-variant: #5f6368;
-  --color-inverse-surface: #202124;
-  --color-inverse-on-surface: #f8f9fa;
+  --color-on-surface: #1C1917;
+  --color-on-surface-variant: #6A6359;
+  --color-inverse-surface: #18181B;
+  --color-inverse-on-surface: #FAF8F5;
 
-  --color-outline: #dadce0;
-  --color-outline-variant: #c4c7c5;
+  --color-outline: #E4DDD0;
+  --color-outline-variant: #D1C7B7;
 
-  --color-background: #ffffff;
-  --color-on-background: #202124;
+  --color-background: #FAF8F5;
+  --color-on-background: #1C1917;
 
-  /* ---------- Colors: brand ---------- */
-  --color-primary: #0075de;
-  --color-on-primary: #ffffff;
-  --color-primary-container: #e6f3fe;
-  --color-on-primary-container: #005bb3;
-  --color-inverse-primary: #4db8ff;
-  --color-primary-hover: #0059b3;
-  --color-primary-active: #004a99;
+  /* ---------- Colors: brand (Obsidian Espresso & Warm Cognac Bronze) ---------- */
+  --color-primary: #201D1B;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #F0E6D8;
+  --color-on-primary-container: #1C1917;
+  --color-inverse-primary: #EAE2D7;
+  --color-primary-hover: #332E2B;
+  --color-primary-active: #151312;
 
-  --color-secondary: #ffb110;
-  --color-on-secondary: #202124;
-  --color-secondary-container: #fff3e0;
-  --color-on-secondary-container: #cc8800;
+  --color-secondary: #8B5E3C;
+  --color-on-secondary: #FFFFFF;
+  --color-secondary-container: #FDF4EA;
+  --color-on-secondary-container: #8A4C1C;
 
-  --color-tertiary: #f64932;
-  --color-on-tertiary: #ffffff;
-  --color-tertiary-container: #ffe0d9;
-  --color-on-tertiary-container: #cc3d28;
+  --color-tertiary: #C28B38;
+  --color-on-tertiary: #FFFFFF;
+  --color-tertiary-container: #FEF7EE;
+  --color-on-tertiary-container: #9A6218;
 
-  --color-error: #d33b27;
-  --color-on-error: #ffffff;
-  --color-error-container: #f9dedb;
-  --color-on-error-container: #a1261f;
+  --color-error: #D33B27;
+  --color-on-error: #FFFFFF;
+  --color-error-container: #FDE8E5;
+  --color-on-error-container: #992317;
 
   /* ---------- Colors: fixed accents ---------- */
-  --color-primary-fixed: #e6f3fe;
-  --color-primary-fixed-dim: #cce5fd;
-  --color-on-primary-fixed: #001f4d;
-  --color-on-primary-fixed-variant: #004a99;
+  --color-primary-fixed: #F0E6D8;
+  --color-primary-fixed-dim: #E3D4C0;
+  --color-on-primary-fixed: #1C1917;
+  --color-on-primary-fixed-variant: #3A3530;
 
-  --color-secondary-fixed: #fff3e0;
-  --color-secondary-fixed-dim: #ffe0b2;
-  --color-on-secondary-fixed: #331f00;
-  --color-on-secondary-fixed-variant: #994d00;
+  --color-secondary-fixed: #FDF4EA;
+  --color-secondary-fixed-dim: #F7DEC7;
+  --color-on-secondary-fixed: #3D1F08;
+  --color-on-secondary-fixed-variant: #7E4215;
 
-  --color-tertiary-fixed: #ffe0d9;
-  --color-tertiary-fixed-dim: #ffb3a3;
-  --color-on-tertiary-fixed: #3d0f08;
-  --color-on-tertiary-fixed-variant: #992817;
+  --color-tertiary-fixed: #FEF7EE;
+  --color-tertiary-fixed-dim: #F8E5C4;
+  --color-on-tertiary-fixed: #3B2404;
+  --color-on-tertiary-fixed-variant: #784707;
 
   /* ---------- Typography ---------- */
-  --font-sans: "NotionInter", "Inter", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
 
   --text-display: 96px;
   --text-display--line-height: 104px;
@@ -122,93 +123,77 @@
   --text-label-sm--letter-spacing: 0.02em;
   --text-label-sm--font-weight: 500;
 
-  /* ---------- Shape (DESIGN.md `rounded`) ---------- */
-  --radius-sm: 0.25rem;
-  --radius-default: 0.5rem;
+  /* ---------- Shape ---------- */
+  --radius-sm: 0.375rem;
+  --radius-default: 0.625rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 1.75rem;
   --radius-full: 9999px;
 
-  /* ---------- Elevation (DESIGN.md: only these two depths) ---------- */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-focus-ring: 0 0 0 3px #e6f3fe;
-
-  /* ---------- Spacing (DESIGN.md semantic scale; base unit 8px) ----------
-     NOTE: these are documented values, NOT --spacing-* theme keys. Defining
-     --spacing-sm/md/lg/etc. would hijack standard utilities (max-w-sm,
-     w-md, min-w-lg, …) because Tailwind v4 resolves those names through the
-     spacing namespace. Use the standard equivalents instead:
-       xs  4px -> p-1 / gap-1 / size-1      sm  12px -> p-3 / gap-3
-       md  24px -> p-6 / gap-6              lg  40px -> p-10 / gap-10
-       xl  64px -> p-16 / gap-16            gutter 24px -> gap-6 / px-6
-  --space-xs: 4px;
-  --space-sm: 12px;
-  --space-md: 24px;
-  --space-lg: 40px;
-  --space-xl: 64px;
-  --space-gutter: 24px;
+  /* ---------- Elevation ---------- */
+  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 12px rgba(28, 25, 23, 0.06);
+  --shadow-lg: 0 12px 30px rgba(28, 25, 23, 0.08);
+  --shadow-focus-ring: 0 0 0 3px rgba(240, 230, 216, 0.85);
 
   /* ---------- Layout ---------- */
   --container-page: 1280px;
 }
 
 /*
- * Dark theme. DESIGN.md ships light tokens + `inverse-*` anchors; values
- * below are derived from those anchors (dark base = inverse-surface #202124).
- * `*-fixed` accents are intentionally NOT overridden — fixed means constant
- * across themes. Applied via `.dark` on <html> (next-themes, attribute="class").
+ * Dark theme (Rich Matte Obsidian & Dark Charcoal)
  */
 .dark {
-  --color-surface: #111113;
-  --color-surface-dim: #09090b;
-  --color-surface-bright: #27272a;
-  --color-surface-container-lowest: #151517;
-  --color-surface-container-low: #1b1b1e;
-  --color-surface-container: #232326;
-  --color-surface-container-high: #2b2b30;
-  --color-surface-container-highest: #36363c;
-  --color-surface-variant: #232326;
-  --color-surface-tint: #4db8ff;
+  --color-surface: #121316;
+  --color-surface-dim: #0C0D0F;
+  --color-surface-bright: #1E2025;
+  --color-surface-container-lowest: #16171B;
+  --color-surface-container-low: #1C1E23;
+  --color-surface-container: #23262D;
+  --color-surface-container-high: #2B2E37;
+  --color-surface-container-highest: #353842;
+  --color-surface-variant: #23262D;
+  --color-surface-tint: #D4AF37;
 
-  --color-on-surface: #ededee;
-  --color-on-surface-variant: #a3a3ab;
-  --color-inverse-surface: #f8f9fa;
-  --color-inverse-on-surface: #202124;
+  --color-on-surface: #EDEDEE;
+  --color-on-surface-variant: #A4A6B0;
+  --color-inverse-surface: #FAF8F5;
+  --color-inverse-on-surface: #121316;
 
-  --color-outline: #2d2d32;
-  --color-outline-variant: #4b4b53;
+  --color-outline: #2C2F38;
+  --color-outline-variant: #404450;
 
-  --color-background: #111113;
-  --color-on-background: #ededee;
+  --color-background: #121316;
+  --color-on-background: #EDEDEE;
 
-  --color-primary: #4db8ff;
-  --color-on-primary: #101012;
-  --color-primary-container: #23262c;
-  --color-on-primary-container: #c4dcf5;
-  --color-inverse-primary: #0075de;
-  --color-primary-hover: #79c2ff;
-  --color-primary-active: #a5d6ff;
+  --color-primary: #F0E6D8;
+  --color-on-primary: #121316;
+  --color-primary-container: #2A2724;
+  --color-on-primary-container: #F0E6D8;
+  --color-inverse-primary: #201D1B;
+  --color-primary-hover: #E3D4C0;
+  --color-primary-active: #CFC0AC;
 
-  --color-secondary: #ffb110;
-  --color-on-secondary: #202124;
-  --color-secondary-container: #2e2a20;
-  --color-on-secondary-container: #ffd88f;
+  --color-secondary: #C89968;
+  --color-on-secondary: #121316;
+  --color-secondary-container: #33271C;
+  --color-on-secondary-container: #FADBBF;
 
-  --color-tertiary-container: #42211a;
-  --color-on-tertiary-container: #ffb3a3;
+  --color-tertiary-container: #362916;
+  --color-on-tertiary-container: #FBE6BC;
 
-  --color-error: #ff9d92;
-  --color-on-error: #2b0d08;
-  --color-error-container: #571512;
-  --color-on-error-container: #ffdad6;
+  --color-error: #FF9D92;
+  --color-on-error: #2B0D08;
+  --color-error-container: #4D1612;
+  --color-on-error-container: #FFDAD6;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.65);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.7);
-  --shadow-focus-ring: 0 0 0 3px #3a3f45;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --shadow-focus-ring: 0 0 0 3px rgba(240, 230, 216, 0.2);
 
   color-scheme: dark;
 }
@@ -257,6 +242,18 @@
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+@utility font-serif-accent {
+  font-family: var(--font-serif);
+}
+
+@utility font-sans-ui {
+  font-family: var(--font-sans);
 }
 
 @layer components {
