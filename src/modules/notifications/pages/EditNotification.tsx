@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Pencil, Send } from "lucide-react";
 import Layout from "@/components/layout/Layout";
+import { AvatarImage } from "@/components/common/AvatarImage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { storageImage } from "@/lib/constants";
 import type { NotificationForm } from "../types/notifications";
 import { useNotificationDetail, useUpdateNotification } from "../hooks/useNotifications";
 
@@ -77,8 +77,6 @@ const EditNotification = () => {
     );
   };
 
-  const imageUrl = storageImage("notification_images", notify.notification_images);
-
   return (
     <Layout>
       <div className="space-y-4">
@@ -90,10 +88,11 @@ const EditNotification = () => {
         <Card>
           <CardContent>
             <div className="relative mx-auto mb-6 flex w-44 flex-col items-center">
-              <img
-                src={imageUrl}
+              <AvatarImage
+                folder="notification_images"
+                file={notify.notification_images}
                 alt="Notification"
-                className="h-32 w-32 rounded-full border border-outline object-cover"
+                size="xl"
               />
               <div className="absolute right-4 bottom-0">
                 <button

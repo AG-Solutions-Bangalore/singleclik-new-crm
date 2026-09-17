@@ -14,10 +14,10 @@ import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Spinner } from "@/components/ui/spinner";
+import { TableSkeleton } from "@/components/ui/table-skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppContext } from "@/context/app-context";
-import { storageImage } from "@/lib/constants";
+import { AvatarImage } from "@/components/common/AvatarImage";
 import { useHoldMember, useMembersList } from "../hooks/useMembersList";
 import type { MemberRow } from "../types/member";
 
@@ -146,11 +146,7 @@ const MemberList = () => {
       searchable: false,
       exportValue: (row) => row.photo ?? "",
       render: (row) => (
-        <img
-          src={storageImage("user_images", row.photo)}
-          alt={row.name}
-          className="h-10 w-10 rounded-full border border-outline object-cover"
-        />
+        <AvatarImage folder="user_images" file={row.photo} alt={row.name} size="sm" />
       ),
     },
     { key: "name", header: "Full name" },
@@ -169,49 +165,57 @@ const MemberList = () => {
       sortable: false,
       searchable: false,
       render: (row) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {!row.photo && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={(e) => whatsApp(e, row.mobile, row.name)}
               title="Send WhatsApp Message"
-              className="cursor-pointer text-on-surface transition-colors hover:text-[#25d366]"
+              aria-label="Send WhatsApp Message"
+              className="hover:text-[#25d366]"
             >
               <FaWhatsapp className="size-5" />
-            </button>
+            </Button>
           )}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={(e) => handleEdit(e, row.id)}
             title="Edit Member Info"
-            className="cursor-pointer text-on-surface transition-colors hover:text-primary"
+            aria-label="Edit Member Info"
           >
             <RiEditLine className="size-5" />
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={() => navigate(`/member-view/${row.id}`)}
             title="View Member Info"
-            className="cursor-pointer text-on-surface transition-colors hover:text-primary"
+            aria-label="View Member Info"
           >
             <MdOutlineRemoveRedEye className="size-5" />
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={(e) => handleChangeToHold(e, row.id)}
             title="Hold"
-            className="cursor-pointer text-error transition-colors hover:opacity-80"
+            aria-label="Hold member"
+            className="text-error hover:text-error"
           >
-            <TbStatusChange className="size-6" />
-          </button>
-          <button
-            type="button"
+            <TbStatusChange className="size-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={(e) => handleWhatsAppClick(e, row.mobile)}
             title="Open WhatsApp"
-            className="cursor-pointer text-on-surface transition-colors hover:text-[#25d366]"
+            aria-label="Open WhatsApp"
+            className="hover:text-[#25d366]"
           >
             <FiMessageCircle className="size-5" />
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -261,12 +265,10 @@ const MemberList = () => {
       <div className="flex flex-col gap-4">
         <PageHeader
           title="Member List"
-          description="All registered members with photo filter and WhatsApp actions."
+          description={`All registered members with photo filter and WhatsApp actions · ${filteredData.length} shown`}
         />
         {loading && memberList === null ? (
-          <div className="rounded-lg border border-outline bg-surface-container-lowest shadow-md">
-            <Spinner className="py-16" />
-          </div>
+          <TableSkeleton />
         ) : (
           <DataTable
             title="Member List"

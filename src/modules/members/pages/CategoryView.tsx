@@ -5,11 +5,11 @@ import { toast } from "react-toastify";
 import { Plus } from "lucide-react";
 import { MdOutlineDelete } from "react-icons/md";
 import Layout from "@/components/layout/Layout";
-import ToggleSwitch from "@/components/layout/ToggleSwitch";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
+import { Switch } from "@/components/ui/switch";
 import { useAppContext } from "@/context/app-context";
 import { useCategoryView } from "../hooks/useMemberDetail";
 import {
@@ -125,8 +125,7 @@ const CategoryView = () => {
   }, [categoryViewError]);
 
   // update the status of category
-  const handleUpdate = (e: SyntheticEvent, rowId: number) => {
-    e.preventDefault();
+  const handleUpdate = (rowId: number) => {
     if (!isPanelUp) {
       navigate("/maintenance");
       return;
@@ -135,8 +134,7 @@ const CategoryView = () => {
   };
 
   // status update for the sub categroy
-  const handleSubUpdate = (e: SyntheticEvent, rowId: number) => {
-    e.preventDefault();
+  const handleSubUpdate = (rowId: number) => {
     if (!isPanelUp) {
       navigate("/maintenance");
       return;
@@ -180,19 +178,22 @@ const CategoryView = () => {
       sortable: false,
       searchable: false,
       render: (row) => (
-        <div className="flex items-center gap-2">
-          <ToggleSwitch
-            isActive={row.u_catg_status === "Active"}
-            onToggle={(e) => handleUpdate(e, row.id)}
+        <div className="flex items-center gap-1">
+          <Switch
+            checked={row.u_catg_status === "Active"}
+            onCheckedChange={() => handleUpdate(row.id)}
+            aria-label={row.u_catg_status === "Active" ? "Deactivate category" : "Activate category"}
           />
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={(e) => handleDelete(e, row.id)}
             title="Delete Category"
-            className="cursor-pointer text-error transition-colors hover:opacity-80"
+            aria-label="Delete Category"
+            className="text-error hover:text-error"
           >
             <MdOutlineDelete className="size-5" />
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -214,19 +215,22 @@ const CategoryView = () => {
       sortable: false,
       searchable: false,
       render: (row) => (
-        <div className="flex items-center gap-2">
-          <ToggleSwitch
-            isActive={row.u_subcatg_status === "Active"}
-            onToggle={(e) => handleSubUpdate(e, row.id)}
+        <div className="flex items-center gap-1">
+          <Switch
+            checked={row.u_subcatg_status === "Active"}
+            onCheckedChange={() => handleSubUpdate(row.id)}
+            aria-label={row.u_subcatg_status === "Active" ? "Deactivate sub-category" : "Activate sub-category"}
           />
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={(e) => handleSubDelete(e, row.id)}
             title="Delete SubCategory"
-            className="cursor-pointer text-error transition-colors hover:opacity-80"
+            aria-label="Delete SubCategory"
+            className="text-error hover:text-error"
           >
             <MdOutlineDelete className="size-5" />
-          </button>
+          </Button>
         </div>
       ),
     },

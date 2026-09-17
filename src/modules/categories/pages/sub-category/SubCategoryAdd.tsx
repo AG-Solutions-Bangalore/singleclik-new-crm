@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MdSend } from "react-icons/md";
 import Layout from "@/components/layout/Layout";
+import { FormActions } from "@/components/common/FormActions";
 import { useAppContext } from "@/context/app-context";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -131,12 +130,11 @@ const SubCategoryAdd = () => {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-center">
-              <Button type="submit" disabled={createSubCategory.isPending}>
-                <MdSend />
-                <span>{createSubCategory.isPending ? "Submiting...." : "Submit"}</span>
-              </Button>
-            </div>
+            <FormActions
+              isPending={createSubCategory.isPending}
+              pendingLabel="Submiting...."
+              submitLabel="Submit"
+            />
           </form>
         </CardContent>
       </Card>

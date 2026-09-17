@@ -2,9 +2,8 @@ import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Send } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
+import { FormActions } from "@/components/common/FormActions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -86,12 +85,11 @@ const AddSlider = () => {
                   />
                 </div>
               </div>
-              <div className="flex justify-center">
-                <Button type="submit" variant="primary" disabled={createMutation.isPending}>
-                  <Send />
-                  <span>{createMutation.isPending ? "Submiting...." : "Submit"}</span>
-                </Button>
-              </div>
+              <FormActions
+                isPending={createMutation.isPending}
+                pendingLabel="Submiting...."
+                submitLabel="Submit"
+              />
             </form>
           </CardContent>
         </Card>

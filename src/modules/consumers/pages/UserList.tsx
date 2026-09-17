@@ -2,14 +2,14 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import ToggleSwitch from "@/components/layout/ToggleSwitch";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
+import { TableSkeleton } from "@/components/ui/table-skeleton";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { AvatarImage } from "@/components/common/AvatarImage";
 import { useAppContext } from "@/context/app-context";
-import { storageImage } from "@/lib/constants";
 import type { ConsumerRow } from "../types/consumers";
 import { profileTypeLabel } from "../types/consumers";
 import { useConsumerList, useDeleteUser, useUpdateUserStatus } from "../hooks/useConsumers";
@@ -34,8 +34,7 @@ const UserList = () => {
     }
   }, [error]);
 
-  const handleUpdate = (e: React.SyntheticEvent, id: number) => {
-    e.preventDefault();
+  const handleUpdate = (id: number) => {
     if (!isPanelUp) {
       navigate("/maintenance");
       return;
@@ -66,11 +65,7 @@ const UserList = () => {
       sortable: false,
       searchable: false,
       render: (row) => (
-        <img
-          src={storageImage("user_images", row.photo)}
-          alt="Member"
-          className="h-10 w-10 rounded-full object-cover"
-        />
+        <AvatarImage folder="user_images" file={row.photo} alt="Member" size="sm" />
       ),
       exportValue: (row) => row.photo ?? "",
     },
@@ -96,9 +91,7 @@ const UserList = () => {
       key: "status",
       header: "Status",
       sortable: false,
-      render: (row) => (
-        <Badge variant={row.status === "Active" ? "success" : "destructive"}>{row.status}</Badge>
-      ),
+      render: (row) => <StatusBadge status={row.status} inactiveVariant="destructive" />,
       exportValue: (row) => row.status ?? "",
     },
     {
@@ -108,9 +101,10 @@ const UserList = () => {
       searchable: false,
       render: (row) => (
         <div className="flex items-center gap-2">
-          <ToggleSwitch
-            isActive={row.status === "Active"}
-            onToggle={(e) => handleUpdate(e, row.id)}
+          <Switch
+            checked={row.status === "Active"}
+            onCheckedChange={() => handleUpdate(row.id)}
+            aria-label={row.status === "Active" ? "Deactivate user" : "Activate user"}
           />
           <Button
             variant="ghost"
@@ -126,15 +120,17 @@ const UserList = () => {
     },
   ];
 
+  const total = userListData?.length ?? 0;
+
   return (
     <Layout>
       <div className="mt-5">
         {loading && userListData == null ? (
-          <Spinner className="py-16" />
+          <TableSkeleton />
         ) : (
           <DataTable
             title="User List"
-            description="Manage all registered users"
+            description={total > 0 ? `Manage all registered users · ${total} total` : "Manage all registered users"}
             data={userListData ?? []}
             columns={columns}
             loading={loading}

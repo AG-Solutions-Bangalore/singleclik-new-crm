@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { AvatarImage } from "@/components/common/AvatarImage";
 import { Spinner } from "@/components/ui/spinner";
 import { useAppContext } from "@/context/app-context";
-import { storageImage } from "@/lib/constants";
 import type { ConsumerRow } from "../types/consumers";
 import { profileTypeLabel } from "../types/consumers";
 import { useDeletedConsumerList } from "../hooks/useConsumers";
@@ -42,11 +42,7 @@ const DeleteUser = () => {
       sortable: false,
       searchable: false,
       render: (row) => (
-        <img
-          src={storageImage("user_images", row.photo)}
-          alt="Member"
-          className="h-10 w-10 rounded-full object-cover"
-        />
+        <AvatarImage folder="user_images" file={row.photo} alt="Member" size="sm" />
       ),
       exportValue: (row) => row.photo ?? "",
     },
@@ -73,9 +69,7 @@ const DeleteUser = () => {
       key: "status",
       header: "Status",
       sortable: false,
-      render: (row) => (
-        <Badge variant={row.status === "Active" ? "success" : "destructive"}>{row.status}</Badge>
-      ),
+      render: (row) => <StatusBadge status={row.status} inactiveVariant="destructive" />,
       exportValue: (row) => row.status ?? "",
     },
   ];

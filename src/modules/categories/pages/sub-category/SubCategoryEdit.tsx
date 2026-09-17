@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { MdSend } from "react-icons/md";
 import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
+import { FormActions } from "@/components/common/FormActions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -141,12 +140,11 @@ const SubCategoryEdit = () => {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-center">
-              <Button type="submit" disabled={updateSubCategory.isPending}>
-                <MdSend />
-                <span>{updateSubCategory.isPending ? "Updating..." : "Update"}</span>
-              </Button>
-            </div>
+            <FormActions
+              isPending={updateSubCategory.isPending}
+              pendingLabel="Updating..."
+              submitLabel="Update"
+            />
           </form>
         </CardContent>
       </Card>

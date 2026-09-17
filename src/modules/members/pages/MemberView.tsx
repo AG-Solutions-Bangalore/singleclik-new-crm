@@ -4,12 +4,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Printer } from "lucide-react";
 import ReactToPrint from "react-to-print";
 import Layout from "@/components/layout/Layout";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { AvatarImage } from "@/components/common/AvatarImage";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { Spinner } from "@/components/ui/spinner";
 import { useAppContext } from "@/context/app-context";
-import { storageImage } from "@/lib/constants";
 import { useMemberDetail } from "../hooks/useMemberDetail";
 import type { MemberCategory, MemberRow, MemberSubCategory } from "../types/member";
 
@@ -116,15 +117,15 @@ const MemberView = () => {
                   </h2>
                   <div className="mt-2 flex flex-wrap gap-2">
                     <Badge variant="primary">{profileTypeLabel(profile.profile_type)}</Badge>
-                    <Badge variant={profile.status === "Active" ? "success" : "secondary"}>
-                      {profile.status}
-                    </Badge>
+                    <StatusBadge status={profile.status} inactiveVariant="secondary" />
                   </div>
                 </div>
-                <img
-                  className="h-24 w-24 rounded-full border-2 border-tertiary object-cover"
-                  src={storageImage("user_images", profile.photo)}
-                  alt={profile.name}
+                <AvatarImage
+                  folder="user_images"
+                  file={profile.photo}
+                  alt={profile.name ?? "Member"}
+                  size="lg"
+                  className="border-2 border-tertiary"
                 />
               </div>
 

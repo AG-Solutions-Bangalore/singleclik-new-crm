@@ -4,7 +4,7 @@ import { RiEditLine } from "react-icons/ri";
 import { Plus } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { useAppContext } from "@/context/app-context";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
@@ -49,11 +49,7 @@ const SubCategoryList = () => {
     {
       key: "subcategory_status",
       header: "Status",
-      render: (row) => (
-        <Badge variant={row.subcategory_status === "Active" ? "success" : "muted"}>
-          {row.subcategory_status}
-        </Badge>
-      ),
+      render: (row) => <StatusBadge status={row.subcategory_status} />,
     },
     {
       key: "id",

@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Send } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
+import { FormActions } from "@/components/common/FormActions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -105,12 +104,11 @@ const AddNotification = () => {
                   />
                 </div>
               </div>
-              <div className="mt-6 flex justify-center">
-                <Button type="submit" variant="primary" disabled={isPending}>
-                  <Send />
-                  <span>{isPending ? "Submitting..." : "Submit"}</span>
-                </Button>
-              </div>
+              <FormActions
+                isPending={isPending}
+                pendingLabel="Submitting..."
+                submitLabel="Submit"
+              />
             </form>
           </CardContent>
         </Card>

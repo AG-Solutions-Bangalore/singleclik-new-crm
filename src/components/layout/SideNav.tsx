@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { X } from "lucide-react";
+import { useTheme } from "next-themes";
+import { KeyRound, LogOut, Moon, Sun, X } from "lucide-react";
 import { TbStackPop, TbCategory2 } from "react-icons/tb";
 import { CgProductHunt } from "react-icons/cg";
 import { TfiLayoutSlider } from "react-icons/tfi";
@@ -13,6 +14,7 @@ import {
   MdOutlineSpaceDashboard,
 } from "react-icons/md";
 import { IoIosNotificationsOutline } from "react-icons/io";
+import Logout from "@/components/layout/Logout";
 import { cn } from "@/lib/utils";
 
 interface SideNavProps {
@@ -37,7 +39,13 @@ const sideItems = [
 const SideNav = ({ openSideNav, setOpenSideNav }: SideNavProps) => {
   const sidenavRef = useRef<HTMLElement>(null);
   const { pathname } = useLocation();
+  const { resolvedTheme, setTheme } = useTheme();
   const [logoOk, setLogoOk] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
+  const userName = localStorage.getItem("name") ?? "Admin";
+
+  const handleOpenLogout = () => setOpenModal((v) => !v);
+  const toggleTheme = () => setTheme(resolvedTheme === "dark" ? "light" : "dark");
 
   // close sidebar when clicking outside
   useEffect(() => {
@@ -127,9 +135,57 @@ const SideNav = ({ openSideNav, setOpenSideNav }: SideNavProps) => {
         </ul>
       </nav>
 
-      <div className="border-t border-outline p-4">
-        <p className="text-center text-label-sm text-on-surface-variant">SingleClik CRM · v1.0</p>
+      <div className="border-t border-outline bg-surface-container-low/60 p-3">
+        <Link
+          to="/profile"
+          onClick={handleItemClick}
+          className="flex items-center gap-3 rounded-lg border border-transparent px-2 py-2 transition-colors outline-none hover:border-outline hover:bg-surface focus-visible:outline-[2px] focus-visible:outline-primary"
+        >
+          <span
+            aria-hidden
+            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-label-md font-semibold text-on-primary ring-2 ring-primary-container"
+          >
+            {userName.charAt(0).toUpperCase()}
+          </span>
+          <span className="min-w-0 flex-1 leading-tight">
+            <span className="block truncate text-label-md font-medium text-on-surface">{userName}</span>
+            <span className="block text-label-sm text-on-surface-variant">View profile</span>
+          </span>
+        </Link>
+        <div className="mt-2 grid grid-cols-3 gap-1.5">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Toggle color theme"
+            title="Toggle color theme"
+            className="inline-flex h-9 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-lg border border-outline bg-surface py-1 text-label-sm text-on-surface-variant transition-colors outline-none hover:border-primary hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
+          >
+            {resolvedTheme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            Theme
+          </button>
+          <Link
+            to="/change-password"
+            onClick={handleItemClick}
+            aria-label="Change password"
+            title="Change password"
+            className="inline-flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg border border-outline bg-surface py-1 text-label-sm text-on-surface-variant transition-colors outline-none hover:border-primary hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
+          >
+            <KeyRound className="size-4" />
+            Security
+          </Link>
+          <button
+            type="button"
+            onClick={handleOpenLogout}
+            aria-label="Log out"
+            title="Log out"
+            className="inline-flex h-9 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-lg border border-error/40 bg-surface py-1 text-label-sm text-error transition-colors outline-none hover:bg-error-container focus-visible:outline-[2px] focus-visible:outline-primary"
+          >
+            <LogOut className="size-4" />
+            Logout
+          </button>
+        </div>
       </div>
+      <Logout open={openModal} handleOpen={handleOpenLogout} />
     </aside>
   );
 };

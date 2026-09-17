@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MdSend } from "react-icons/md";
 import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
+import { FormActions } from "@/components/common/FormActions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -135,12 +134,11 @@ const CategoryAdd = () => {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-center">
-              <Button type="submit" disabled={createCategory.isPending}>
-                <MdSend />
-                <span>{createCategory.isPending ? "Submiting...." : "Submit"}</span>
-              </Button>
-            </div>
+            <FormActions
+              isPending={createCategory.isPending}
+              pendingLabel="Submiting...."
+              submitLabel="Submit"
+            />
           </form>
         </CardContent>
       </Card>

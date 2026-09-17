@@ -4,6 +4,7 @@ import { clearAppStorage } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -24,18 +25,20 @@ const Logout = ({ open, handleOpen }: LogoutProps) => {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleOpen()}>
-      <DialogHeader>
-        <DialogTitle>Confirm Logout</DialogTitle>
-        <DialogDescription>Are you sure you want to log out?</DialogDescription>
-      </DialogHeader>
-      <DialogFooter>
-        <Button variant="ghost" onClick={handleOpen}>
-          Cancel
-        </Button>
-        <Button variant="destructive" onClick={handleLogout}>
-          <LogOut /> Confirm
-        </Button>
-      </DialogFooter>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Confirm Logout</DialogTitle>
+          <DialogDescription>Are you sure you want to log out?</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="ghost" onClick={handleOpen}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={handleLogout}>
+            <LogOut /> Confirm
+          </Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 };

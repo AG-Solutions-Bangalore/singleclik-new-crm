@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Pencil, Send } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import { storageImage } from "@/lib/constants";
+import { AvatarImage } from "@/components/common/AvatarImage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -98,8 +98,6 @@ const EditSlider = () => {
     );
   };
 
-  const imageUrl = storageImage("slider_images", advSlider.slider_images);
-
   return (
     <Layout>
       <div className="space-y-4">
@@ -111,10 +109,12 @@ const EditSlider = () => {
         <Card>
           <CardContent>
             <div className="relative m-auto mb-6 flex w-44 flex-col items-center">
-              <img
-                src={imageUrl}
+              <AvatarImage
+                folder="slider_images"
+                file={advSlider.slider_images}
                 alt="Slider"
-                className="mb-2 h-32 w-32 rounded-full border-2 border-outline object-cover"
+                size="xl"
+                className="mb-2 border-2"
               />
               <div className="absolute right-0 bottom-0 -translate-x-6 -translate-y-1/4 transform">
                 <div

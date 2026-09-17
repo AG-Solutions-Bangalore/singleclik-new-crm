@@ -5,7 +5,7 @@ import { Pencil, Plus } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { useAppContext } from "@/context/app-context";
 import { storageImage } from "@/lib/constants";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
@@ -76,12 +76,7 @@ const SliderList = () => {
       key: "slider_status",
       header: "Status",
       sortable: false,
-      render: (row) =>
-        row.slider_status === "Active" ? (
-          <Badge variant="success">Active</Badge>
-        ) : (
-          <Badge variant="secondary">{row.slider_status}</Badge>
-        ),
+      render: (row) => <StatusBadge status={row.slider_status} inactiveVariant="secondary" />,
       exportValue: (row) => row.slider_status,
     },
     {

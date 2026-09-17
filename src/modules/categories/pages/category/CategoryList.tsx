@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { useAppContext } from "@/context/app-context";
 import { storageImage } from "@/lib/constants";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
@@ -67,11 +67,7 @@ const CategoryList = () => {
     {
       key: "category_status",
       header: "Status",
-      render: (row) => (
-        <Badge variant={row.category_status === "Active" ? "success" : "muted"}>
-          {row.category_status}
-        </Badge>
-      ),
+      render: (row) => <StatusBadge status={row.category_status} />,
     },
     {
       key: "id",

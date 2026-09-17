@@ -4,11 +4,11 @@ import { Pencil, Plus } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { AvatarImage } from "@/components/common/AvatarImage";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useAppContext } from "@/context/app-context";
-import { storageImage } from "@/lib/constants";
 import type { NotificationRow } from "../types/notifications";
 import { useNotificationList } from "../hooks/useNotifications";
 
@@ -43,10 +43,11 @@ const NotificationList = () => {
       sortable: false,
       searchable: false,
       render: (row) => (
-        <img
-          src={storageImage("notification_images", row.notification_images)}
+        <AvatarImage
+          folder="notification_images"
+          file={row.notification_images}
           alt="Notification"
-          className="h-10 w-10 rounded-full object-cover"
+          size="sm"
         />
       ),
       exportValue: (row) => row.notification_images ?? "",
@@ -66,9 +67,7 @@ const NotificationList = () => {
       header: "Status",
       sortable: false,
       render: (row) => (
-        <Badge variant={row.notification_status === "Active" ? "success" : "destructive"}>
-          {row.notification_status}
-        </Badge>
+        <StatusBadge status={row.notification_status} inactiveVariant="destructive" />
       ),
       exportValue: (row) => row.notification_status ?? "",
     },
