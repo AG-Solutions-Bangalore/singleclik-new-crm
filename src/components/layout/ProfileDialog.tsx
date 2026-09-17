@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { KeyRound, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,9 +12,11 @@ import {
 interface ProfileDialogProps {
   open: boolean;
   onClose: () => void;
+  onOpenSecurity: () => void;
+  onOpenProfile: () => void;
 }
 
-const ProfileDialog = ({ open, onClose }: ProfileDialogProps) => {
+const ProfileDialog = ({ open, onClose, onOpenSecurity, onOpenProfile }: ProfileDialogProps) => {
   const userName = localStorage.getItem("name") ?? "Admin";
   const userMobile = localStorage.getItem("username") ?? "—";
 
@@ -43,15 +44,11 @@ const ProfileDialog = ({ open, onClose }: ProfileDialogProps) => {
           </div>
         </div>
         <DialogFooter className="sm:justify-center">
-          <Button variant="outline" asChild>
-            <Link to="/change-password" onClick={onClose}>
-              <KeyRound /> Security
-            </Link>
+          <Button variant="outline" type="button" onClick={onOpenSecurity}>
+            <KeyRound /> Security
           </Button>
-          <Button asChild>
-            <Link to="/profile" onClick={onClose}>
-              <UserRound /> Full Profile
-            </Link>
+          <Button type="button" onClick={onOpenProfile}>
+            <UserRound /> Full Profile
           </Button>
         </DialogFooter>
       </DialogContent>

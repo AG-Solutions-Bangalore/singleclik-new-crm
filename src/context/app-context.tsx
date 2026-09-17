@@ -74,8 +74,6 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
           "/member-edit",
           "/category-view",
           "/category",
-          "/profile",
-          "/change-password",
           "/category-edit",
           "/sub-category",
           "/add-subCategory",

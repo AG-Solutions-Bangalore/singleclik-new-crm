@@ -30,6 +30,9 @@ export function useLogin() {
           localStorage.setItem("id", res.data.UserInfo.user.user_type);
           localStorage.setItem("name", res.data.UserInfo.user.name);
           localStorage.setItem("username", res.data.UserInfo.user.mobile);
+          if (res.data.UserInfo.user.email) {
+            localStorage.setItem("email", res.data.UserInfo.user.email);
+          }
           localStorage.setItem("user_type_id", res.data.UserInfo.user.user_type);
           navigate("/home");
         } else {

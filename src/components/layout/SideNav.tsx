@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { ChevronRight, KeyRound, LogOut, Moon, Sun, X } from "lucide-react";
 import { TbStackPop, TbCategory2 } from "react-icons/tb";
@@ -16,6 +16,8 @@ import {
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import ProfileDialog from "@/components/layout/ProfileDialog";
+import ProfileEditDialog from "@/modules/profile/components/ProfileEditDialog";
+import SecurityDialog from "@/modules/profile/components/SecurityDialog";
 import { cn } from "@/lib/utils";
 
 interface SideNavProps {
@@ -43,6 +45,8 @@ const SideNav = ({ openSideNav, setOpenSideNav, onLogoutRequest }: SideNavProps)
   const { pathname } = useLocation();
   const { resolvedTheme, setTheme } = useTheme();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [profileEditOpen, setProfileEditOpen] = useState(false);
+  const [securityOpen, setSecurityOpen] = useState(false);
   const userName = localStorage.getItem("name") ?? "Admin";
 
   const toggleTheme = () => setTheme(resolvedTheme === "dark" ? "light" : "dark");
@@ -148,16 +152,16 @@ const SideNav = ({ openSideNav, setOpenSideNav, onLogoutRequest }: SideNavProps)
               {resolvedTheme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
               Theme
             </button>
-            <Link
-              to="/change-password"
-              onClick={handleItemClick}
+            <button
+              type="button"
+              onClick={() => setSecurityOpen(true)}
               aria-label="Change password"
               title="Change password"
-              className="inline-flex h-12 flex-col items-center justify-center gap-1 rounded-lg text-label-sm font-medium text-on-surface-variant transition-colors outline-none hover:bg-surface hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
+              className="inline-flex h-12 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg text-label-sm font-medium text-on-surface-variant transition-colors outline-none hover:bg-surface hover:text-on-surface focus-visible:outline-[2px] focus-visible:outline-primary"
             >
               <KeyRound className="size-[18px]" />
               Security
-            </Link>
+            </button>
             <button
               type="button"
               onClick={onLogoutRequest}
@@ -171,7 +175,20 @@ const SideNav = ({ openSideNav, setOpenSideNav, onLogoutRequest }: SideNavProps)
           </div>
         </div>
       </div>
-      <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
+      <ProfileDialog
+        open={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        onOpenSecurity={() => {
+          setProfileOpen(false);
+          setSecurityOpen(true);
+        }}
+        onOpenProfile={() => {
+          setProfileOpen(false);
+          setProfileEditOpen(true);
+        }}
+      />
+      <ProfileEditDialog open={profileEditOpen} onClose={() => setProfileEditOpen(false)} />
+      <SecurityDialog open={securityOpen} onClose={() => setSecurityOpen(false)} />
     </aside>
   );
 };

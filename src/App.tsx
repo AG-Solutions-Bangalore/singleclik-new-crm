@@ -8,8 +8,6 @@ import SignIn from "@/modules/auth/pages/SignIn";
 import SignUp from "@/modules/auth/pages/SignUp";
 import ForgetPassword from "@/modules/auth/pages/ForgetPassword";
 import Maintenance from "@/modules/maintenance/pages/Maintenance";
-import Profile from "@/modules/profile/pages/Profile";
-import ChangePassword from "@/modules/profile/pages/ChangePassword";
 import MemberList from "@/modules/members/pages/MemberList";
 import MemberView from "@/modules/members/pages/MemberView";
 import MemberEdit from "@/modules/members/pages/MemberEdit";
@@ -48,8 +46,6 @@ const App = () => {
         <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
         <Route path="/maintenance" element={<Maintenance />} />
 
-        <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
-        <Route path="/change-password" element={<ProtectedRoute element={<ChangePassword />} />} />
         <Route path="/member-list" element={<MemberList />} />
         <Route path="/member-view/:id" element={<MemberView />} />
         <Route path="/member-edit/:id" element={<MemberEdit />} />
