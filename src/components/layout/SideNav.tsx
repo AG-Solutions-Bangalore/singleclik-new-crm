@@ -5,7 +5,7 @@ import { TbStackPop, TbCategory2 } from "react-icons/tb";
 import { CgProductHunt } from "react-icons/cg";
 import { TfiLayoutSlider } from "react-icons/tfi";
 import { PiCardholderLight } from "react-icons/pi";
-import { FiUsers } from "react-icons/fi";
+import { FiSettings, FiUsers } from "react-icons/fi";
 import {
   MdOutlineBusinessCenter,
   MdOutlineDelete,
@@ -33,6 +33,7 @@ const sideItems = [
   { to: "/product", label: "Products", Icon: CgProductHunt },
   { to: "/feedback", label: "Feedback", Icon: MdOutlineFeedback },
   { to: "/notification", label: "Notification", Icon: IoIosNotificationsOutline },
+  { to: "/settings", label: "Settings", Icon: FiSettings },
 ];
 
 const SideNav = ({ openSideNav, setOpenSideNav }: SideNavProps) => {

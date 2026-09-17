@@ -33,6 +33,7 @@ import FeedbackList from "@/modules/feedback/pages/FeedbackList";
 import NotificationList from "@/modules/notifications/pages/NotificationList";
 import AddNotification from "@/modules/notifications/pages/AddNotification";
 import EditNotification from "@/modules/notifications/pages/EditNotification";
+import Settings from "@/modules/settings/pages/Settings";
 
 const App = () => {
   return (
@@ -88,6 +89,7 @@ const App = () => {
         <Route path="/notification" element={<NotificationList />} />
         <Route path="/add-notification" element={<AddNotification />} />
         <Route path="/edit-notification/:id" element={<EditNotification />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </>
   );

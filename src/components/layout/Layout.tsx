@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { MotionConfig } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import Logout from "@/components/layout/Logout";
 import SideNav from "@/components/layout/SideNav";
@@ -51,14 +51,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
           <Footer />
         </div>
 
-        <button
-          type="button"
-          onClick={() => setOpenSideNav((v) => !v)}
-          aria-label={openSideNav ? "Close navigation" : "Open navigation"}
-          className="fixed bottom-4 left-4 z-40 flex size-12 cursor-pointer items-center justify-center rounded-full bg-blue-600 text-white shadow-xl shadow-blue-600/30 transition-transform outline-none hover:scale-105 focus-visible:outline-2 focus-visible:outline-blue-600 xl:hidden"
-        >
-          {openSideNav ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
         <Logout open={logoutOpen} handleOpen={() => setLogoutOpen(false)} />
       </div>
     </MotionConfig>

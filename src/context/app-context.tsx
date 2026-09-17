@@ -114,6 +114,7 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
           "/notification",
           "/add-notification",
           "/edit-notification",
+          "/settings",
         ];
         const isAllowedPath = allowedPaths.some((path) => currentPath.startsWith(path));
         // Stay where the user is (covers refresh); only bounce unknown /
