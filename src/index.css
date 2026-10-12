@@ -5,7 +5,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Design system — generated from DESIGN.md (Notion / Functional Minimalism)
+ * Design system — generated from DESIGN.md (SingleClik CRM / Clean Slate & Precision Canvas)
  * Tailwind CSS v4 (CSS-first config). All tokens live in @theme below,
  * so every color / type / radius / shadow is a native utility, e.g.:
  *   bg-primary text-on-primary bg-surface-container-lowest
