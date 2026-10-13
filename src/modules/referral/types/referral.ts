@@ -64,3 +64,5 @@ export function referralTargetLabel(val?: string | null): string {
   if (v === "1,2" || v === "2,1") return "Both (Business & Consumer)";
   return v || "All";
 }
+
+

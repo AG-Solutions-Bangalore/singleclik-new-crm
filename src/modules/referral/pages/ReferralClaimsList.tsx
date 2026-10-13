@@ -16,6 +16,7 @@ import {
   useReferralClaimList,
   useUpdateReferralClaimStatus,
 } from "../hooks/useReferral";
+import { formatDisplayDate } from "@/lib/utils";
 import type { ReferralClaimPoint } from "../types/referral";
 
 function ClaimStatusBadge({ status }: { status: string }) {
@@ -81,14 +82,9 @@ const ReferralClaimsList = () => {
       key: "user",
       header: "Claimant (User)",
       render: (row) => (
-        <div className="flex flex-col">
-          <span className="font-semibold text-on-surface">
-            {row.user?.name || `User #${row.user_id}`}
-          </span>
-          <span className="text-xs text-on-surface-variant">
-            User ID: {row.user_id}
-          </span>
-        </div>
+        <span className="font-semibold text-on-surface">
+          {row.user?.name || `User #${row.user_id}`}
+        </span>
       ),
       exportValue: (row) => row.user?.name || String(row.user_id),
     },
@@ -96,15 +92,10 @@ const ReferralClaimsList = () => {
       key: "claim_products",
       header: "Reward Product Claimed",
       render: (row) => (
-        <div className="flex flex-col max-w-sm">
-          <span className="font-medium text-on-surface">
-            {row.claim_products?.refferal_products ||
-              `Product #${row.refferal_product_id}`}
-          </span>
-          <span className="text-xs text-on-surface-variant">
-            Product ID: {row.refferal_product_id}
-          </span>
-        </div>
+        <span className="font-medium text-on-surface max-w-sm">
+          {row.claim_products?.refferal_products ||
+            `Product #${row.refferal_product_id}`}
+        </span>
       ),
       exportValue: (row) =>
         row.claim_products?.refferal_products ||
@@ -124,21 +115,21 @@ const ReferralClaimsList = () => {
       key: "refferal_claim_created_date",
       header: "Claim Date",
       render: (row) => (
-        <span className="text-sm text-on-surface-variant">
-          {row.refferal_claim_created_date}
+        <span className="text-sm whitespace-nowrap text-on-surface-variant">
+          {formatDisplayDate(row.refferal_claim_created_date)}
         </span>
       ),
-      exportValue: (row) => row.refferal_claim_created_date,
+      exportValue: (row) => formatDisplayDate(row.refferal_claim_created_date),
     },
     {
       key: "refferal_claim_validity_date",
       header: "Valid Till",
       render: (row) => (
-        <span className="text-sm text-on-surface-variant">
-          {row.refferal_claim_validity_date || "—"}
+        <span className="text-sm whitespace-nowrap text-on-surface-variant">
+          {formatDisplayDate(row.refferal_claim_validity_date)}
         </span>
       ),
-      exportValue: (row) => row.refferal_claim_validity_date || "—",
+      exportValue: (row) => formatDisplayDate(row.refferal_claim_validity_date),
     },
     {
       key: "refferal_claim_point_status",
