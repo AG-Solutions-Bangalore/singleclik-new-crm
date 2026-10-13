@@ -3,6 +3,7 @@ import { DataTable } from "@/components/ui/data-table";
 import type { DataTableColumn } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
 import { Spinner } from "@/components/ui/spinner";
+import { formatDisplayDate } from "@/lib/utils";
 import { useReferralPointList } from "../hooks/useReferral";
 import type { ReferralPoint } from "../types/referral";
 
@@ -29,14 +30,9 @@ const ReferralPointsList = () => {
       key: "reffer_user",
       header: "Referred By (Referrer)",
       render: (row) => (
-        <div className="flex flex-col">
-          <span className="font-semibold text-on-surface">
-            {row.reffer_user?.name || `User #${row.refferal_from_id}`}
-          </span>
-          <span className="text-xs text-on-surface-variant">
-            ID: {row.refferal_from_id}
-          </span>
-        </div>
+        <span className="font-semibold text-on-surface">
+          {row.reffer_user?.name || `User #${row.refferal_from_id}`}
+        </span>
       ),
       exportValue: (row) =>
         row.reffer_user?.name || String(row.refferal_from_id),
@@ -45,14 +41,9 @@ const ReferralPointsList = () => {
       key: "referred_user",
       header: "New Member (Referred)",
       render: (row) => (
-        <div className="flex flex-col">
-          <span className="font-semibold text-on-surface">
-            {row.referred_user?.name || `User #${row.referred_to_id}`}
-          </span>
-          <span className="text-xs text-on-surface-variant">
-            ID: {row.referred_to_id}
-          </span>
-        </div>
+        <span className="font-semibold text-on-surface">
+          {row.referred_user?.name || `User #${row.referred_to_id}`}
+        </span>
       ),
       exportValue: (row) =>
         row.referred_user?.name || String(row.referred_to_id),
@@ -71,11 +62,11 @@ const ReferralPointsList = () => {
       key: "refferal_point_date",
       header: "Award Date",
       render: (row) => (
-        <span className="text-sm text-on-surface-variant">
-          {row.refferal_point_date}
+        <span className="text-sm whitespace-nowrap text-on-surface-variant">
+          {formatDisplayDate(row.refferal_point_date)}
         </span>
       ),
-      exportValue: (row) => row.refferal_point_date,
+      exportValue: (row) => formatDisplayDate(row.refferal_point_date),
     },
   ];
 
