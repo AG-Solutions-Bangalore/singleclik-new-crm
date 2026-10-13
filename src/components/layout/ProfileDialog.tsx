@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { getUserField } from "@/lib/auth-storage";
 
 interface ProfileDialogProps {
   open: boolean;
@@ -17,8 +18,8 @@ interface ProfileDialogProps {
 }
 
 const ProfileDialog = ({ open, onClose, onOpenSecurity, onOpenProfile }: ProfileDialogProps) => {
-  const userName = localStorage.getItem("name") ?? "Admin";
-  const userMobile = localStorage.getItem("username") ?? "—";
+  const userName = getUserField("name", "Admin");
+  const userMobile = getUserField("username", "—");
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>

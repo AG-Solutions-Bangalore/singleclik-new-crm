@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { X } from "lucide-react";
+import { X, Gift, Coins, Award } from "lucide-react";
 import { TbStackPop, TbCategory2 } from "react-icons/tb";
 import { CgProductHunt } from "react-icons/cg";
 import { TfiLayoutSlider } from "react-icons/tfi";
@@ -31,6 +31,9 @@ const sideItems = [
   { to: "/hold-user", label: "Hold User", Icon: PiCardholderLight },
   { to: "/delete-user", label: "Delete User", Icon: MdOutlineDelete },
   { to: "/product", label: "Products", Icon: CgProductHunt },
+  { to: "/referral-products", label: "Referral Products", Icon: Gift },
+  { to: "/referral-points", label: "Referral Points", Icon: Coins },
+  { to: "/referral-claims", label: "Referral Claims", Icon: Award },
   { to: "/feedback", label: "Feedback", Icon: MdOutlineFeedback },
   { to: "/notification", label: "Notification", Icon: IoIosNotificationsOutline },
   { to: "/settings", label: "Settings", Icon: FiSettings },

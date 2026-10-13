@@ -11,6 +11,7 @@ import {
 import ProfileDialog from "@/components/layout/ProfileDialog";
 import ProfileEditDialog from "@/modules/profile/components/ProfileEditDialog";
 import SecurityDialog from "@/modules/profile/components/SecurityDialog";
+import { getUserField } from "@/lib/auth-storage";
 
 interface UserMenuProps {
   onLogoutRequest: () => void;
@@ -22,7 +23,7 @@ export default function UserMenu({ onLogoutRequest }: UserMenuProps) {
   const [profileEditOpen, setProfileEditOpen] = useState(false);
   const [securityOpen, setSecurityOpen] = useState(false);
 
-  const userName = localStorage.getItem("name") ?? "Admin";
+  const userName = getUserField("name", "Admin");
   const userRole = "SingleClik Admin";
 
   const toggleTheme = () => setTheme(resolvedTheme === "dark" ? "light" : "dark");

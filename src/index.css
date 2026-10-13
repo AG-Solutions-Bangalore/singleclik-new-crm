@@ -233,6 +233,34 @@
     outline: 3px solid var(--color-primary-container);
     outline-offset: 2px;
   }
+
+  /* Kill Chrome/Safari autofill white-yellow bg so saved logins
+     blend with the theme (login page dark inputs). The huge inset
+     shadow paints over the UA autofill background. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: #0f172a;
+    -webkit-box-shadow: 0 0 0 1000px #f8fafc inset;
+    box-shadow: 0 0 0 1000px #f8fafc inset;
+    caret-color: #0f172a;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+  .dark input:-webkit-autofill,
+  .dark input:-webkit-autofill:hover,
+  .dark input:-webkit-autofill:focus,
+  .dark input:-webkit-autofill:active,
+  .dark textarea:-webkit-autofill,
+  .dark select:-webkit-autofill {
+    -webkit-text-fill-color: #f8fafc;
+    -webkit-box-shadow: 0 0 0 1000px #1e293b inset;
+    box-shadow: 0 0 0 1000px #1e293b inset;
+    caret-color: #f8fafc;
+    transition: background-color 5000s ease-in-out 0s;
+  }
 }
 
 /* Hide scrollbars while keeping scroll/swipe working.
@@ -397,5 +425,90 @@
   .list-item:hover {
     background-color: var(--color-surface-container-high);
     color: var(--color-primary);
+  }
+
+  /* ----- Select (Radix): global polish for every dropdown ----- */
+  [data-slot="select-trigger"] {
+    min-height: 42px;
+    min-width: 0;
+    padding: 10px 14px;
+    border-radius: var(--radius-default);
+    border: 1px solid var(--color-outline);
+    background-color: var(--color-surface-container-low);
+    color: var(--color-on-surface);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      background-color 0.15s ease;
+  }
+  [data-slot="select-trigger"]:hover {
+    border-color: var(--color-outline-variant);
+    background-color: var(--color-surface-container);
+  }
+  [data-slot="select-trigger"]:focus-visible,
+  [data-slot="select-trigger"][data-state="open"] {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus-ring);
+    outline: none;
+  }
+  /* Selected text: always truncate, never push the chevron out */
+  [data-slot="select-trigger"] > span:first-child,
+  [data-slot="select-value"] {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+  }
+  [data-slot="select-trigger"] > svg,
+  [data-slot="select-trigger"] [data-radix-select-icon] {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    opacity: 0.55;
+    transition: transform 0.15s ease;
+  }
+  [data-slot="select-trigger"][data-state="open"] > svg,
+  [data-slot="select-trigger"][data-state="open"] [data-radix-select-icon] {
+    transform: rotate(180deg);
+    opacity: 1;
+  }
+  [data-slot="select-trigger"][data-placeholder] {
+    color: var(--color-on-surface-variant);
+    font-weight: 400;
+  }
+
+  [data-slot="select-content"] {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-outline);
+    background-color: var(--color-surface-container-lowest);
+    color: var(--color-on-surface);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  [data-slot="select-item"] {
+    border-radius: var(--radius-md);
+    padding: 10px 36px 10px 12px;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    color: var(--color-on-surface);
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+  }
+  [data-slot="select-item"]:hover,
+  [data-slot="select-item"]:focus-visible,
+  [data-slot="select-item"][data-highlighted] {
+    background-color: var(--color-surface-container-low);
+    outline: none;
+  }
+  [data-slot="select-item"][data-state="checked"] {
+    background-color: var(--color-primary-container);
+    color: var(--color-on-primary-container);
   }
 }

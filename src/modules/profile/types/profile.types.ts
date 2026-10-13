@@ -1,3 +1,5 @@
+import { getUserField } from "@/lib/auth-storage";
+
 export interface ProfileForm {
   name: string;
   email: string;
@@ -6,8 +8,8 @@ export interface ProfileForm {
 
 export function getDefaultProfileForm(): ProfileForm {
   return {
-    name: localStorage.getItem("name") ?? "",
-    email: localStorage.getItem("email") ?? "",
+    name: getUserField("name"),
+    email: getUserField("email"),
     message: "",
   };
 }
