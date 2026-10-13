@@ -21,15 +21,15 @@ function SelectTrigger({
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn(
-        "flex w-full cursor-pointer items-center justify-between gap-2 rounded-default border border-outline bg-surface-container-low px-3 py-2 text-body-md text-on-surface shadow-xs transition-colors outline-none hover:border-outline-variant focus:border-primary focus:shadow-focus-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:truncate",
-        size === "default" ? "min-h-9" : "min-h-8 text-[14px]",
+        "group flex min-h-[42px] w-full cursor-pointer items-center justify-between gap-2 rounded-default border border-outline bg-surface-container-low px-3.5 py-2.5 text-sm font-medium text-on-surface shadow-sm transition-all outline-none hover:border-outline-variant hover:bg-surface-container focus:border-primary focus:shadow-focus-ring data-[state=open]:border-primary data-[state=open]:shadow-focus-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate [&>span]:text-left",
+        size === "default" ? "" : "min-h-9 text-[14px]",
         className
       )}
       {...props}
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDown className="size-4 shrink-0 opacity-60" />
+        <ChevronDown className="size-4 shrink-0 opacity-60 transition-transform duration-150 group-data-[state=open]:rotate-180" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -41,7 +41,7 @@ function SelectContent({ className, children, position = "popper", ...props }: R
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          "relative z-50 max-h-72 min-w-[8rem] overflow-hidden rounded-md border border-outline bg-surface text-on-surface shadow-lg data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
+          "relative z-50 max-h-72 min-w-[8rem] overflow-hidden rounded-xl border border-outline bg-surface-container-lowest p-1.5 text-on-surface shadow-lg data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
           className
         )}
@@ -69,7 +69,7 @@ function SelectItem({ className, children, ...props }: React.ComponentProps<type
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-pointer items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-body-md outline-none select-none focus:bg-surface-container-low data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "relative flex w-full cursor-pointer items-center gap-2 rounded-lg py-2.5 pr-9 pl-3 text-sm font-medium outline-none select-none focus:bg-surface-container-low data-[highlighted]:bg-surface-container-low data-[state=checked]:bg-primary-container data-[state=checked]:font-semibold data-[state=checked]:text-on-primary-container data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
       {...props}

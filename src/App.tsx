@@ -34,6 +34,11 @@ import NotificationList from "@/modules/notifications/pages/NotificationList";
 import AddNotification from "@/modules/notifications/pages/AddNotification";
 import EditNotification from "@/modules/notifications/pages/EditNotification";
 import Settings from "@/modules/settings/pages/Settings";
+import ReferralProductList from "@/modules/referral/pages/ReferralProductList";
+import ReferralProductAdd from "@/modules/referral/pages/ReferralProductAdd";
+import ReferralProductEdit from "@/modules/referral/pages/ReferralProductEdit";
+import ReferralPointsList from "@/modules/referral/pages/ReferralPointsList";
+import ReferralClaimsList from "@/modules/referral/pages/ReferralClaimsList";
 
 const App = () => {
   return (
@@ -85,6 +90,11 @@ const App = () => {
         <Route path="/product" element={<ProductList />} />
         <Route path="/add-product" element={<ProductAdd />} />
         <Route path="/edit-product/:id" element={<ProductEdit />} />
+        <Route path="/referral-products" element={<ReferralProductList />} />
+        <Route path="/add-referral-product" element={<ReferralProductAdd />} />
+        <Route path="/edit-referral-product/:id" element={<ReferralProductEdit />} />
+        <Route path="/referral-points" element={<ReferralPointsList />} />
+        <Route path="/referral-claims" element={<ReferralClaimsList />} />
         <Route path="/feedback" element={<FeedbackList />} />
         <Route path="/notification" element={<NotificationList />} />
         <Route path="/add-notification" element={<AddNotification />} />

@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
+import { getUserField } from "@/lib/auth-storage";
 import { useAppContext } from "@/context/app-context";
 import { NO_IMAGE, storageImage } from "@/lib/constants";
 import { useDashboardStats } from "@/modules/dashboard/hooks/useDashboard";
@@ -56,7 +57,7 @@ const Home = () => {
   const { data: feedbackList = [], isLoading: feedbackLoading } = useFeedbackList();
   const statsLoading = loading || consumersLoading || feedbackLoading;
   const [searchTerm, setSearchTerm] = useState("");
-  const userName = localStorage.getItem("name") ?? "Admin";
+  const userName = getUserField("name", "Admin");
 
   // Time-aware greeting
   const currentHour = new Date().getHours();

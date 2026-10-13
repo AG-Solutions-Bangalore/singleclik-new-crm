@@ -1,128 +1,184 @@
 ---
-version: alpha
-name: Notion
+version: 1.0.0
+name: SingleClik CRM
 description: >-
-  The AI workspace that works for you. Notion combines collaborative document editing, database management, and
-  AI-powered agents into a unified system of record for teams.
+  Enterprise CRM & verified business marketplace. Single Clik connects consumers with verified businesses
+  and professionals without sharing personal contact details. Enquire, chat, negotiate, and manage workflows
+  in one secure, privacy-first platform.
+tagline: Connect. Collaborate. Get Things Done.
 logo:
-  src: https://notion.so/front-static/logo-ios.png
+  src: /favicon.svg
+  brandMark: SingleClik SC Badge with Emerald Verification Dot
+themes:
+  engine: Tailwind CSS v4 (CSS-first config via @theme and @custom-variant dark)
+  controller: next-themes (class-based dark mode on <html>)
+  default: system
 colors:
-  surface: '#ffffff'
-  surface-dim: '#f8f9fa'
-  surface-bright: '#ffffff'
-  surface-container-lowest: '#f8f9fa'
-  surface-container-low: '#f0f2f5'
-  surface-container: '#e9ecef'
-  surface-container-high: '#e0e3e8'
-  surface-container-highest: '#d9dce1'
-  on-surface: '#202124'
-  on-surface-variant: '#5f6368'
-  inverse-surface: '#202124'
-  inverse-on-surface: '#f8f9fa'
-  outline: '#dadce0'
-  outline-variant: '#c4c7c5'
-  surface-tint: '#0075de'
-  primary: '#0075de'
-  on-primary: '#ffffff'
-  primary-container: '#e6f3fe'
-  on-primary-container: '#005bb3'
-  inverse-primary: '#4db8ff'
-  secondary: '#ffb110'
-  on-secondary: '#202124'
-  secondary-container: '#fff3e0'
-  on-secondary-container: '#cc8800'
-  tertiary: '#f64932'
-  on-tertiary: '#ffffff'
-  tertiary-container: '#ffe0d9'
-  on-tertiary-container: '#cc3d28'
-  error: '#d33b27'
-  on-error: '#ffffff'
-  error-container: '#f9dedb'
-  on-error-container: '#a1261f'
-  primary-fixed: '#e6f3fe'
-  primary-fixed-dim: '#cce5fd'
-  on-primary-fixed: '#001f4d'
-  on-primary-fixed-variant: '#004a99'
-  secondary-fixed: '#fff3e0'
-  secondary-fixed-dim: '#ffe0b2'
-  on-secondary-fixed: '#331f00'
-  on-secondary-fixed-variant: '#994d00'
-  tertiary-fixed: '#ffe0d9'
-  tertiary-fixed-dim: '#ffb3a3'
-  on-tertiary-fixed: '#3d0f08'
-  on-tertiary-fixed-variant: '#992817'
-  background: '#ffffff'
-  on-background: '#202124'
-  surface-variant: '#e9ecef'
+  # Light Theme (Clean Slate & Modern Canvas)
+  surface: '#F8FAFC'
+  surface-dim: '#F1F5F9'
+  surface-bright: '#FFFFFF'
+  surface-container-lowest: '#FFFFFF'
+  surface-container-low: '#F8FAFC'
+  surface-container: '#F1F5F9'
+  surface-container-high: '#E2E8F0'
+  surface-container-highest: '#CBD5E1'
+  surface-variant: '#F1F5F9'
+  surface-tint: '#2563EB'
+  on-surface: '#0F172A'
+  on-surface-variant: '#475569'
+  inverse-surface: '#0F172A'
+  inverse-on-surface: '#F8FAFC'
+  outline: '#E2E8F0'
+  outline-variant: '#CBD5E1'
+  background: '#F8FAFC'
+  on-background: '#0F172A'
+  primary: '#2563EB'
+  on-primary: '#FFFFFF'
+  primary-container: '#EFF6FF'
+  on-primary-container: '#1E40AF'
+  inverse-primary: '#93C5FD'
+  primary-hover: '#1D4ED8'
+  primary-active: '#1E40AF'
+  secondary: '#10B981'
+  on-secondary: '#FFFFFF'
+  secondary-container: '#ECFDF5'
+  on-secondary-container: '#047857'
+  tertiary: '#F59E0B'
+  on-tertiary: '#FFFFFF'
+  tertiary-container: '#FEF3C7'
+  on-tertiary-container: '#B45309'
+  error: '#EF4444'
+  on-error: '#FFFFFF'
+  error-container: '#FEE2E2'
+  on-error-container: '#991B1B'
+  primary-fixed: '#EFF6FF'
+  primary-fixed-dim: '#DBEAFE'
+  on-primary-fixed: '#1E40AF'
+  on-primary-fixed-variant: '#1D4ED8'
+  secondary-fixed: '#ECFDF5'
+  secondary-fixed-dim: '#D1FAE5'
+  on-secondary-fixed: '#065F46'
+  on-secondary-fixed-variant: '#047857'
+  tertiary-fixed: '#FEF3C7'
+  tertiary-fixed-dim: '#FDE68A'
+  on-tertiary-fixed: '#92400E'
+  on-tertiary-fixed-variant: '#B45309'
+dark-colors:
+  # Dark Theme (SingleClik Deep Midnight Slate)
+  surface: '#0B1120'
+  surface-dim: '#070C16'
+  surface-bright: '#1E293B'
+  surface-container-lowest: '#0F172A'
+  surface-container-low: '#131D33'
+  surface-container: '#1E293B'
+  surface-container-high: '#283548'
+  surface-container-highest: '#334155'
+  surface-variant: '#1E293B'
+  surface-tint: '#3B82F6'
+  on-surface: '#F8FAFC'
+  on-surface-variant: '#94A3B8'
+  inverse-surface: '#F8FAFC'
+  inverse-on-surface: '#0F172A'
+  outline: '#1E293B'
+  outline-variant: '#334155'
+  background: '#0B1120'
+  on-background: '#F8FAFC'
+  primary: '#3B82F6'
+  on-primary: '#FFFFFF'
+  primary-container: '#1E3A8A'
+  on-primary-container: '#DBEAFE'
+  inverse-primary: '#1D4ED8'
+  primary-hover: '#60A5FA'
+  primary-active: '#2563EB'
+  secondary: '#10B981'
+  on-secondary: '#FFFFFF'
+  secondary-container: '#064E3B'
+  on-secondary-container: '#A7F3D0'
+  tertiary: '#F59E0B'
+  on-tertiary: '#FFFFFF'
+  tertiary-container: '#451A03'
+  on-tertiary-container: '#FDE68A'
+  error: '#F87171'
+  on-error: '#450A0A'
+  error-container: '#7F1D1D'
+  on-error-container: '#FEE2E2'
 typography:
+  fontFamilies:
+    sans: 'Plus Jakarta Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif'
+    display: 'Space Grotesk, sans-serif'
+    serif: 'Plus Jakarta Sans, -apple-system, BlinkMacSystemFont, sans-serif'
   display:
-    fontFamily: NotionInter, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif
+    fontFamily: '{typography.fontFamilies.display}'
     fontSize: 96px
     fontWeight: '600'
     lineHeight: 104px
     letterSpacing: '-0.04em'
   headline-lg:
-    fontFamily: NotionInter, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif
+    fontFamily: '{typography.fontFamilies.display}'
     fontSize: 48px
     fontWeight: '600'
     lineHeight: 56px
     letterSpacing: '-0.02em'
   headline-md:
-    fontFamily: NotionInter, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif
-    fontSize: 32px
-    fontWeight: '600'
-    lineHeight: 40px
-    letterSpacing: '-0.01em'
-  title-lg:
-    fontFamily: NotionInter, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif
+    fontFamily: '{typography.fontFamilies.display}'
     fontSize: 24px
     fontWeight: '600'
     lineHeight: 32px
-  body-lg:
-    fontFamily: NotionInter, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif
-    fontSize: 18px
-    fontWeight: '400'
+    letterSpacing: '-0.01em'
+  title-lg:
+    fontFamily: '{typography.fontFamilies.sans}'
+    fontSize: 20px
+    fontWeight: '600'
     lineHeight: 28px
-  body-md:
-    fontFamily: NotionInter, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif
+  body-lg:
+    fontFamily: '{typography.fontFamilies.sans}'
     fontSize: 16px
     fontWeight: '400'
     lineHeight: 24px
+  body-md:
+    fontFamily: '{typography.fontFamilies.sans}'
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
   label-md:
-    fontFamily: NotionInter, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif
-    fontSize: 16px
+    fontFamily: '{typography.fontFamilies.sans}'
+    fontSize: 14px
     fontWeight: '500'
-    lineHeight: 24px
+    lineHeight: 20px
     letterSpacing: 0.01em
   label-sm:
-    fontFamily: NotionInter, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif
+    fontFamily: '{typography.fontFamilies.sans}'
     fontSize: 12px
     fontWeight: '500'
     lineHeight: 16px
     letterSpacing: 0.02em
 rounded:
-  sm: 0.25rem
-  DEFAULT: 0.5rem
+  sm: 0.375rem
+  DEFAULT: 0.625rem
   md: 0.75rem
   lg: 1rem
-  xl: 1.5rem
+  xl: 1.25rem
+  2xl: 1.5rem
+  3xl: 1.75rem
   full: 9999px
-spacing:
-  unit: 8px
-  xs: 4px
-  sm: 12px
-  md: 24px
-  lg: 40px
-  xl: 64px
-  gutter: 24px
-  container-max: 1280px
 elevation:
-  sm: 0 1px 2px rgba(0, 0, 0, 0.06)
-  md: 0 3px 8px rgba(0, 0, 0, 0.15)
-  lg: 0 8px 24px rgba(0, 0, 0, 0.12)
+  light:
+    sm: 0 1px 3px rgba(15, 23, 42, 0.05)
+    md: 0 4px 12px rgba(15, 23, 42, 0.07)
+    lg: 0 12px 30px rgba(15, 23, 42, 0.09)
+    focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.25)
+  dark:
+    sm: 0 1px 3px rgba(0, 0, 0, 0.5)
+    md: 0 4px 14px rgba(0, 0, 0, 0.6)
+    lg: 0 12px 32px rgba(0, 0, 0, 0.7)
+    focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.35)
 layout:
   containerMaxWidth: 1280px
   gridColumns: 12
+  sidebarWidth: 288px # 72 in Tailwind (18rem)
+  headerHeight: 64px # 16 in Tailwind (4rem)
+  gutter: 24px
 components:
   button-primary:
     backgroundColor: '{colors.primary}'
@@ -130,47 +186,37 @@ components:
     typography: '{typography.label-md}'
     rounded: '{rounded.lg}'
     padding: 6px 15px
-    height: 40px
+    minHeight: 36px
     fontWeight: '500'
   button-primary-hover:
-    backgroundColor: '#0059b3'
+    backgroundColor: '{colors.primary-hover}'
     textColor: '{colors.on-primary}'
     transition: background-color 0.2s ease
-  button-primary-active:
-    backgroundColor: '#004a99'
-    textColor: '{colors.on-primary}'
   button-secondary:
     backgroundColor: '{colors.primary-container}'
     textColor: '{colors.primary}'
     typography: '{typography.label-md}'
     rounded: '{rounded.lg}'
     padding: 6px 15px
-    height: 40px
+    minHeight: 36px
     fontWeight: '500'
-  button-secondary-hover:
-    backgroundColor: '#cce5fd'
-    textColor: '{colors.primary}'
-    transition: background-color 0.2s ease
   button-ghost:
     backgroundColor: transparent
     textColor: '{colors.on-surface}'
     typography: '{typography.label-md}'
     rounded: '{rounded.lg}'
     padding: 6px 15px
-    height: 40px
+    minHeight: 36px
     fontWeight: '400'
-  button-ghost-hover:
-    backgroundColor: '{colors.surface-container-low}'
-    textColor: '{colors.on-surface}'
   card:
     backgroundColor: '{colors.surface-container-lowest}'
     rounded: '{rounded.lg}'
     padding: 16px
-    boxShadow: '{elevation.md}'
+    boxShadow: '{elevation.light.md}'
     border: 1px solid {colors.outline}
   card-hover:
     backgroundColor: '{colors.surface-container-low}'
-    boxShadow: '{elevation.lg}'
+    boxShadow: '{elevation.light.lg}'
     transition: all 0.2s ease
   input-field:
     backgroundColor: '{colors.surface-container-low}'
@@ -179,11 +225,7 @@ components:
     rounded: '{rounded.DEFAULT}'
     padding: 8px 12px
     border: 1px solid {colors.outline}
-    height: 40px
-  input-field-focus:
-    borderColor: '{colors.primary}'
-    boxShadow: 0 0 0 3px {colors.primary-container}
-    outline: none
+    minHeight: 36px
   badge:
     backgroundColor: '{colors.secondary-container}'
     textColor: '{colors.on-secondary-container}'
@@ -194,63 +236,213 @@ components:
   badge-accent:
     backgroundColor: '{colors.tertiary-container}'
     textColor: '{colors.on-tertiary-container}'
-  list-item:
-    backgroundColor: transparent
-    rounded: '{rounded.md}'
-    padding: 12px 16px
-    textColor: '{colors.on-surface}'
-  list-item-hover:
-    backgroundColor: '{colors.surface-container-high}'
-    textColor: '{colors.primary}'
-    transition: background-color 0.15s ease
 ---
 
-## Overview
+# SingleClik CRM — Design System & Style Guide
 
-Notion is a unified workspace platform that combines collaborative document management, database organization, and AI-powered automation into a single system of record. The design language embraces 'Functional Minimalism'—a clean, light aesthetic with strategic use of primary blue (#0075de) as the signature accent color, complemented by warm secondary accents (orange #ffb110 and red #f64932) that highlight key actions and AI-driven features. The brand personality is professional yet approachable, designed to make complex workflows feel intuitive and accessible to teams of all sizes. The UI prioritizes clarity and efficiency: generous whitespace, high contrast typography, and purposeful color application guide users through task-oriented workflows without visual noise.
+## 1. Brand & Product Overview
 
-Notion's voice is direct, confident, and action-oriented. The tone avoids jargon while maintaining technical credibility. Example sentence: 'Capture context, find answers, and automate tasks with AI built for your team.' The vocabulary emphasizes collaboration, intelligence, and unified systems—never fragmented or siloed. Visual hierarchy is achieved through weight and scale rather than decoration, reflecting a design philosophy that respects user attention and values substance over ornament.
+**SingleClik CRM** is the administrative and operational heart of the SingleClik Verified Marketplace. SingleClik connects everyday consumers with verified businesses, contractors, and professionals while preserving user privacy—enabling seamless inquiry, negotiation, and contract execution without exposing personal phone numbers.
 
-## Colors
+### Core Brand Identity
+- **Product Name**: SingleClik CRM
+- **Motto / Tagline**: *“Connect. Collaborate. Get Things Done.”*
+- **Sub-tagline**: *“Verified Businesses & Professionals · Privacy First”*
+- **Aesthetic Philosophy**: **Clean Slate & Precision Slate** — Crisp typography, generous breathing room, high-contrast readability, and purposeful visual anchors.
+- **Brand Signature Color**: **Electric Royal Blue (`#2563EB`)**, signifying reliability, security, and prompt action.
+- **Trust Accent Color**: **Verified Emerald (`#10B981`)**, utilized for verified badges, successful statuses, and active toggles.
 
-The color system is anchored by a primary blue (#0075de) used exclusively for primary CTAs, active states, and brand-critical interactions. This blue is vibrant enough to command attention on the white background (rgb(255, 255, 255)) without feeling aggressive. The primary container (#e6f3fe) provides a soft, low-contrast background for secondary actions and informational contexts. Secondary orange (#ffb110) highlights AI-powered features and creative actions—it appears on the 'Create' badge in the hero and signals automation or intelligence. Tertiary red (#f64932) is reserved for destructive actions, warnings, and high-priority alerts. The surface stack uses a carefully calibrated neutral palette: surface-container-lowest (#f8f9fa) for cards and panels, surface-container (#e9ecef) for div
+---
 
-## Typography
+## 2. Theme Architecture & Color System
 
-The type system uses NotionInter (a custom variant of Inter) as the primary typeface, with system fallbacks (BlinkMacSystemFont, Segoe UI) for cross-platform consistency. Display (96px, 600 weight) anchors hero sections with commanding presence and -0.04em letter-spacing to tighten the visual impact. Headline-lg (48px, 600 weight) and headline-md (32px, 600 weight) establish section hierarchy with -0.02em and -0.01em letter-spacing respectively, creating a sophisticated, slightly condensed feel. Body-lg (18px, 400 weight) and body-md (16px, 400 weight) maintain 1.5x line-height (28px and 24px) for comfortable reading in both hero copy and card content. Label-md (16px, 500 weight) is used for button text and interactive labels, while label-sm (12px, 500 weight) handles metadata, badges, and
+The application utilizes **Tailwind CSS v4** with CSS-first variable design tokens registered inside `@theme` and class-level dark mode switching via `@custom-variant dark (&:where(.dark, .dark *))` with `next-themes`.
 
-## Layout
+An inline pre-render script in `index.html` inspects `localStorage.getItem('theme')` and `window.matchMedia('(prefers-color-scheme: dark)')` to guarantee zero Flash of Unstyled Content (FOUC).
 
-The page layout uses a 12-column grid with a max-width of 1280px, centered on the viewport. Hero sections span full width with generous vertical padding (40px top/bottom minimum) to create breathing room around the display-sized headline. Content sections use a gutter of 24px between columns and 40px (lg spacing) for vertical separation between major sections. Cards and containers maintain 16px internal padding (md spacing) with 12px (sm spacing) for nested elements. The design favors asymmetrical whitespace: wider margins above sections than below, creating a natural reading rhythm that guides the eye downward. Container max-width of 1280px ensures text remains readable on ultra-wide displays while maintaining focus. Buttons and CTAs are grouped with 12px horizontal spacing (sm) and 24px
+### 2.1 Surfaces & Canvas Hierarchy
 
-## Elevation & Depth
+| Token Name | Tailwind Utility | Light Theme (Slate Light) | Dark Theme (Deep Midnight Slate) | Semantic Role |
+| :--- | :--- | :--- | :--- | :--- |
+| `surface` | `bg-surface` | `#F8FAFC` (Slate 50) | `#0B1120` (Midnight Navy) | Default viewport base |
+| `surface-dim` | `bg-surface-dim` | `#F1F5F9` (Slate 100) | `#070C16` (Deep Obsidian) | Recessed background areas |
+| `surface-bright` | `bg-surface-bright` | `#FFFFFF` (Pure White) | `#1E293B` (Slate 800) | Elevated highlighted canvas |
+| `surface-container-lowest` | `bg-surface-container-lowest` | `#FFFFFF` (Pure White) | `#0F172A` (Slate 900) | Primary card & table backgrounds |
+| `surface-container-low` | `bg-surface-container-low` | `#F8FAFC` (Slate 50) | `#131D33` (Slate 900 tint) | Input backgrounds & table headers |
+| `surface-container` | `bg-surface-container` | `#F1F5F9` (Slate 100) | `#1E293B` (Slate 800) | Standard container surfaces |
+| `surface-container-high` | `bg-surface-container-high` | `#E2E8F0` (Slate 200) | `#283548` (Slate 750) | Hover backgrounds & borders |
+| `surface-container-highest` | `bg-surface-container-highest`| `#CBD5E1` (Slate 300) | `#334155` (Slate 700) | Inactive switch tracks & chip fills |
+| `surface-variant` | `bg-surface-variant` | `#F1F5F9` (Slate 100) | `#1E293B` (Slate 800) | Alternate surface treatment |
+| `surface-tint` | `text-surface-tint` | `#2563EB` | `#3B82F6` | Primary tint overlay |
+| `outline` | `border-outline` | `#E2E8F0` (Slate 200) | `#1E293B` (Slate 800) | Default card & input borders |
+| `outline-variant` | `border-outline-variant` | `#CBD5E1` (Slate 300) | `#334155` (Slate 700) | Emphasized or active borders |
+| `on-surface` | `text-on-surface` | `#0F172A` (Slate 900) | `#F8FAFC` (Slate 50) | Primary high-contrast text |
+| `on-surface-variant` | `text-on-surface-variant`| `#475569` (Slate 600) | `#94A3B8` (Slate 400) | Secondary metadata & hint text |
 
-Depth is conveyed through subtle shadows and layering rather than dramatic effects. Level 1 (Base): the white background (rgb(255, 255, 255)) with no shadow. Level 2 (Standard Card): box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) with a 1px solid border at #dadce0, creating a soft separation from the background. Level 3 (Elevated/Hover): box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) with the same border, used for modals, popovers, and hover states on cards. Shadows use a 15% black opacity at 3px blur for standard cards and 12% at 8px blur for elevated states, creating a consistent, naturalistic light
+---
 
-## Shapes
+### 2.2 Brand & Status Color Tokens
 
-The shape philosophy is 'Geometric Clarity'—rounded corners are used sparingly and consistently to soften hard edges without introducing visual softness. Buttons and input fields use rounded.lg (1rem / 16px border-radius) for a modern, approachable feel that avoids both sharp rectangles and overly rounded pill shapes. Cards use the same 1rem radius for visual consistency. The 'Create' badge in the hero uses rounded.full (9999px) to signal a special, highlighted action—this is the only full-pill element on the page, making it visually distinctive. Smaller UI elements like badges and chips use r
+| Semantic Role | Token Name | Light Mode Hex | Dark Mode Hex | Usage in Application |
+| :--- | :--- | :--- | :--- | :--- |
+| **Primary Brand** | `primary` | `#2563EB` | `#3B82F6` | Primary action buttons, active navigation, brand marks |
+| **Primary Hover** | `primary-hover` | `#1D4ED8` | `#60A5FA` | Hover state for primary buttons |
+| **Primary Active** | `primary-active` | `#1E40AF` | `#2563EB` | Active pressed state for primary actions |
+| **Primary Container** | `primary-container` | `#EFF6FF` | `#1E3A8A` | Secondary buttons, selection pills, input focus rings |
+| **On-Primary Container** | `on-primary-container` | `#1E40AF` | `#DBEAFE` | High-contrast text on primary container backgrounds |
+| **Inverse Primary** | `inverse-primary` | `#93C5FD` | `#1D4ED8` | Contrasting accents on reversed surfaces |
+| **Secondary (Verified)** | `secondary` | `#10B981` | `#10B981` | Verification checkmarks, success toasts, live metrics |
+| **Secondary Container** | `secondary-container` | `#ECFDF5` | `#064E3B` | Verified badge backgrounds, positive delta indicators |
+| **On-Secondary Container**| `on-secondary-container` | `#047857` | `#A7F3D0` | Text within verified badges |
+| **Tertiary (Attention)** | `tertiary` | `#F59E0B` | `#F59E0B` | Category badges, alerts, warning toasts, feedback hearts |
+| **Tertiary Container** | `tertiary-container` | `#FEF3C7` | `#451A03` | Amber badge backgrounds, warning cards |
+| **On-Tertiary Container** | `on-tertiary-container` | `#B45309` | `#FDE68A` | Text within amber badges |
+| **Error (Destructive)** | `error` | `#EF4444` | `#F87171` | Delete actions, destructive dialogs, error toasts |
+| **Error Container** | `error-container` | `#FEE2E2` | `#7F1D1D` | Error banners, invalid field badges |
+| **On-Error Container** | `on-error-container` | `#991B1B` | `#FEE2E2` | Text inside error containers |
 
-## Components
+---
 
-### Action Elements
-Buttons follow a three-tier system: primary (solid blue #0075de on white background, 40px height, 6px 15px padding, 500 weight label-md), secondary (light blue background #e6f3fe with blue text #0075de, same dimensions), and ghost (transparent with dark text, used for tertiary actions). Primary buttons transition to #0059b3 on hover with a 0.2s ease timing function. All buttons use rounded.lg (16px) and maintain a minimum 44px touch target height. Focus states add a 3px outline ring of primary-container (#e6f3fe) at 100% opacity, visible at 2px offset from the button edge.
+### 2.3 Dashboard Stat Card Themes
 
-### Containers & Surfaces
-Cards use a 1px solid border (#dadce0) with 16px padding and rounded.lg (16px). The background is surface-container-lowest (#f8f9fa). On hover, the background shifts to surf
+The CRM dashboard uses four specialized color variants for KPI cards (`StatCard.tsx`), backed by live API metrics:
 
-## Do's and Don'ts
+| Variant | Light Mode (Card / Icon / Badge) | Dark Mode (Card / Icon / Badge) | Representative Metric |
+| :--- | :--- | :--- | :--- |
+| **Amber** | `bg-amber-50/70 border-amber-200` <br/> `bg-amber-100 text-amber-700` | `bg-amber-950/20 border-amber-900/40` <br/> `bg-amber-900/50 text-amber-300` | **Total Categories** |
+| **Blue** | `bg-[#EFF6FF] border-[#DBEAFE]` <br/> `bg-[#DBEAFE] text-[#1D4ED8]` | `bg-[#141F32] border-[#1E3252]` <br/> `bg-[#1E3252] text-[#93C5FD]` | **Verified Businesses** |
+| **Purple** | `bg-[#F5F3FF] border-[#EDE9FE]` <br/> `bg-[#EDE9FE] text-[#6D28D9]` | `bg-[#1E1932] border-[#322752]` <br/> `bg-[#322752] text-[#C4B5FD]` | **Consumer Accounts** |
+| **Mint (Emerald)**| `bg-[#ECFDF5] border-[#D1FAE5]` <br/> `bg-[#D1FAE5] text-[#047857]` | `bg-[#12261E] border-[#1C3E30]` <br/> `bg-[#1C3E30] text-[#6EE7B7]` | **Feedback Received** |
 
-**Do**
-- Do use primary blue (#0075de) exclusively for primary CTAs and active states—it is the brand's signature accent and must not be diluted across secondary elements.
-- Do maintain 24px (md spacing) as the standard vertical gap between major sections and 12px (sm spacing) for grouped elements to create rhythm and breathing room.
-- Do apply box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) to cards and 0 8px 24px rgba(0, 0, 0, 0.12) to elevated states; never use drop-shadows or blurred effects outside this range.
-- Do use 600 weight typography for all headings (display, headline-lg, headline-md) and 500 weight for button labels and interactive text; body text remains 400 weight.
-- Do use the secondary orange (#ffb110) and tertiary red (#f64932) sparingly—only for AI-powered features, creative actions, or destructive/warning states respectively.
+---
 
-**Don't**
-- Don't use primary blue for non-interactive elements, backgrounds, or decorative purposes—reserve it exclusively for CTAs, focus states, and active indicators.
-- Don't apply rounded corners smaller than 0.5rem (8px) to buttons or cards; the minimum is rounded.DEFAULT (8px) for inputs and rounded.lg (16px) for primary actions.
-- Don't mix shadow depths—use only the two defined levels (0 3px 8px for standard, 0 8px 24px for elevated); never create custom shadow values.
-- Don't use the secondary orange or tertiary red as background colors for large areas; they are accent colors for small, high-priority UI elements only.
-- Don't exceed 1280px container max-width on any section; if content is wider, use a fixed-width container or allow the layout to reflow at smaller breakpoints rather than stretching.
+## 3. Typography Hierarchy
+
+SingleClik CRM combines modern geometric sans fonts for high visual punch and effortless administrative scanning:
+
+1. **`Plus Jakarta Sans`** (`--font-sans`): Main UI, navigation, buttons, table data, and inputs.
+2. **`Space Grotesk`** (`--font-display`): Brand titles, section headlines, KPI counters, and hero greeting headers.
+3. **`Playfair Display`**: Available for selective editorial emphasis or high-tier enterprise statements.
+
+### Typography Scale
+
+| Token | CSS Utility | Size | Line Height | Letter Spacing | Weight | Usage |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Display** | `text-display` | `96px` | `104px` | `-0.04em` | `600` | Hero visual anchor |
+| **Headline Large** | `text-headline-lg` | `48px` | `56px` | `-0.02em` | `600` | Major page banners & landing titles |
+| **Headline Medium**| `text-headline-md` | `24px` | `32px` | `-0.01em` | `600` | Module & page headers (`h1`) |
+| **Title Large** | `text-title-lg` | `20px` | `28px` | Normal | `600` | Card headers, table titles, modal titles |
+| **Body Large** | `text-body-lg` | `16px` | `24px` | Normal | `400` | Descriptive introductions, callouts |
+| **Body Medium** | `text-body-md` | `14px` | `20px` | Normal | `400` | Default body copy, table cell content |
+| **Label Medium** | `text-label-md` | `14px` | `20px` | `+0.01em` | `500` | Button labels, form labels, menu items |
+| **Label Small** | `text-label-sm` | `12px` | `16px` | `+0.02em` | `500` | Badges, table headers (`th`), helper text |
+
+---
+
+## 4. Shapes & Border Radius
+
+The shape language utilizes smooth geometric rounding:
+
+| Token | CSS Variable | Value | Implementation Examples |
+| :--- | :--- | :--- | :--- |
+| `rounded-sm` | `--radius-sm` | `0.375rem` (6px) | Checkboxes, dropdown menu items |
+| `rounded-default`| `--radius-default` | `0.625rem` (10px) | Text inputs, select triggers, table controls |
+| `rounded-md` | `--radius-md` | `0.75rem` (12px) | Navigation links, sub-panels |
+| `rounded-lg` | `--radius-lg` | `1.0rem` (16px) | Primary buttons, standard cards, modals |
+| `rounded-xl` | `--radius-xl` | `1.25rem` (20px) | Brand mark logo container, SideNav items |
+| `rounded-2xl` | `--radius-2xl` | `1.5rem` (24px) | Metric stat cards, hero banners, auth inputs |
+| `rounded-3xl` | `--radius-3xl` | `1.75rem` (28px) | Floating auth cards, directory containers |
+| `rounded-full` | `--radius-full` | `9999px` | Badges, user avatars, pill action buttons |
+
+---
+
+## 5. Elevation & Shadows
+
+Shadows provide tactile depth without visual clutter:
+
+### Light Mode
+- **`shadow-sm`**: `0 1px 3px rgba(15, 23, 42, 0.05)` — Subtle separation for buttons and navigation bars.
+- **`shadow-md`**: `0 4px 12px rgba(15, 23, 42, 0.07)` — Standard card elevation, table wrappers.
+- **`shadow-lg`**: `0 12px 30px rgba(15, 23, 42, 0.09)` — Modals, popovers, card hover elevations.
+- **`shadow-focus-ring`**: `0 0 0 3px rgba(37, 99, 235, 0.25)` — Accessible outline for interactive focus states.
+
+### Dark Mode
+- **`shadow-sm`**: `0 1px 3px rgba(0, 0, 0, 0.5)`
+- **`shadow-md`**: `0 4px 14px rgba(0, 0, 0, 0.6)`
+- **`shadow-lg`**: `0 12px 32px rgba(0, 0, 0, 0.7)`
+- **`shadow-focus-ring`**: `0 0 0 3px rgba(59, 130, 246, 0.35)`
+
+---
+
+## 6. Layout & Grid Architecture
+
+### Master Structure
+- **Sidebar (`SideNav.tsx`)**:
+  - Desktop: Fixed left position, width `72` (`18rem` / `288px`), `z-50`.
+  - Content offset: `xl:ml-72`.
+  - Mobile: Slide-over drawer toggled via mobile menu trigger with backdrop click-outside dismissal.
+  - Active route: Filled Royal Blue (`bg-blue-600 font-semibold text-white shadow-sm shadow-blue-500/25`).
+- **Header (`header`)**:
+  - Sticky top: `sticky top-0 z-30 h-16` (64px).
+  - Background: Frosted translucent glass (`bg-white/90 backdrop-blur-md dark:bg-[#0F172A]/90`).
+  - Contains responsive drawer trigger, live formatted date, and `UserMenu` profile dropdown with theme switcher.
+- **Content Container (`container-page`)**:
+  - Max Width: `1280px` (`--container-page`).
+  - Padding: `p-4 md:p-6 lg:p-8`.
+- **Footer (`Footer.tsx`)**:
+  - Subtle copyright and attribution with tertiary heart icon.
+
+---
+
+## 7. Core Component Specifications
+
+### 7.1 Buttons (`src/components/ui/button.tsx` & `.btn-*`)
+- **Primary**: Solid blue (`bg-primary text-on-primary hover:bg-primary-hover active:bg-primary-active`). 36px min-height, 6px 15px padding, rounded-lg, label-md font.
+- **Secondary**: Soft tint (`bg-primary-container text-primary hover:bg-primary-fixed-dim`).
+- **Ghost**: Transparent (`hover:bg-surface-container-low text-on-surface`).
+- **Outline**: Clean border (`border border-outline bg-surface text-on-surface hover:bg-surface-container-low`).
+- **Destructive**: Alert red (`bg-error text-on-error hover:brightness-95`).
+- **Success**: Emerald green (`bg-emerald-600 text-white hover:bg-emerald-700`).
+
+### 7.2 Cards & Surfaces (`src/components/ui/card.tsx` & `.card`)
+- Base surface: `bg-surface-container-lowest border border-outline rounded-lg p-4 shadow-md`.
+- Interactive hover: `transition: all 0.2s ease; hover:bg-surface-container-low hover:shadow-lg`.
+
+### 7.3 Data Tables (`src/components/ui/data-table.tsx`)
+- Powered by `@tanstack/react-table` v9 with animated row entrances via `framer-motion`.
+- Top Action Bar: Search input, CSV download, print-ready view generator, and column visibility toggle dropdown.
+- Header (`th`): `bg-surface-container-low text-label-sm font-medium text-on-surface-variant`.
+- Rows (`tr`): `border-b border-outline hover:bg-surface-container-low transition-colors`.
+- Scroll Container: `@utility scrollbar-hide` with `scrollbar-gutter: stable` to eliminate layout shift on data load.
+
+### 7.4 Form Inputs & Controls
+- **Input (`input.tsx`)**: `h-9 rounded-default border border-outline bg-surface-container-low px-3 py-2 text-body-md text-on-surface focus:border-primary focus:shadow-focus-ring`.
+- **Select (`select.tsx`)**: Popover dropdown with animated zoom-in, item check indicators, and scroll buttons.
+- **Switch (`switch.tsx`)**: Emerald active fill (`data-[state=checked]:bg-emerald-600`) with smooth sliding circular thumb.
+- **Checkbox (`checkbox.tsx`)**: Rounded 4px, primary blue fill on check (`data-[state=checked]:bg-primary`).
+
+### 7.5 Badges (`src/components/ui/badge.tsx`)
+- Pill shape (`rounded-full`), `px-3 py-1`, `text-label-sm font-medium`.
+- Variants:
+  - `secondary`: Emerald tint (`bg-secondary-container text-on-secondary-container`).
+  - `accent`: Amber tint (`bg-tertiary-container text-on-tertiary-container`).
+  - `primary`: Blue tint (`bg-primary-container text-on-primary-container`).
+  - `success`: Emerald solid badge (`bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200`).
+  - `destructive`: Red tint (`bg-error-container text-on-error-container`).
+
+---
+
+## 8. Do's and Don'ts
+
+### Do
+- **Do use Electric Royal Blue (`#2563EB`)** as the primary interactive anchor for main CTAs, active route indicators, and brand marks.
+- **Do use Verified Emerald (`#10B981`)** strictly for verification badges, success indicators, and verified business statuses.
+- **Do support both Light and Dark themes** using CSS tokens (`bg-surface`, `text-on-surface`, `border-outline`) or Tailwind's `dark:` variant.
+- **Do keep interactive heights aligned**: standard buttons and form inputs should respect 36px–40px heights with 10px–16px border-radii.
+- **Do use `scrollbar-hide` and `scrollbar-gutter: stable`** on data tables to prevent horizontal bounce or jumping when data updates.
+
+### Don't
+- **Don't hardcode arbitrary colors** when a semantic token exists (use `bg-primary`, `bg-surface-container-lowest`, `border-outline`).
+- **Don't use pure `#000000` for dark backgrounds**; use SingleClik's calibrated `#0B1120` (Midnight Navy) and `#0F172A` (Slate 900) to maintain subtle depth and avoid eye strain.
+- **Don't expose raw phone numbers or personal contacts** in UI copy or layouts—SingleClik is fundamentally built as a **Privacy-First Marketplace**.
+- **Don't mix mismatched border radii** on adjacent elements—pair `rounded-default` (10px) inputs with `rounded-lg` (16px) or `rounded-full` CTA buttons.

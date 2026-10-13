@@ -3,7 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { PANEL_LOGIN_URL } from "@/modules/auth/api/auth.api";
-import { setAuthToken, setRememberedUsername } from "@/lib/auth-storage";
+import { setAuthToken, setRememberedUsername, setUserSession } from "@/lib/auth-storage";
 
 export interface LoginPayload {
   username: string;
@@ -33,13 +33,16 @@ export function useLogin() {
           // Remember me OFF -> sessionStorage (forgotten when tab/browser closes)
           setAuthToken(token, remember);
           setRememberedUsername(variables.username, remember);
-          localStorage.setItem("id", res.data.UserInfo.user.user_type);
-          localStorage.setItem("name", res.data.UserInfo.user.name);
-          localStorage.setItem("username", res.data.UserInfo.user.mobile);
-          if (res.data.UserInfo.user.email) {
-            localStorage.setItem("email", res.data.UserInfo.user.email);
-          }
-          localStorage.setItem("user_type_id", res.data.UserInfo.user.user_type);
+          setUserSession(
+            {
+              id: res.data.UserInfo.user.user_type,
+              name: res.data.UserInfo.user.name,
+              username: res.data.UserInfo.user.mobile,
+              email: res.data.UserInfo.user.email,
+              user_type_id: res.data.UserInfo.user.user_type,
+            },
+            remember,
+          );
           navigate("/home", { replace: true });
         } else {
           toast.error("Login Failed, Token not received.");
