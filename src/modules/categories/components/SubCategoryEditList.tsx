@@ -1,10 +1,23 @@
 import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import { useParams } from "react-router-dom";
 import { CiEdit } from "react-icons/ci";
 import { RiArrowUpDoubleFill } from "react-icons/ri";
+import { Loader2, Plus } from "lucide-react";
+import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -13,7 +26,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCategoryDetail } from "@/modules/categories/hooks/useCategories";
-import { useUpdateSubCategoryRow } from "@/modules/categories/hooks/useSubCategories";
+import {
+  useCreateSubCategory,
+  useUpdateSubCategoryRow,
+} from "@/modules/categories/hooks/useSubCategories";
 import type {
   CategoryEditFormState,
   SubCategoryRow,
@@ -35,9 +51,23 @@ const SubCategoryEditList = () => {
   const [subcategories, setSubcategories] = useState<SubCategoryRow[]>([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editedSubcategories, setEditedSubcategories] = useState<SubCategoryRow[]>([]);
+
+  // State for Add Sub Category dialog
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [newSubCategory, setNewSubCategory] = useState("");
+
   const { id } = useParams();
+  const queryClient = useQueryClient();
   const { data: categoryDetail, error: categoryError } = useCategoryDetail(id);
   const updateSubCategory = useUpdateSubCategoryRow();
+
+  const createSubCategory = useCreateSubCategory({
+    onCreated: () => {
+      setNewSubCategory("");
+      setIsAddOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["categories", "detail", id] });
+    },
+  });
 
   useEffect(() => {
     if (categoryDetail) {
@@ -88,107 +118,196 @@ const SubCategoryEditList = () => {
     setEditedSubcategories(updatedSubcategories);
   };
 
+  const handleAddSubCategory = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!newSubCategory.trim()) {
+      toast.error("Please enter a subcategory name");
+      return;
+    }
+    if (!id) {
+      toast.error("Category ID not found");
+      return;
+    }
+
+    createSubCategory.mutate({
+      category: String(id),
+      subcategory: newSubCategory.trim(),
+    });
+  };
+
   return (
-    <Card className="h-[420px] w-full overflow-hidden">
-      <CardHeader>
-        <CardTitle>SubCategory List</CardTitle>
-        <CardDescription>Inline edit sub categories of this category.</CardDescription>
-      </CardHeader>
-      <CardContent className="h-full overflow-y-auto pb-16">
-        <table className="min-w-full divide-y divide-outline">
-          <thead className="bg-surface-container-low">
-            <tr>
-              <th className="px-4 py-2 text-left text-label-sm font-medium text-on-surface-variant">
-                Sl No
-              </th>
-              <th className="px-4 py-2 text-left text-label-sm font-medium text-on-surface-variant">
-                Subcategory of {categoryData.category}
-              </th>
-              <th className="px-4 py-2 text-left text-label-sm font-medium text-on-surface-variant">
-                Status
-              </th>
-              <th className="px-4 py-2 text-left text-label-sm font-medium text-on-surface-variant">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-outline bg-surface-container-lowest">
-            {editedSubcategories.length === 0 ? (
+    <>
+      <Card className="h-[420px] w-full overflow-hidden">
+        <CardHeader className="flex flex-row items-center justify-between gap-4 pb-3">
+          <div>
+            <CardTitle>SubCategory List</CardTitle>
+            <CardDescription>Inline edit sub categories of this category.</CardDescription>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => {
+              setNewSubCategory("");
+              setIsAddOpen(true);
+            }}
+            className="bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm transition-all"
+          >
+            <Plus className="mr-1.5 size-4" />
+            Add Sub Category
+          </Button>
+        </CardHeader>
+        <CardContent className="h-full overflow-y-auto pb-16">
+          <table className="min-w-full divide-y divide-outline">
+            <thead className="bg-surface-container-low">
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-body-md text-on-surface-variant">
-                  No subcategories found.
-                </td>
+                <th className="px-4 py-2 text-left text-label-sm font-medium text-on-surface-variant">
+                  Sl No
+                </th>
+                <th className="px-4 py-2 text-left text-label-sm font-medium text-on-surface-variant">
+                  Subcategory of {categoryData.category}
+                </th>
+                <th className="px-4 py-2 text-left text-label-sm font-medium text-on-surface-variant">
+                  Status
+                </th>
+                <th className="px-4 py-2 text-left text-label-sm font-medium text-on-surface-variant">
+                  Action
+                </th>
               </tr>
-            ) : (
-              subcategories.map((subcat, index) => (
-                <tr key={index} className="transition-colors hover:bg-surface-container-low">
-                  <td className="px-4 py-2 text-body-md text-on-surface">{index + 1}</td>
-                  <td className="px-4 py-2 text-body-md text-on-surface">
-                    {editIndex === index ? (
-                      <Input
-                        type="text"
-                        value={editedSubcategories[index]?.subcategory ?? ""}
-                        onChange={(e) => handleChange(index, "subcategory", e.target.value)}
-                        aria-label="Subcategory name"
-                      />
-                    ) : (
-                      subcat.subcategory
-                    )}
-                  </td>
-                  <td className="px-4 py-2 text-body-md text-on-surface">
-                    {editIndex === index ? (
-                      <Select
-                        value={editedSubcategories[index]?.subcategory_status ?? ""}
-                        onValueChange={(value) =>
-                          handleChange(index, "subcategory_status", value)
-                        }
-                      >
-                        <SelectTrigger aria-label="Subcategory status">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {statusOptions.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      subcat.subcategory_status
-                    )}
-                  </td>
-                  <td className="px-4 py-2">
-                    {editIndex === index ? (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => handleUpdateSubCat(e, index)}
-                        disabled={updateSubCategory.isPending}
-                        aria-label="Save subcategory"
-                        title="Save"
-                      >
-                        <RiArrowUpDoubleFill className="text-emerald-700" />
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEditClick(index)}
-                        aria-label="Edit subcategory"
-                        title="Edit"
-                      >
-                        <CiEdit className="text-emerald-700" />
-                      </Button>
-                    )}
+            </thead>
+            <tbody className="divide-y divide-outline bg-surface-container-lowest">
+              {editedSubcategories.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-8 text-center text-body-md text-on-surface-variant">
+                    No subcategories found.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </CardContent>
-    </Card>
+              ) : (
+                subcategories.map((subcat, index) => (
+                  <tr key={index} className="transition-colors hover:bg-surface-container-low">
+                    <td className="px-4 py-2 text-body-md text-on-surface">{index + 1}</td>
+                    <td className="px-4 py-2 text-body-md text-on-surface">
+                      {editIndex === index ? (
+                        <Input
+                          type="text"
+                          value={editedSubcategories[index]?.subcategory ?? ""}
+                          onChange={(e) => handleChange(index, "subcategory", e.target.value)}
+                          aria-label="Subcategory name"
+                        />
+                      ) : (
+                        subcat.subcategory
+                      )}
+                    </td>
+                    <td className="px-4 py-2 text-body-md text-on-surface">
+                      {editIndex === index ? (
+                        <Select
+                          value={editedSubcategories[index]?.subcategory_status ?? ""}
+                          onValueChange={(value) =>
+                            handleChange(index, "subcategory_status", value)
+                          }
+                        >
+                          <SelectTrigger aria-label="Subcategory status">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {statusOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        subcat.subcategory_status
+                      )}
+                    </td>
+                    <td className="px-4 py-2">
+                      {editIndex === index ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => handleUpdateSubCat(e, index)}
+                          disabled={updateSubCategory.isPending}
+                          aria-label="Save subcategory"
+                          title="Save"
+                        >
+                          <RiArrowUpDoubleFill className="text-emerald-700" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditClick(index)}
+                          aria-label="Edit subcategory"
+                          title="Edit"
+                        >
+                          <CiEdit className="text-emerald-700" />
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+
+      {/* Add Sub Category Dialog */}
+      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Sub Category</DialogTitle>
+            <DialogDescription>
+              Create a new sub category under {categoryData.category || "this category"}.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleAddSubCategory} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="edit-new-subcategory">
+                Sub Category Name <span className="text-error">*</span>
+              </Label>
+              <Input
+                id="edit-new-subcategory"
+                type="text"
+                placeholder="Enter sub category name"
+                value={newSubCategory}
+                onChange={(e) => setNewSubCategory(e.target.value)}
+                disabled={createSubCategory.isPending}
+                autoFocus
+                required
+              />
+            </div>
+            <DialogFooter className="sm:justify-end gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setIsAddOpen(false)}
+                disabled={createSubCategory.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={createSubCategory.isPending}
+                className="bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm min-w-28"
+              >
+                {createSubCategory.isPending ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Adding…
+                  </>
+                ) : (
+                  <>
+                    <Plus className="size-4" />
+                    Add Sub Category
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
