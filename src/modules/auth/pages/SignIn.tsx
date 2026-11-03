@@ -8,19 +8,22 @@ import { AuthLayout } from "@/modules/auth/components/AuthLayout";
 import { PasswordInput } from "@/modules/auth/components/PasswordInput";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import {
-  getRememberedUsername,
-  getToken,
-  wasRememberMeChecked,
-} from "@/lib/auth-storage";
+import { getToken } from "@/lib/auth-storage";
 
 const SignIn = () => {
-  const [email, setEmail] = useState(() => getRememberedUsername());
+  // Start with completely blank credentials fields - no default credentials shown
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(() => wasRememberMeChecked());
+  const [rememberMe, setRememberMe] = useState(false);
   const { isPanelUp } = useAppContext();
   const navigate = useNavigate();
   const { mutate: login, isPending } = useLogin();
+
+  // Clean any old stored credentials from previous sessions so fields stay clear
+  useEffect(() => {
+    localStorage.removeItem("remembered_username");
+    localStorage.removeItem("remember_me");
+  }, []);
 
   // Already have a session (e.g. refresh / back button) — skip the login
   // form instead of flashing it, and go straight to the dashboard.
@@ -47,7 +50,7 @@ const SignIn = () => {
       title="Sign In"
       description="Login to your CRM account"
     >
-      <form onSubmit={handleSubmit} method="POST" className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} method="POST" className="flex flex-col gap-4" autoComplete="off">
         {/* Username / Mobile Number input with icon */}
         <div className="relative">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
@@ -60,7 +63,7 @@ const SignIn = () => {
             value={email}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
             placeholder="Enter your username or mobile"
-            autoComplete="username"
+            autoComplete="off"
             className="h-11 rounded-2xl border-slate-200 bg-slate-50 pl-10 text-[14px] shadow-2xs transition-colors focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-600/20 dark:border-slate-800 dark:bg-slate-800/60 dark:focus:border-blue-500 dark:focus:bg-slate-800"
             required
           />
@@ -77,7 +80,7 @@ const SignIn = () => {
             value={password}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             placeholder="Enter your password"
-            autoComplete="current-password"
+            autoComplete="new-password"
             className="h-11 rounded-2xl border-slate-200 bg-slate-50 pl-10 pr-10 text-[14px] shadow-2xs transition-colors focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-600/20 dark:border-slate-800 dark:bg-slate-800/60 dark:focus:border-blue-500 dark:focus:bg-slate-800"
             required
           />

@@ -3,7 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { PANEL_LOGIN_URL } from "@/modules/auth/api/auth.api";
-import { setAuthToken, setRememberedUsername, setUserSession } from "@/lib/auth-storage";
+import { setAuthToken, setUserSession } from "@/lib/auth-storage";
 
 export interface LoginPayload {
   username: string;
@@ -29,17 +29,25 @@ export function useLogin() {
         const token = res.data.UserInfo?.token;
         if (token) {
           const remember = variables.remember ?? false;
+          const user = res.data.UserInfo?.user || {};
+          const loginUser = variables.username;
+
           // Remember me ON  -> localStorage (persists across browser restarts)
           // Remember me OFF -> sessionStorage (forgotten when tab/browser closes)
           setAuthToken(token, remember);
-          setRememberedUsername(variables.username, remember);
+
+          const store = remember ? localStorage : sessionStorage;
+          if (loginUser) {
+            store.setItem("login_username", loginUser);
+          }
+
           setUserSession(
             {
-              id: res.data.UserInfo.user.user_type,
-              name: res.data.UserInfo.user.name,
-              username: res.data.UserInfo.user.mobile,
-              email: res.data.UserInfo.user.email,
-              user_type_id: res.data.UserInfo.user.user_type,
+              id: String(user.user_type ?? user.id ?? ""),
+              name: user.name || loginUser || "Admin",
+              username: user.name || loginUser || user.mobile || "Admin",
+              email: user.email || "",
+              user_type_id: String(user.user_type ?? ""),
             },
             remember,
           );

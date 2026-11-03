@@ -73,7 +73,10 @@ export interface CreateCategoryInput {
   file: File | null;
 }
 
-export function useCreateCategory(options?: { onCreated?: () => void }) {
+export function useCreateCategory(options?: {
+  onCreated?: () => void;
+  showToast?: boolean;
+}) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: CreateCategoryInput): Promise<any> => {
@@ -93,20 +96,25 @@ export function useCreateCategory(options?: { onCreated?: () => void }) {
           Authorization: `Bearer ${getToken()}`,
         },
       });
+
+      if (res.data?.code != "200" && res.data?.code != 200 && res.data?.code != 201) {
+        throw new Error(res.data?.message || res.data?.msg || "Duplicate entry or failed to create category");
+      }
       return res.data;
     },
     onSuccess: (res) => {
-      if (res?.code == "200") {
-        toast.success("Sub Category succesfull");
-        queryClient.invalidateQueries({ queryKey: ["categories", "list"] });
-        queryClient.invalidateQueries({ queryKey: ["categories", "dropdown"] });
-        options?.onCreated?.();
-      } else {
-        toast.error("duplicate entry");
+      queryClient.invalidateQueries({ queryKey: ["categories", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["categories", "dropdown"] });
+      if (options?.showToast !== false) {
+        toast.success(res?.message || res?.msg || "Category created successfully");
       }
+      options?.onCreated?.();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Error creating category", error);
+      if (options?.showToast !== false) {
+        toast.error(error?.message || "Error creating category");
+      }
     },
   });
 }
